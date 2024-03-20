@@ -67,7 +67,6 @@ namespace MapDisplay
             if (!paralelized)
                 texture = TextureUtils.ColorDataToTexture2D(textureData, HeightMap.Size, HeightMap.Size);
 
-            texture.filterMode = FilterMode.Point;
             texture.Apply();
 
             if (textureRenderer != null)

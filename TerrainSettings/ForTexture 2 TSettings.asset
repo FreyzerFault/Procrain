@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: ForTexture 2 TSettings
   m_EditorClassIdentifier: 
   autoUpdate: 1
-  dirty: 0
+  dirty: 1
   noiseParams:
     size: 256
-    scale: 100
+    scale: 60.18
     numOctaves: 5
     persistance: 0.5
     lacunarity: 2
