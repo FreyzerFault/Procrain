@@ -1,0 +1,19 @@
+{
+  "name": "Scripts.Utils.Editor",
+  "rootNamespace": "",
+  "references": [
+    "GUID:09193dd9a3311884987a31473f564759",
+    "GUID:984271c8582200c4b94bb303e2391297"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

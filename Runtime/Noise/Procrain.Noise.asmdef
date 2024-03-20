@@ -1,0 +1,18 @@
+{
+    "name": "Procrain.Noise",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:e97b30bf0ec2fba4ba38c47f8a03ac4f",
+        "GUID:8e56582fd59963847b3cb4d5600b8406"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

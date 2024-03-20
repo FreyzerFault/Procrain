@@ -1,0 +1,21 @@
+{
+    "name": "Procrain.MapGeneration",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:a6245a649dbd77945a7c456417a40bdb",
+        "GUID:984271c8582200c4b94bb303e2391297",
+        "GUID:e97b30bf0ec2fba4ba38c47f8a03ac4f",
+        "GUID:19096656ae734cc4cbcb15af4c9348d8",
+        "GUID:2665a8d13d1b3f18800f46e256720795"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

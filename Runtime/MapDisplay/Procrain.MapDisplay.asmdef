@@ -1,0 +1,25 @@
+{
+  "name": "Scripts.NoiseDisplay",
+  "rootNamespace": "",
+  "references": [
+    "GUID:c598079f1bd7ac14fbbef2e2aaa6777d",
+    "GUID:984271c8582200c4b94bb303e2391297",
+    "GUID:b41b7865b149c7d4b9c749c4446a484a",
+    "GUID:a6245a649dbd77945a7c456417a40bdb",
+    "GUID:8e56582fd59963847b3cb4d5600b8406",
+    "GUID:07febe4ddf955e44188fb1c2e9b8e3a5",
+    "GUID:e7f8ffb28dbc3e34fbe0b2b8585de79b",
+    "GUID:19096656ae734cc4cbcb15af4c9348d8",
+    "GUID:d8b63aba1907145bea998dd612889d6b",
+    "GUID:d786fe02fabc6b3409063bb3e4fa1a6d"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

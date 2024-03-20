@@ -1,0 +1,24 @@
+{
+    "name": "Scripts.MapGeneration.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b41b7865b149c7d4b9c749c4446a484a",
+        "GUID:d786fe02fabc6b3409063bb3e4fa1a6d",
+        "GUID:e7f8ffb28dbc3e34fbe0b2b8585de79b",
+        "GUID:89665336b07e51b4e839835b4f5e92e4",
+        "GUID:984271c8582200c4b94bb303e2391297",
+        "GUID:e97b30bf0ec2fba4ba38c47f8a03ac4f",
+        "GUID:8e56582fd59963847b3cb4d5600b8406"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
