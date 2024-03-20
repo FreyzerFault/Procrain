@@ -1,3 +1,4 @@
+using Noise;
 using Procrain.Runtime.MapGeneration;
 using Procrain.Runtime.Noise;
 using UnityEngine;

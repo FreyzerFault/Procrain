@@ -1,3 +1,4 @@
+using Noise;
 using Procrain.Runtime.Noise;
 using Procrain.Runtime.Utils.Threading;
 using Unity.Burst;

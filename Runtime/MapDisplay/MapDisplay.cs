@@ -1,4 +1,5 @@
 using System.Collections;
+using Noise;
 using Procrain.Runtime.MapGeneration;
 using Procrain.Runtime.Noise;
 using Procrain.Runtime.Utils;
