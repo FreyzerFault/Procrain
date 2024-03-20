@@ -1,7 +1,7 @@
-﻿using Procrain.Runtime.MapGeneration.TerrainGeneration.InfiniteGeneration;
-using Procrain.Runtime.Utils;
+﻿using MapGeneration.TerrainGeneration.InfiniteGeneration;
 using UnityEditor;
 using UnityEngine;
+using Utils;
 
 namespace Procrain.Editor.MapGeneration
 {

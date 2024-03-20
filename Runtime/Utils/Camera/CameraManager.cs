@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Procrain.Runtime.Utils.Camera
+namespace Utils.Camera
 {
     public class CameraManager : MonoBehaviour
     {

@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Procrain.Runtime.MapDisplay;
-using Procrain.Runtime.MapGeneration.MeshGeneration;
-using Procrain.Runtime.Noise;
+using MapDisplay;
+using MapGeneration.MeshGeneration;
+using Noise;
 using UnityEngine;
 
-namespace Procrain.Runtime.MapGeneration.TerrainGeneration.InfiniteGeneration
+namespace MapGeneration.TerrainGeneration.InfiniteGeneration
 {
     public class TerrainChunk : MapDisplayInMesh
     {

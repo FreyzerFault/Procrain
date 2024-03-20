@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Procrain.Runtime.UI.Minimap
+namespace UI.Minimap
 {
     [RequireComponent(typeof(RectTransform))]
     public class Minimap : MonoBehaviour, IPointerClickHandler

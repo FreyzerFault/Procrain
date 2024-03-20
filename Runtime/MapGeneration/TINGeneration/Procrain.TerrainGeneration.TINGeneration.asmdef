@@ -1,0 +1,22 @@
+{
+  "name": "Procrain.TINGenerator",
+  "rootNamespace": "",
+  "references": [
+    "GUID:8e56582fd59963847b3cb4d5600b8406",
+    "GUID:c598079f1bd7ac14fbbef2e2aaa6777d",
+    "GUID:b41b7865b149c7d4b9c749c4446a484a",
+    "GUID:07febe4ddf955e44188fb1c2e9b8e3a5",
+    "GUID:a6245a649dbd77945a7c456417a40bdb",
+    "GUID:984271c8582200c4b94bb303e2391297",
+    "GUID:2cac3cb2d33f8384f9525079515e3b29"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

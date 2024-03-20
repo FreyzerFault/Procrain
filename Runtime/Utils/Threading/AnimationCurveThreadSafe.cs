@@ -4,7 +4,7 @@ using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Procrain.Runtime.Utils.Threading
+namespace Utils.Threading
 {
     [BurstCompile]
     public struct SampledAnimationCurve : IDisposable

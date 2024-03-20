@@ -3,16 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Procrain.Runtime.Geometry;
-using Procrain.Runtime.MapGeneration.MeshGeneration;
-using Procrain.Runtime.MapGeneration.TextureGeneration;
-using Procrain.Runtime.Noise;
-using Procrain.Runtime.UI.Minimap;
+using Geometry;
+using MapGeneration.MeshGeneration;
+using MapGeneration.TextureGeneration;
+using Noise;
+using UI.Minimap;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 
-namespace Procrain.Runtime.MapGeneration.TerrainGeneration.TINGeneration
+namespace MapGeneration.TerrainGeneration.TINGeneration
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     [ExecuteAlways]

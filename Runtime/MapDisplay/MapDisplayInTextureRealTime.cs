@@ -1,8 +1,9 @@
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Procrain.Runtime.MapDisplay
+namespace MapDisplay
 {
+    // Añade movimiento al MapDisplay para testear el rendimiento de la generación del Mapa en Tiempo Real
     public class MapDisplayInTextureRealTime : MapDisplayInTexture
     {
         [Space] public bool movement;

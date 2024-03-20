@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Procrain.Runtime.Geometry
+namespace Geometry
 {
     public static class GeometryUtils
     {

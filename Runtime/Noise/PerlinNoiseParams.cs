@@ -3,7 +3,7 @@ using Procrain.Editor.Utils;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Procrain.Runtime.Noise
+namespace Noise
 {
     // Clase en la que se almacenan los parametros usados en el ruido
     [Serializable]

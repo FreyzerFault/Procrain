@@ -1,9 +1,8 @@
+using MapGeneration;
 using Noise;
-using Procrain.Runtime.MapGeneration;
-using Procrain.Runtime.Noise;
 using UnityEngine;
 
-namespace Procrain.Runtime.MapDisplay
+namespace MapDisplay
 {
     public class RandomMapDisplayInTexture : MapDisplayInTexture
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Procrain.Runtime.Utils
+namespace Utils
 {
     [ExecuteAlways]
     public class SingletonExecuteAlways<T> : MonoBehaviour where T : MonoBehaviour

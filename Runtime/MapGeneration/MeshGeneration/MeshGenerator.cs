@@ -1,11 +1,11 @@
 using System;
-using Procrain.Runtime.Noise;
+using Noise;
 using Unity.Burst;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Procrain.Runtime.MapGeneration.MeshGeneration
+namespace MapGeneration.MeshGeneration
 {
     public static class MeshGenerator
     {

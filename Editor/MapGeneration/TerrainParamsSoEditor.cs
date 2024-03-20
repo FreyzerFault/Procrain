@@ -1,5 +1,5 @@
+using MapGeneration;
 using Procrain.Editor.Utils;
-using Procrain.Runtime.MapGeneration;
 using UnityEditor;
 using UnityEngine;
 

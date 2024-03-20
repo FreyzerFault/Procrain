@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Procrain.Runtime.Utils
+namespace Utils
 {
     [ExecuteAlways]
     public abstract class AutoUpdatableSoWithBackup<T> : AutoUpdatableSo where T : AutoUpdatableSoWithBackup<T>

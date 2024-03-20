@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-namespace Procrain.Runtime.Water.Caustics
+namespace Water.Caustics
 {
     public class CausticsPass : ScriptableRenderPass
     {
@@ -16,9 +16,9 @@ namespace Procrain.Runtime.Water.Caustics
 
         private const float BIAS = 0.1f;
         private static Mesh mesh;
+        private readonly float waterLevel;
 
         public Material causticsMaterial;
-        private readonly float waterLevel;
 
         public CausticsPass(float waterLevel) => this.waterLevel = waterLevel;
 

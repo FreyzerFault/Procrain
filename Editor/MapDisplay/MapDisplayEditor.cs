@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace Procrain.Editor.MapDisplay
 {
-    [CustomEditor(typeof(Runtime.MapDisplay.MapDisplay), true)]
+    [CustomEditor(typeof(global::MapDisplay.MapDisplay), true)]
     public class MapDisplayEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
-            var mapDisplay = target as Runtime.MapDisplay.MapDisplay;
+            var mapDisplay = target as global::MapDisplay.MapDisplay;
             if (mapDisplay == null) return;
 
             // Si se cambio algun valor tambien generamos el mapa

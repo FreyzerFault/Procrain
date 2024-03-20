@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Procrain.Runtime.MapGeneration.TerrainGeneration
+namespace MapGeneration.TerrainGeneration
 {
     public static class TerrainGenerator
     {

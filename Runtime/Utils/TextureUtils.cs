@@ -3,7 +3,7 @@ using System.Linq;
 using Unity.Collections;
 using UnityEngine;
 
-namespace Procrain.Runtime.Utils
+namespace Utils
 {
     public static class TextureUtils
     {

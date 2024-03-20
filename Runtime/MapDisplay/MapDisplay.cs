@@ -1,14 +1,13 @@
 using System.Collections;
+using MapGeneration;
 using Noise;
-using Procrain.Runtime.MapGeneration;
-using Procrain.Runtime.Noise;
-using Procrain.Runtime.Utils;
-using Procrain.Runtime.Utils.Threading;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using Utils;
+using Utils.Threading;
 
-namespace Procrain.Runtime.MapDisplay
+namespace MapDisplay
 {
     public abstract class MapDisplay : MonoBehaviour
     {

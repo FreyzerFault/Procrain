@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-namespace Procrain.Runtime.Water.Caustics
+namespace Water.Caustics
 {
     public class CausticsFeature : ScriptableRendererFeature
     {

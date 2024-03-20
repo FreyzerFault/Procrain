@@ -1,11 +1,11 @@
+using Noise;
 using Procrain.Editor.Utils;
-using Procrain.Runtime.Noise;
-using Procrain.Runtime.Utils;
 using Unity.Mathematics;
 using UnityEngine;
+using Utils;
 using Random = UnityEngine.Random;
 
-namespace Procrain.Runtime.MapGeneration
+namespace MapGeneration
 {
     [ExecuteAlways]
     [CreateAssetMenu(menuName = "Terrain Params", fileName = "Terrain Params")]

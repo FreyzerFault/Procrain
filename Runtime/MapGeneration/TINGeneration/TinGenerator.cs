@@ -1,9 +1,9 @@
 using System;
-using Procrain.Runtime.Geometry;
-using Procrain.Runtime.MapGeneration.MeshGeneration;
+using Geometry;
+using MapGeneration.MeshGeneration;
 using UnityEngine;
 
-namespace Procrain.Runtime.MapGeneration.TerrainGeneration.TINGeneration
+namespace MapGeneration.TerrainGeneration.TINGeneration
 {
     public static class TinGenerator
     {

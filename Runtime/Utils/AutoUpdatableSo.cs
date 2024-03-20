@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Procrain.Runtime.Utils
+namespace Utils
 {
     [ExecuteAlways]
     public abstract class AutoUpdatableSo : ScriptableObject

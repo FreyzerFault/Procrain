@@ -1,11 +1,10 @@
 using Noise;
-using Procrain.Runtime.Noise;
-using Procrain.Runtime.Utils.Threading;
 using Unity.Burst;
 using Unity.Jobs;
 using UnityEngine;
+using Utils.Threading;
 
-namespace Procrain.Runtime.MapGeneration
+namespace MapGeneration
 {
     public static class HeightMapGenerator
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Procrain.Runtime.Geometry
+namespace Geometry
 {
     [Serializable]
     public class Vertex

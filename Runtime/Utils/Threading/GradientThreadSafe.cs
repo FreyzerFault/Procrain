@@ -3,7 +3,7 @@ using Unity.Burst;
 using Unity.Collections;
 using UnityEngine;
 
-namespace Procrain.Runtime.Utils.Threading
+namespace Utils.Threading
 {
     [BurstCompile]
     public struct GradientThreadSafe : IDisposable

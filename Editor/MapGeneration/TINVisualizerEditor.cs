@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using Procrain.Runtime.MapGeneration.TerrainGeneration.TINGeneration;
+using MapGeneration.TerrainGeneration.TINGeneration;
 using UnityEditor;
 using UnityEngine;
 

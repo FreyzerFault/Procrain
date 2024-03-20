@@ -1,9 +1,9 @@
 using System;
-using Procrain.Runtime.Utils.Threading;
 using Unity.Collections;
 using UnityEngine;
+using Utils.Threading;
 
-namespace Procrain.Runtime.MapGeneration
+namespace MapGeneration
 {
     public interface IHeightMap
     {

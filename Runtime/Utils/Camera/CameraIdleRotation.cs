@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Procrain.Runtime.Utils.Camera
+namespace Utils.Camera
 {
     public class CameraIdleRotation : MonoBehaviour
     {

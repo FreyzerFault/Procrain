@@ -7,7 +7,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using Mesh = UnityEngine.Mesh;
 
-namespace Procrain.Runtime.MapGeneration.MeshGeneration
+namespace MapGeneration.MeshGeneration
 {
     public interface IMeshData
     {

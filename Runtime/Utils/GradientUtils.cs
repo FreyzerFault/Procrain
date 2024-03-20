@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Procrain.Runtime.Utils
+namespace Utils
 {
     public static class GradientUtils
     {

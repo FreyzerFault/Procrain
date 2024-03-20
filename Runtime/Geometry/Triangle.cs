@@ -2,7 +2,7 @@
 using JetBrains.Annotations;
 using UnityEngine;
 
-namespace Procrain.Runtime.Geometry
+namespace Geometry
 {
     public class Triangle
     {

@@ -10,7 +10,7 @@ using UnityEngine.Rendering;
 #if UNITY_EDITOR
 #endif
 
-namespace Procrain.Runtime.Water
+namespace Water
 {
     [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
     [ExecuteAlways]

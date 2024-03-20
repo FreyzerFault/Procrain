@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Procrain.Runtime.MapGeneration.TerrainGeneration.TINGeneration
+namespace MapGeneration.TerrainGeneration.TINGeneration
 {
     public class TinControlUI : MonoBehaviour
     {

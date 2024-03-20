@@ -1,14 +1,14 @@
 using System;
 using System.Linq;
-using Procrain.Runtime.Noise;
-using Procrain.Runtime.Utils;
-using Procrain.Runtime.Utils.Threading;
+using Noise;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using Utils;
+using Utils.Threading;
 
-namespace Procrain.Runtime.MapGeneration.TextureGeneration
+namespace MapGeneration.TextureGeneration
 {
     public static class TextureGenerator
     {

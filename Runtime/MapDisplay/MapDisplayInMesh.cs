@@ -1,10 +1,10 @@
 using System.Collections;
-using Procrain.Runtime.MapGeneration.MeshGeneration;
-using Procrain.Runtime.Utils;
+using MapGeneration.MeshGeneration;
 using Unity.Jobs;
 using UnityEngine;
+using Utils;
 
-namespace Procrain.Runtime.MapDisplay
+namespace MapDisplay
 {
     [ExecuteAlways]
     [RequireComponent(

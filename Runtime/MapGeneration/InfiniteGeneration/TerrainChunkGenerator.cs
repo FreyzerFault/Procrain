@@ -9,7 +9,7 @@ using UnityEngine.Serialization;
 //
 // La generación es lazy:
 // no genera el Chunk hasta que el jugador se acerca a menos de la distancia de renderizado
-namespace Procrain.Runtime.MapGeneration.TerrainGeneration.InfiniteGeneration
+namespace MapGeneration.TerrainGeneration.InfiniteGeneration
 {
     [ExecuteAlways]
     public class TerrainChunkGenerator : MonoBehaviour

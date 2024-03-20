@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEditor;
 
-namespace Procrain.Runtime.Utils
+namespace Utils
 {
     /// <summary>
     ///     Sometimes, when you use Unity's built-in OnValidate, it will spam you with a very annoying warning message,

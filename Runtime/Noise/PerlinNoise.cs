@@ -1,7 +1,6 @@
 using System;
 using System.IO;
-using Procrain.Runtime.Geometry;
-using Procrain.Runtime.Noise;
+using Geometry;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;

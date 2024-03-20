@@ -1,8 +1,8 @@
-using Procrain.Runtime.MapGeneration.MeshGeneration;
-using Procrain.Runtime.MapGeneration.TextureGeneration;
+using MapGeneration.MeshGeneration;
+using MapGeneration.TextureGeneration;
 using UnityEngine;
 
-namespace Procrain.Runtime.MapGeneration.TerrainGeneration
+namespace MapGeneration.TerrainGeneration
 {
     public struct TerrainMapData
     {

@@ -1,7 +1,8 @@
 using UnityEngine;
 
-namespace Procrain.Runtime.MapDisplay
+namespace MapDisplay
 {
+    // Actualiza el LOD del Mapa en Tiempo Real dependiendo de la distancia del Jugador
     [RequireComponent(
         typeof(MeshFilter),
         typeof(MeshRenderer)

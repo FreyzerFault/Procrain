@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using UnityEngine;
 
-namespace Procrain.Runtime.Utils.Threading
+namespace Utils.Threading
 {
     public class MainThreadDispatcher : SingletonPersistent<MainThreadDispatcher>
     {
