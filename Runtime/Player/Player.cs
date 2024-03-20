@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Procrain.Runtime.Player
+namespace Player
 {
     public class Player : MonoBehaviour
     {
@@ -17,7 +17,6 @@ namespace Procrain.Runtime.Player
             if (Input.GetKey(KeyCode.D))
                 move = transform.right;
 
-            //rb.AddForce(move);
             transform.position += move * (Time.deltaTime * 1000);
         }
     }
