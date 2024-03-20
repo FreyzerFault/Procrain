@@ -10,7 +10,7 @@ using Utils.Threading;
 namespace MapDisplay
 {
     [ExecuteAlways]
-    public abstract class MapDisplayInTexture : MapDisplay
+    public abstract class MapDisplayInTexture : MapDisplayBase
     {
         [Space] public Gradient gradient;
 
@@ -67,6 +67,7 @@ namespace MapDisplay
             if (!paralelized)
                 texture = TextureUtils.ColorDataToTexture2D(textureData, HeightMap.Size, HeightMap.Size);
 
+            texture.filterMode = FilterMode.Point;
             texture.Apply();
 
             if (textureRenderer != null)

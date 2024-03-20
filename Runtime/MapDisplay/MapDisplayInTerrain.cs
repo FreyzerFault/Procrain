@@ -7,7 +7,7 @@ namespace MapDisplay
     // TODO: Texturas y Collider
     [RequireComponent(typeof(Terrain), typeof(TerrainCollider))]
     [ExecuteAlways]
-    public class MapDisplayInTerrain : MapDisplay
+    public class MapDisplayInTerrain : MapDisplayBase
     {
         public bool movement;
 

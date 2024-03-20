@@ -9,7 +9,7 @@ using Utils.Threading;
 
 namespace MapDisplay
 {
-    public abstract class MapDisplay : MonoBehaviour
+    public abstract class MapDisplayBase : MonoBehaviour
     {
         public bool autoUpdate = true;
         public bool debugTimer = true;
