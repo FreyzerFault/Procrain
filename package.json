@@ -1,11 +1,11 @@
 {
-  "name": "daviduvidev.procrain",
+  "name": "procrain",
   "version": "0.1.0",
   "displayName": "Procrain - PROcedural terRAIN",
   "description": "Tool for creating procedural terrains in Unity using Perlin noise.",
   "unity": "2022.3",
   "unityRelease": "16f1",
-  "documentationUrl": "https://github.com/FreyzerFault/Procedural-Terrain",
+  "documentationUrl": "https://github.com/FreyzerFault/Procrain.git",
   "keywords": [
     "Terrain",
     "Procedural Generation",
@@ -14,7 +14,7 @@
     "Terrain Shader"
   ],
   "author": {
-    "name": "David Mart\u00ednez Alc\u00e1ntara",
+    "name": "David Martínez Alcántara",
     "email": "martinezalcantara29@gmail.com",
     "url": "https://daviduvi.dev"
   }
