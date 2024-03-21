@@ -37,6 +37,7 @@ namespace MapDisplay
 
         public override void DisplayMap()
         {
+            if (TerrainData == null) TerrainData = new TerrainData();
             TerrainGenerator.ApplyToTerrainData(TerrainData, heightMap, HeightMultiplier);
             terrainCollider.terrainData = TerrainData;
             terrain.materialTemplate = terrainMaterial;
