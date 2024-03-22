@@ -1,7 +1,7 @@
 using System;
+using ThreadingUtils;
 using Unity.Collections;
 using UnityEngine;
-using Utils.Threading;
 
 namespace MapGeneration
 {
@@ -36,6 +36,30 @@ namespace MapGeneration
         {
         }
 
+        public HeightMap(float[,] map, int size = 129, uint seed = 0)
+        {
+            Size = size;
+            this.seed = seed;
+            this.map = new float[map.GetLength(0) * map.GetLength(1)];
+
+            for (var y = 0; y < map.GetLength(1); y++)
+            for (var x = 0; x < map.GetLength(0); x++)
+                this.map[x + y * map.GetLength(0)] = map[x, y];
+        }
+
+        public HeightMap(Terrain terrain)
+            : this(
+                terrain.terrainData.GetHeights(
+                    0,
+                    0,
+                    terrain.terrainData.heightmapResolution,
+                    terrain.terrainData.heightmapResolution
+                ),
+                terrain.terrainData.heightmapResolution
+            )
+        {
+        }
+
         public float[,] ToArray2D()
         {
             var array = new float[Size, Size];
@@ -47,11 +71,9 @@ namespace MapGeneration
 
         public float GetHeight(int x, int y) => map[x + y * Size];
 
-
         public void ApplyHeightCurve(AnimationCurve heightCurve)
         {
-            for (var i = 0; i < map.Length; i++)
-                map[i] = heightCurve.Evaluate(map[i]);
+            for (var i = 0; i < map.Length; i++) map[i] = heightCurve.Evaluate(map[i]);
         }
     }
 
@@ -59,7 +81,6 @@ namespace MapGeneration
     {
         public NativeArray<float> map;
         public readonly uint seed;
-
 
         public HeightMapThreadSafe(int size = 129, uint seed = 0)
         {
@@ -85,8 +106,7 @@ namespace MapGeneration
 
         public void ApplyHeightCurve(AnimationCurve heightCurve)
         {
-            for (var i = 0; i < map.Length; i++)
-                map[i] = heightCurve.Evaluate(map[i]);
+            for (var i = 0; i < map.Length; i++) map[i] = heightCurve.Evaluate(map[i]);
         }
 
         // NO paralelizable
@@ -94,8 +114,7 @@ namespace MapGeneration
         {
             if (heightCurve.IsEmpty) return;
 
-            for (var i = 0; i < map.Length; i++)
-                map[i] = heightCurve.Evaluate(map[i]);
+            for (var i = 0; i < map.Length; i++) map[i] = heightCurve.Evaluate(map[i]);
         }
 
         public void Dispose() => map.Dispose();

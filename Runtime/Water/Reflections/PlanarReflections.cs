@@ -66,8 +66,10 @@ namespace Water.Reflections
 
         private void SafeDestroyObject(Object obj)
         {
-            if (Application.isEditor) DestroyImmediate(obj);
-            else Destroy(obj);
+            if (Application.isEditor)
+                DestroyImmediate(obj);
+            else
+                Destroy(obj);
         }
 
         private void UpdateReflectionCamera(Camera realCamera)

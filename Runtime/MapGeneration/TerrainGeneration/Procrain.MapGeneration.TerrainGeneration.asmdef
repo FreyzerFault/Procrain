@@ -1,18 +1,18 @@
 {
-    "name": "Procrain.TerrainGeneration",
-    "rootNamespace": "",
-    "references": [
-        "GUID:07febe4ddf955e44188fb1c2e9b8e3a5",
-        "GUID:c598079f1bd7ac14fbbef2e2aaa6777d",
-        "GUID:b41b7865b149c7d4b9c749c4446a484a"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+  "name": "Procrain.TerrainGeneration",
+  "rootNamespace": "",
+  "references": [
+    "GUID:07febe4ddf955e44188fb1c2e9b8e3a5",
+    "GUID:c598079f1bd7ac14fbbef2e2aaa6777d",
+    "GUID:b41b7865b149c7d4b9c749c4446a484a"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
 }

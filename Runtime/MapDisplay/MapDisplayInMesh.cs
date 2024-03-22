@@ -7,10 +7,7 @@ using Utils;
 namespace MapDisplay
 {
     [ExecuteAlways]
-    [RequireComponent(
-        typeof(MeshFilter),
-        typeof(MeshRenderer)
-    )]
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class MapDisplayInMesh : MapDisplayInTexture
     {
         public enum TextureMode
@@ -52,7 +49,10 @@ namespace MapDisplay
                 var size = NoiseParams.size;
                 DebugTimer.DebugTime(BuildHeightMap, $"Time to build HeightMap {size} x {size}");
                 if (textureMode == TextureMode.SetTexture)
-                    DebugTimer.DebugTime(BuildTextureData, $"Time to build TextureData {size} x {size}");
+                    DebugTimer.DebugTime(
+                        BuildTextureData,
+                        $"Time to build TextureData {size} x {size}"
+                    );
 
                 DebugTimer.DebugTime(
                     BuildMeshData,
@@ -80,8 +80,7 @@ namespace MapDisplay
 
         public override void DisplayMap()
         {
-            if (textureMode == TextureMode.SetTexture)
-                SetTexture();
+            if (textureMode == TextureMode.SetTexture) SetTexture();
 
             UpdateMesh();
         }
@@ -94,8 +93,7 @@ namespace MapDisplay
 
             meshFilter.sharedMesh = mesh;
 
-            if (meshCollider != null)
-                meshCollider.sharedMesh = mesh;
+            if (meshCollider != null) meshCollider.sharedMesh = mesh;
         }
 
         #endregion
@@ -117,8 +115,7 @@ namespace MapDisplay
         {
             yield return BuildHeightMapParallelizedCoroutine();
 
-            if (textureMode == TextureMode.SetTexture)
-                yield return BuildTextureParallelizedCoroutine();
+            if (textureMode == TextureMode.SetTexture) yield return BuildTextureParallelizedCoroutine();
 
             yield return BuildMeshParallelizedCoroutine();
 

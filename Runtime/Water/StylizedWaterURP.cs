@@ -71,8 +71,10 @@ namespace Water
 
         private void SafeDestroyObject(Object obj)
         {
-            if (Application.isEditor) DestroyImmediate(obj);
-            else Destroy(obj);
+            if (Application.isEditor)
+                DestroyImmediate(obj);
+            else
+                Destroy(obj);
         }
 
         public void ReadMaterialProperties()
@@ -80,7 +82,8 @@ namespace Water
             if (meshRenderer) material = meshRenderer.sharedMaterial;
             if (!material) return;
             if (material.shader.name != shaderName && material.shader.name != mobileShaderName
-                                                   && material.shader.name != underwaterShaderName) return;
+                                                   && material.shader.name != underwaterShaderName)
+                return;
 
             enableRefraction = material.IsKeywordEnabled("REFRACTION_ON") ? true : false;
 
@@ -156,8 +159,10 @@ namespace Water
 
                 #endregion
 
-                if (material.IsKeywordEnabled("WORLD_SPACE_UV_ON")) waterUVs = WaterUVs.World;
-                else waterUVs = WaterUVs.Local;
+                if (material.IsKeywordEnabled("WORLD_SPACE_UV_ON"))
+                    waterUVs = WaterUVs.World;
+                else
+                    waterUVs = WaterUVs.Local;
             }
 
             if (material.shader.name == shaderName)
@@ -221,11 +226,15 @@ namespace Water
 
                 #region Lighting
 
-                if (material.IsKeywordEnabled("WATER_LIGHTING_ON")) lighting = Lighting.Enabled;
-                else lighting = Lighting.Disabled;
+                if (material.IsKeywordEnabled("WATER_LIGHTING_ON"))
+                    lighting = Lighting.Enabled;
+                else
+                    lighting = Lighting.Disabled;
 
-                if (material.IsKeywordEnabled("SHORE_MOVEMENT_ON")) foamMovement = FoamMovement.Shore;
-                else foamMovement = FoamMovement.Directional;
+                if (material.IsKeywordEnabled("SHORE_MOVEMENT_ON"))
+                    foamMovement = FoamMovement.Shore;
+                else
+                    foamMovement = FoamMovement.Directional;
 
                 lightingSmoothness = material.GetFloat("_LightingSmoothness");
                 lightingSpecularColor = material.GetColor("_LightingSpecularColor");
@@ -256,7 +265,8 @@ namespace Water
         {
             if (!material) return;
             if (material.shader.name != shaderName && material.shader.name != mobileShaderName
-                                                   && material.shader.name != underwaterShaderName) return;
+                                                   && material.shader.name != underwaterShaderName)
+                return;
 
             if (material && meshRenderer && meshFilter && meshRenderer.sharedMaterial && !Application.isPlaying)
             {
@@ -267,8 +277,10 @@ namespace Water
 
             #region Colors and Transparency
 
-            if (useColorGradient) material.EnableKeyword("COLOR_GRADIENT_ON");
-            else material.DisableKeyword("COLOR_GRADIENT_ON");
+            if (useColorGradient)
+                material.EnableKeyword("COLOR_GRADIENT_ON");
+            else
+                material.DisableKeyword("COLOR_GRADIENT_ON");
             material.SetTexture("_WaterColorGradientTexture", colorGradientTexture);
             material.SetColor("_WaterColorShallow", shallowColor);
             material.SetColor("_WaterColorHorizon", horizonColor);
@@ -321,8 +333,10 @@ namespace Water
                 "_SurfaceFoamTilingAndOffset",
                 new Vector4(surfaceFoamOffsetX, surfaceFoamOffsetY, surfaceFoamScale1, surfaceFoamScale2)
             );
-            if (enableSurfaceFoam) material.EnableKeyword("SURFACE_FOAM_ON");
-            else material.DisableKeyword("SURFACE_FOAM_ON");
+            if (enableSurfaceFoam)
+                material.EnableKeyword("SURFACE_FOAM_ON");
+            else
+                material.DisableKeyword("SURFACE_FOAM_ON");
             if (enableHeightMask)
             {
                 material.SetFloat("_SurfaceFoamHeightMask", surfaceFoamHeightMask);
@@ -352,8 +366,10 @@ namespace Water
                 "_IntersectionFoamSampling",
                 new Vector2(intersectionFoamCutoff, intersectionFoamDistortion)
             );
-            if (enableIntersectionEffects) material.EnableKeyword("INTERSECTION_EFFECTS_ON");
-            else material.DisableKeyword("INTERSECTION_EFFECTS_ON");
+            if (enableIntersectionEffects)
+                material.EnableKeyword("INTERSECTION_EFFECTS_ON");
+            else
+                material.DisableKeyword("INTERSECTION_EFFECTS_ON");
 
             #endregion
 
@@ -377,16 +393,22 @@ namespace Water
 
             #endregion
 
-            if (waterUVs == WaterUVs.World) material.EnableKeyword("WORLD_SPACE_UV_ON");
-            else material.DisableKeyword("WORLD_SPACE_UV_ON");
+            if (waterUVs == WaterUVs.World)
+                material.EnableKeyword("WORLD_SPACE_UV_ON");
+            else
+                material.DisableKeyword("WORLD_SPACE_UV_ON");
 
             #region Lighting
 
-            if (lighting == Lighting.Enabled) material.EnableKeyword("WATER_LIGHTING_ON");
-            else material.DisableKeyword("WATER_LIGHTING_ON");
+            if (lighting == Lighting.Enabled)
+                material.EnableKeyword("WATER_LIGHTING_ON");
+            else
+                material.DisableKeyword("WATER_LIGHTING_ON");
 
-            if (foamMovement == FoamMovement.Shore) material.EnableKeyword("SHORE_MOVEMENT_ON");
-            else material.DisableKeyword("SHORE_MOVEMENT_ON");
+            if (foamMovement == FoamMovement.Shore)
+                material.EnableKeyword("SHORE_MOVEMENT_ON");
+            else
+                material.DisableKeyword("SHORE_MOVEMENT_ON");
 
             material.SetFloat("_LightingSmoothness", lightingSmoothness);
             material.SetColor("_LightingSpecularColor", lightingSpecularColor);
@@ -416,14 +438,18 @@ namespace Water
             material.SetFloat("_RefractionStrength", refractionStrength);
             if (material.shader.name == mobileShaderName || material.shader.name == underwaterShaderName)
             {
-                if (enableRefraction) material.EnableKeyword("REFRACTION_ON");
-                else material.DisableKeyword("REFRACTION_ON");
+                if (enableRefraction)
+                    material.EnableKeyword("REFRACTION_ON");
+                else
+                    material.DisableKeyword("REFRACTION_ON");
             }
 
             #endregion
 
-            if (enableFoamShadows) material.EnableKeyword("FOAM_SHADOWS_ON");
-            else material.DisableKeyword("FOAM_SHADOWS_ON");
+            if (enableFoamShadows)
+                material.EnableKeyword("FOAM_SHADOWS_ON");
+            else
+                material.DisableKeyword("FOAM_SHADOWS_ON");
         }
 
         public float GetWaveSteepness() => waveSteepness;

@@ -50,8 +50,7 @@ namespace UI.Minimap
         // }
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (MouseInMap())
-                onMapClick?.Invoke(Input.mousePosition, eventData.button);
+            if (MouseInMap()) onMapClick?.Invoke(Input.mousePosition, eventData.button);
         }
 
         private void UpdateMapBounds()

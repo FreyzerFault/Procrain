@@ -22,8 +22,7 @@ namespace Noise
         public static float[] BuildHeightMap(PerlinNoiseParams np, PerlinOctaves octaves)
         {
             // Scale no puede ser negativa
-            if (np.scale <= 0)
-                np.scale = 0.0001f;
+            if (np.scale <= 0) np.scale = 0.0001f;
 
             var size = np.SampleSize;
 
@@ -132,8 +131,7 @@ namespace Noise
         public static Vector3[] SampleNoiseInPointsFromFile(PerlinNoiseParams np, string filePath, out AABB aabb)
         {
             // Scale no puede ser negativa
-            if (np.scale <= 0)
-                np.scale = 0.0001f;
+            if (np.scale <= 0) np.scale = 0.0001f;
 
             var octaves = BuildOctaves(np);
 
@@ -182,8 +180,7 @@ namespace Noise
 
             // Añadimos las ESQUINAS
             var corners = GetCorners(aabb, np, octaves);
-            foreach (var corner in corners)
-                points[index++] = corner;
+            foreach (var corner in corners) points[index++] = corner;
 
             return points;
         }
@@ -229,8 +226,7 @@ namespace Noise
         )
         {
             // Scale no puede ser negativa
-            if (np.scale <= 0)
-                np.scale = 0.0001f;
+            if (np.scale <= 0) np.scale = 0.0001f;
 
             var size = np.SampleSize;
 

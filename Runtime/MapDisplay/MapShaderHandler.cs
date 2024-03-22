@@ -68,8 +68,7 @@ namespace MapDisplay
 
         public void SetShaderValues()
         {
-            foreach (var (regionType, region) in regions)
-                SetShaderRegionValues(region);
+            foreach (var (regionType, region) in regions) SetShaderRegionValues(region);
         }
 
         private void SetShaderRegionValues(Region region)

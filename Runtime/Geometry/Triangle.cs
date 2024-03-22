@@ -51,8 +51,7 @@ namespace Geometry
 
             // Y hay que ordenarlos en orden ANTIHORARIO
             // (si alguno esta a la Derecha de la arista opuesta se hace un Swap de la opuesta):
-            if (GeometryUtils.IsRight(v1.v2D, v2.v2D, v3.v2D))
-                (v3, v2) = (v2, v3); // SWAP v2 <-> v3
+            if (GeometryUtils.IsRight(v1.v2D, v2.v2D, v3.v2D)) (v3, v2) = (v2, v3); // SWAP v2 <-> v3
         }
 
         public Triangle(Vertex v1, Vertex v2, Vertex v3, Edge e1, Edge e2, Edge e3, int index = -1)
@@ -115,8 +114,7 @@ namespace Geometry
                 oppositeVertex = v1;
             else if (v2 != edge.begin && v2 != edge.end)
                 oppositeVertex = v2;
-            else if (v3 != edge.begin && v3 != edge.end)
-                oppositeVertex = v3;
+            else if (v3 != edge.begin && v3 != edge.end) oppositeVertex = v3;
 
             if (oppositeVertex == null)
                 throw new Exception("No se encuentra el vertice opuesto de " + edge + " en el Triangulo " + this);
@@ -207,8 +205,7 @@ namespace Geometry
 
             var denom1 = (b.y - a.y) * (c.x - a.x) - (b.x - a.x) * (c.y - a.y);
             var denom2 = c.y - a.y;
-            if (denom1 == 0 || denom2 == 0)
-                return PointTriPosition.OUT;
+            if (denom1 == 0 || denom2 == 0) return PointTriPosition.OUT;
 
             var w1 = (a.x * (c.y - a.y) + (p.y - a.y) * (c.x - a.x) - p.x * (c.y - a.y)) / denom1;
 
@@ -437,12 +434,10 @@ namespace Geometry
                         }
 
                 // No hubo interseccion
-                if (intersectionPoint1 == null)
-                    return false;
+                if (intersectionPoint1 == null) return false;
 
                 // Comprobamos cual es el Eje mas lejano, el cual tendra de vecino el SIGUIENTE TRIANGULO
-                if (farEdge != null)
-                    nextTriangle = farEdge.tIzq != this ? farEdge.tIzq : farEdge.tDer;
+                if (farEdge != null) nextTriangle = farEdge.tIzq != this ? farEdge.tIzq : farEdge.tDer;
 
                 return true;
             }

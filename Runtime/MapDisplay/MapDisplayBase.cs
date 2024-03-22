@@ -1,11 +1,11 @@
 using System.Collections;
 using MapGeneration;
 using Noise;
+using ThreadingUtils;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using Utils;
-using Utils.Threading;
 
 namespace MapDisplay
 {
@@ -67,11 +67,10 @@ namespace MapDisplay
         {
             StopAllCoroutines();
 
-            if (!mapJobHandle.IsCompleted)
-                mapJobHandle.Complete();
+            if (!mapJobHandle.IsCompleted) mapJobHandle.Complete();
 
             if (terrainSettingsSo == null) return;
-            terrainSettingsSo.onValuesUpdated -= OnValuesUpdated;
+            terrainSettingsSo.OnValuesUpdated -= OnValuesUpdated;
 
             heightMapThreadSafe.Dispose();
             heightCurveThreadSafe.Dispose();
@@ -82,7 +81,6 @@ namespace MapDisplay
             if (!autoUpdate) return;
             SubscribeToValuesUpdated();
 
-
             // OnValuesUpdated();
         }
 
@@ -90,8 +88,8 @@ namespace MapDisplay
         {
             if (terrainSettingsSo == null) return;
 
-            terrainSettingsSo.onValuesUpdated -= OnValuesUpdated;
-            if (autoUpdate) terrainSettingsSo.onValuesUpdated += OnValuesUpdated;
+            terrainSettingsSo.OnValuesUpdated -= OnValuesUpdated;
+            if (autoUpdate) terrainSettingsSo.OnValuesUpdated += OnValuesUpdated;
         }
 
         public void OnValuesUpdated()
@@ -106,7 +104,6 @@ namespace MapDisplay
         }
 
         public abstract void DisplayMap();
-
 
         public virtual void BuildMap()
         {
@@ -126,7 +123,6 @@ namespace MapDisplay
             heightMap = HeightMapGenerator.CreatePerlinNoiseHeightMap(NoiseParams, HeightCurve);
 
         public virtual void ResetSeed() => Seed = PerlinNoise.GenerateRandomSeed();
-
 
         #region THREADING
 

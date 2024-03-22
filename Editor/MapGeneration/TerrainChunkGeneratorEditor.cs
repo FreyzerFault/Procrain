@@ -1,9 +1,9 @@
-﻿using MapGeneration.TerrainGeneration.InfiniteGeneration;
+﻿using MapGeneration.InfiniteGeneration;
 using UnityEditor;
 using UnityEngine;
 using Utils;
 
-namespace Procrain.Editor.MapGeneration
+namespace Editor.MapGeneration
 {
     [CustomEditor(typeof(TerrainChunkGenerator))]
     public class TerrainChunkGeneratorEditor : UnityEditor.Editor
@@ -17,7 +17,6 @@ namespace Procrain.Editor.MapGeneration
 
             // Boton para generar el mapa
             if (GUILayout.Button("Regenerate Terrain")) DebugTimer.DebugTime(terrainChunkGen.RegenerateTerrain);
-            ;
 
             if (GUILayout.Button("Reset Seed")) terrainChunkGen.ResetSeed();
 

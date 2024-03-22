@@ -18,17 +18,18 @@ float3 RGBSplit(float Split, Texture2D Texture, SamplerState Sampler, float2 UV)
     float g = SAMPLE_TEXTURE2D(Texture, Sampler, UVG).g;
     float b = SAMPLE_TEXTURE2D(Texture, Sampler, UVB).b;
 
-    return float3(r,g,b);
+    return float3(r, g, b);
 }
 
-void Caustics_float(float2 uv, SamplerState Sampler, float speed, float scale, float split, Texture2D Texture, out float3 Out)
+void Caustics_float(float2 uv, SamplerState Sampler, float speed, float scale, float split, Texture2D Texture,
+                    out float3 Out)
 {
     split *= 0.01f;
 
-    float3 tex1 = RGBSplit(split, Texture, Sampler, Panner(uv, 1, speed, float2(0,0), 1/scale));
-    float3 tex2 = RGBSplit(split, Texture, Sampler, Panner(uv, 1, speed, float2(0,0), -1/scale));
+    float3 tex1 = RGBSplit(split, Texture, Sampler, Panner(uv, 1, speed, float2(0, 0), 1 / scale));
+    float3 tex2 = RGBSplit(split, Texture, Sampler, Panner(uv, 1, speed, float2(0, 0), -1 / scale));
 
-    Out =  min(tex1, tex2);
+    Out = min(tex1, tex2);
 }
 
 void IVPFix_float(float4x4 In, out float4x4 Out)
@@ -43,7 +44,7 @@ void DepthFix_float(float In, out float Out)
 {
     Out = In;
     #ifndef UNITY_REVERSED_Z
-        Out = In * 2 - 1;         
+    Out = In * 2 - 1;
     #endif
 }
 

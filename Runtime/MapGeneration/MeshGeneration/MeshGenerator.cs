@@ -15,8 +15,7 @@ namespace MapGeneration.MeshGeneration
             var initCoord = (map.Size - 1) / -2f;
 
             // El LOD NECESITA ser múltiplo de la anchura para que sea simétrico
-            while (lod != 0 && (map.Size - 1) % lod != 0)
-                lod += 1;
+            while (lod != 0 && (map.Size - 1) % lod != 0) lod += 1;
 
             // Incremento entre vertices para asegurar el LOD
             var simplificationIncrement = lod == 0 ? 1 : lod * 2;
@@ -73,15 +72,13 @@ namespace MapGeneration.MeshGeneration
             var initCoord = (map.Size - 1) / -2f;
 
             // El LOD NECESITA ser múltiplo de la anchura para que sea simétrico
-            while (lod != 0 && (map.Size - 1) % lod != 0)
-                lod += 1;
+            while (lod != 0 && (map.Size - 1) % lod != 0) lod += 1;
 
             // Incremento entre vertices para asegurar el LOD
             var simplificationIncrement = lod == 0 ? 1 : lod * 2;
             var verticesPerLine = (map.Size - 1) / simplificationIncrement + 1;
 
-            if (meshData.IsEmpty)
-                meshData = new MeshDataThreadSafe(verticesPerLine, verticesPerLine, lod);
+            if (meshData.IsEmpty) meshData = new MeshDataThreadSafe(verticesPerLine, verticesPerLine, lod);
 
             var vertIndex = 0;
             for (var y = 0; y < map.Size; y += simplificationIncrement)

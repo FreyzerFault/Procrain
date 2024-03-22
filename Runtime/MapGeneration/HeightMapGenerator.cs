@@ -1,14 +1,17 @@
 using Noise;
+using ThreadingUtils;
 using Unity.Burst;
 using Unity.Jobs;
 using UnityEngine;
-using Utils.Threading;
 
 namespace MapGeneration
 {
     public static class HeightMapGenerator
     {
-        public static HeightMap CreatePerlinNoiseHeightMap(PerlinNoiseParams np, AnimationCurve heightCurve = null)
+        public static HeightMap CreatePerlinNoiseHeightMap(
+            PerlinNoiseParams np,
+            AnimationCurve heightCurve = null
+        )
         {
             var heigthMap = new HeightMap(PerlinNoise.BuildHeightMap(np), np.size + 1, np.seed);
 
@@ -18,7 +21,6 @@ namespace MapGeneration
             return heigthMap;
         }
     }
-
 
     public static class HeightMapGeneratorThreadSafe
     {
@@ -35,8 +37,7 @@ namespace MapGeneration
             {
                 PerlinNoiseThreadSafe.BuildHeightMap(heightMap.map, noiseParams);
 
-                if (!heightCurve.IsEmpty)
-                    heightMap.ApplyHeightCurve(heightCurve);
+                if (!heightCurve.IsEmpty) heightMap.ApplyHeightCurve(heightCurve);
             }
         }
 

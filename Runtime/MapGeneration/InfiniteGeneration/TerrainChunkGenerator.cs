@@ -9,13 +9,11 @@ using UnityEngine.Serialization;
 //
 // La generación es lazy:
 // no genera el Chunk hasta que el jugador se acerca a menos de la distancia de renderizado
-namespace MapGeneration.TerrainGeneration.InfiniteGeneration
+namespace MapGeneration.InfiniteGeneration
 {
     [ExecuteAlways]
     public class TerrainChunkGenerator : MonoBehaviour
     {
-        public TerrainSettingsSo terrainSettingsSo;
-
         // TEXTURAS
         public Gradient gradient = new();
 
@@ -26,12 +24,16 @@ namespace MapGeneration.TerrainGeneration.InfiniteGeneration
 
         // PLAYER
         public Transform player;
+
         [SerializeField] private Vector2Int playerChunkCoords;
 
         public bool autoUpdate = true;
 
         // Almacen de chunks generados indexados por su ChunkCoord [X,Y]
         [SerializeField] private TerrainChunk chunkPrefab;
+
+        public TerrainSettingsSo terrainSettingsSo;
+
         private readonly Dictionary<Vector2, TerrainChunk> chunkDictionary = new();
 
         // Cache de Chunks visibles en el ultimo update
@@ -44,7 +46,6 @@ namespace MapGeneration.TerrainGeneration.InfiniteGeneration
         private Vector2 PlayerPos2D => new(player.position.x, player.position.z);
         private TerrainChunk PlayerChunk => chunkDictionary[playerChunkCoords];
 
-
         // Longitud del Borde de los chunks, que sera el tama�o de mi matriz de Chunks Renderizados
         private int VisibilityChunkBorderLength => maxRenderDist * 2 + 1;
 
@@ -54,8 +55,7 @@ namespace MapGeneration.TerrainGeneration.InfiniteGeneration
 
             // RegenerateTerrain();
 
-            if (autoUpdate)
-                terrainSettingsSo.onValuesUpdated += OnValuesUpdated;
+            if (autoUpdate) terrainSettingsSo.OnValuesUpdated += OnValuesUpdated;
         }
 
         public void Update()
@@ -63,20 +63,19 @@ namespace MapGeneration.TerrainGeneration.InfiniteGeneration
             playerChunkCoords = TerrainChunk.GetChunkCoord(PlayerPos2D, ChunkSize);
 
             // Solo si el viewer cambia de chunk se actualizan los chunks
-            if (lastPlayerChunkCoords != playerChunkCoords)
-                UpdateVisibleChunks();
+            if (lastPlayerChunkCoords != playerChunkCoords) UpdateVisibleChunks();
 
             // Ultimo chunk del jugador para comprobar si ha cambiado de chunk
             lastPlayerChunkCoords = playerChunkCoords;
         }
 
-        private void OnDestroy() => terrainSettingsSo.onValuesUpdated -= OnValuesUpdated;
+        private void OnDestroy() => terrainSettingsSo.OnValuesUpdated -= OnValuesUpdated;
 
         private void OnValidate()
         {
             if (!autoUpdate) return;
-            terrainSettingsSo.onValuesUpdated -= OnValuesUpdated;
-            terrainSettingsSo.onValuesUpdated += OnValuesUpdated;
+            terrainSettingsSo.OnValuesUpdated -= OnValuesUpdated;
+            terrainSettingsSo.OnValuesUpdated += OnValuesUpdated;
         }
 
         public void RegenerateTerrain()
@@ -90,8 +89,7 @@ namespace MapGeneration.TerrainGeneration.InfiniteGeneration
 
         public void UpdateVisibleChunks()
         {
-            foreach (var chunk in chunkLastVisibleList)
-                chunk.Visible = false;
+            foreach (var chunk in chunkLastVisibleList) chunk.Visible = false;
 
             // Recorremos toda la malla alrededor del jugador que entra dentro de la distancia de renderizado
             for (var yOffset = -maxRenderDist; yOffset <= maxRenderDist; yOffset++)
@@ -108,8 +106,7 @@ namespace MapGeneration.TerrainGeneration.InfiniteGeneration
                 chunk.UpdateVisibility(maxRenderDist);
 
                 // Y si es visible recordarlo para hacerlo invisible cuando se escape del rango de renderizado
-                if (chunk.Visible)
-                    chunkLastVisibleList.Add(chunk);
+                if (chunk.Visible) chunkLastVisibleList.Add(chunk);
             }
         }
 
@@ -126,7 +123,6 @@ namespace MapGeneration.TerrainGeneration.InfiniteGeneration
         {
             terrainSettingsSo.ResetSeed();
         }
-
 
         // Borra todos los terrenos renderizados
         public void Clear()

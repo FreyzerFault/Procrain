@@ -114,15 +114,13 @@ namespace Geometry
 
                 var denominador = cd.x * ab.y - ab.x * cd.y;
 
-                if (denominador == 0)
-                    throw new Exception("La interseccion es paralela");
+                if (denominador == 0) throw new Exception("La interseccion es paralela");
 
                 var s = (cd.x * ac.y - ac.x * cd.y) / denominador;
                 var t = (ab.x * ac.y - ac.x * ab.y) / denominador;
 
                 // Si s o t estan fuera de [0,1] => la interseccion esta fuera de los segmentos
-                if (s < 0 || s > 1 || t < 0 || t > 1)
-                    return false;
+                if (s < 0 || s > 1 || t < 0 || t > 1) return false;
 
                 intersectionPoint = a + (b - a) * s;
 

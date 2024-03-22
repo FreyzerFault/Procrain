@@ -57,12 +57,10 @@ namespace Geometry
             var centro = CentroCirculo(a, b, c);
 
             // Son colineares, no hay circulo
-            if (centro == null)
-                return false;
+            if (centro == null) return false;
 
             // Si el radio es mayor que la distancia de P al Centro => DENTRO
-            if ((a - (Vector2)centro).magnitude > (p - (Vector2)centro).magnitude)
-                return true;
+            if ((a - (Vector2)centro).magnitude > (p - (Vector2)centro).magnitude) return true;
 
             return false;
             //return angle(a, b, c) < angle(p, b, c);
@@ -107,8 +105,7 @@ namespace Geometry
 
             var denominador = cd.x * ab.y - ab.x * cd.y;
 
-            if (Mathf.Abs(denominador) < Epsilon)
-                return null;
+            if (Mathf.Abs(denominador) < Epsilon) return null;
 
             var s = (cd.x * ac.y - ac.x * cd.y) / denominador;
             //float t = (ab.x * ac.y - ac.x * ab.y) / denominador;

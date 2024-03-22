@@ -107,8 +107,7 @@ namespace MapGeneration.TerrainGeneration.TINGeneration
             // Para verla de perfil hay que hacer una Rotacion Inversa en el eje Y para poner todos los puntos en Z = 0
             var dir = (points[1] - points[0]).normalized;
             var angle = Mathf.Asin(dir.z);
-            if (dir.x <= 0)
-                angle = -angle + Mathf.PI;
+            if (dir.x <= 0) angle = -angle + Mathf.PI;
             var rotation = Quaternion.Euler(0, angle * Mathf.Rad2Deg, 0);
 
             // Calculamos la longitud que ocupa si contar la altura

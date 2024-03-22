@@ -39,8 +39,7 @@ namespace MapGeneration.TerrainGeneration.TINGeneration
 
         private void Start()
         {
-            if (enablePath)
-                minimap.onMapClick += AddPathPoint;
+            if (enablePath) minimap.onMapClick += AddPathPoint;
 
             BuildHeightMap();
             fase = 0;
@@ -53,8 +52,7 @@ namespace MapGeneration.TerrainGeneration.TINGeneration
 
             OnDrawGizmosNormals();
 
-            if (enablePath)
-                OnDrawGizmosPath();
+            if (enablePath) OnDrawGizmosPath();
         }
 
         #endregion
@@ -123,8 +121,7 @@ namespace MapGeneration.TerrainGeneration.TINGeneration
                 Destroy(endPointSprite);
                 endPointSprite = sprite;
                 _endPoint2D = point;
-                if (tin.GetHeightInterpolated(point, out var height))
-                    endPoint = new Vector3(point.x, height, point.y);
+                if (tin.GetHeightInterpolated(point, out var height)) endPoint = new Vector3(point.x, height, point.y);
             }
         }
 
@@ -186,8 +183,7 @@ namespace MapGeneration.TerrainGeneration.TINGeneration
 
             // Punto de control de la linea
             Gizmos.color = Color.blue;
-            foreach (var intersection in intersections)
-                Gizmos.DrawSphere(intersection, 1);
+            foreach (var intersection in intersections) Gizmos.DrawSphere(intersection, 1);
         }
 
         #endregion
@@ -213,8 +209,7 @@ namespace MapGeneration.TerrainGeneration.TINGeneration
         public void BuildHeightMap()
         {
             heightMap = HeightMapGenerator.CreatePerlinNoiseHeightMap(NoiseParams, HeightCurve);
-            if (withTexture)
-                BuildTexture();
+            if (withTexture) BuildTexture();
         }
 
         public void BuildTexture()
@@ -273,11 +268,9 @@ namespace MapGeneration.TerrainGeneration.TINGeneration
         // Genera el TIN de forma progresiva
         public bool RunIteration()
         {
-            if (tin == null)
-                fase = 0;
+            if (tin == null) fase = 0;
 
-            if (heightMap.IsEmpty)
-                BuildHeightMap();
+            if (heightMap.IsEmpty) BuildHeightMap();
 
             var finished = false;
             if (tin == null || fase == 0)
@@ -352,8 +345,7 @@ namespace MapGeneration.TerrainGeneration.TINGeneration
             while (true)
             {
                 // Espacio => PARA la generación
-                if (Input.GetKeyDown(KeyCode.Space) || RunIteration())
-                    break;
+                if (Input.GetKeyDown(KeyCode.Space) || RunIteration()) break;
 
                 yield return null;
             }
@@ -414,8 +406,7 @@ namespace MapGeneration.TerrainGeneration.TINGeneration
             if (tin?.lastVertexAdded == null || tin.lastVertexAdded.Count == 0) return;
 
             Gizmos.color = Color.red;
-            foreach (var t in tin.lastVertexAdded)
-                Gizmos.DrawSphere(t.v3D, 1);
+            foreach (var t in tin.lastVertexAdded) Gizmos.DrawSphere(t.v3D, 1);
         }
 
         #endregion

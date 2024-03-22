@@ -214,8 +214,7 @@ namespace Procrain.Editor.Water.Support
         private static VisualTreeAsset GetUXML(string name)
         {
             var guids = AssetDatabase.FindAssets($"t:{nameof(VisualTreeAsset)} {name}");
-            if (guids.Length == 0)
-                return null;
+            if (guids.Length == 0) return null;
             var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(AssetDatabase.GUIDToAssetPath(guids[0]));
             return uxml;
         }

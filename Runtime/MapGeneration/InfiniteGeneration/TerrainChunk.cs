@@ -4,7 +4,7 @@ using MapGeneration.MeshGeneration;
 using Noise;
 using UnityEngine;
 
-namespace MapGeneration.TerrainGeneration.InfiniteGeneration
+namespace MapGeneration.InfiniteGeneration
 {
     public class TerrainChunk : MapDisplayInMesh
     {
@@ -14,6 +14,7 @@ namespace MapGeneration.TerrainGeneration.InfiniteGeneration
 
         // LOD local del Chunk
         [SerializeField] private int lod;
+
         private readonly Dictionary<int, IMeshData> meshDataPerLOD = new();
         private Bounds bounds;
 
@@ -37,12 +38,15 @@ namespace MapGeneration.TerrainGeneration.InfiniteGeneration
 
         private int Size => localNoiseParams.size;
 
-        private Vector2Int PlayerChunk => GetChunkCoord(
-            playerTransform?.position ?? GameObject.FindWithTag("Player").transform.position
-        );
+        private Vector2Int PlayerChunk =>
+            GetChunkCoord(
+                playerTransform?.position ?? GameObject.FindWithTag("Player").transform.position
+            );
 
         private float Extent => Size / 2f;
-        private Vector3 CenterPos => new(transform.position.x + Extent, 0, transform.position.z + Extent);
+
+        private Vector3 CenterPos =>
+            new(transform.position.x + Extent, 0, transform.position.z + Extent);
 
         public bool Visible
         {
@@ -87,7 +91,8 @@ namespace MapGeneration.TerrainGeneration.InfiniteGeneration
         }
 
         // No construir el mapa al iniciar
-        protected override void Start() => playerTransform = GameObject.FindWithTag("Player")?.transform;
+        protected override void Start() =>
+            playerTransform = GameObject.FindWithTag("Player")?.transform;
 
         protected override void BuildMeshData()
         {
@@ -110,7 +115,10 @@ namespace MapGeneration.TerrainGeneration.InfiniteGeneration
 
         protected override void BuildHeightMap()
         {
-            heightMap = HeightMapGenerator.CreatePerlinNoiseHeightMap(localNoiseParams, HeightCurve);
+            heightMap = HeightMapGenerator.CreatePerlinNoiseHeightMap(
+                localNoiseParams,
+                HeightCurve
+            );
             meshDataPerLOD.Clear();
         }
 
@@ -122,7 +130,6 @@ namespace MapGeneration.TerrainGeneration.InfiniteGeneration
             BuildTextureData();
             SetTexture();
         }
-
 
         /// <summary>
         ///     Actualiza la Visibilidad del Chunk (si debe ser renderizado o no).
@@ -156,10 +163,12 @@ namespace MapGeneration.TerrainGeneration.InfiniteGeneration
 
         // Transformaciones de Espacio de Mundo al Espacio del Chunk:
         public Vector2Int GetChunkCoord(Vector2 pos) => GetChunkCoord(pos, Size);
+
         public Vector2Int GetChunkCoord(Vector3 pos) => GetChunkCoord(pos, Size);
 
         // Posicion relativa al centro del Chunk
         public Vector2 GetLocalPos(Vector2 pos) => pos - WorldPosition2D;
+
         public Vector2 GetLocalPos(Vector3 pos) => pos - WorldPosition3D;
 
         public static Vector2Int GetChunkCoord(Vector2 pos, int chunkSize) =>

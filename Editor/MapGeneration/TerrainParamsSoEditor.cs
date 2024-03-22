@@ -3,7 +3,7 @@ using Procrain.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
-namespace Procrain.Editor.MapGeneration
+namespace Editor.MapGeneration
 {
     [CustomEditor(typeof(TerrainSettingsSo), true)]
     public class TerrainParamsSoEditor : AutoUpdatableSoEditor
@@ -19,8 +19,7 @@ namespace Procrain.Editor.MapGeneration
 
             if (!terrainParamsSo.dirty) return;
 
-            if (GUILayout.Button("✔ Save Changes"))
-                terrainParamsSo.SaveChanges();
+            if (GUILayout.Button("✔ Save Changes")) terrainParamsSo.SaveChanges();
             if (GUILayout.Button("✖ Undo Changes")) terrainParamsSo.UndoChanges();
         }
     }

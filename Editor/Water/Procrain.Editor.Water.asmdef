@@ -1,31 +1,31 @@
 {
-    "name": "StylizedWaterForURPEditor",
-    "rootNamespace": "",
-    "references": [
-        "GUID:3eae0364be2026648bf74846acb8a731",
-        "GUID:15fc0a57446b3144c949da3e2b9737a9",
-        "GUID:e28886e1dcd808a408bf45ea4102ddff"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [
-        {
-            "name": "com.unity.render-pipelines.universal",
-            "expression": "7.1.1",
-            "define": "UNIVERSAL_RENDERER"
-        },
-        {
-            "name": "com.unity.render-pipelines.universal",
-            "expression": "7.3.1",
-            "define": "UNIVERSAL_731"
-        }
-    ],
-    "noEngineReferences": false
+  "name": "StylizedWaterForURPEditor",
+  "rootNamespace": "",
+  "references": [
+    "GUID:3eae0364be2026648bf74846acb8a731",
+    "GUID:15fc0a57446b3144c949da3e2b9737a9",
+    "GUID:e28886e1dcd808a408bf45ea4102ddff"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [
+    {
+      "name": "com.unity.render-pipelines.universal",
+      "expression": "7.1.1",
+      "define": "UNIVERSAL_RENDERER"
+    },
+    {
+      "name": "com.unity.render-pipelines.universal",
+      "expression": "7.3.1",
+      "define": "UNIVERSAL_731"
+    }
+  ],
+  "noEngineReferences": false
 }

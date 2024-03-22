@@ -96,8 +96,7 @@ namespace MapGeneration.TerrainGeneration.TINGeneration
             }
 
             // Indices
-            foreach (var tri in tin.triangles)
-                data.AddTriangle(tri.v1.index, tri.v3.index, tri.v2.index);
+            foreach (var tri in tin.triangles) data.AddTriangle(tri.v1.index, tri.v3.index, tri.v2.index);
 
             return data;
         }

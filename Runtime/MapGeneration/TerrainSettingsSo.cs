@@ -11,14 +11,16 @@ namespace MapGeneration
     [CreateAssetMenu(menuName = "Terrain Params", fileName = "Terrain Params")]
     public class TerrainSettingsSo : AutoUpdatableSoWithBackup<TerrainSettingsSo>
     {
-        [SerializeField] private PerlinNoiseParams noiseParams = PerlinNoiseParams.Default();
         [SerializeField] private AnimationCurve heightCurve = AnimationCurveUtils.DefaultCurve();
+
         [SerializeField] private float heightMultiplier = 100;
 
 #if UNITY_EDITOR
         [SerializeField] [PowerOfTwo(0, 4, true)]
 #endif
         private int lod;
+
+        [SerializeField] private PerlinNoiseParams noiseParams = PerlinNoiseParams.Default();
 
         public PerlinNoiseParams NoiseParams
         {

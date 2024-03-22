@@ -53,8 +53,7 @@ namespace Procrain.Editor.MapGeneration
             if (showVertexIndices || showEdgeInfo)
                 foreach (var e in tin.edges)
                 {
-                    if (showEdgeInfo)
-                        Handles.Label((e.end.v3D + e.begin.v3D) / 2, e.ToString(), magentaStyle);
+                    if (showEdgeInfo) Handles.Label((e.end.v3D + e.begin.v3D) / 2, e.ToString(), magentaStyle);
 
                     if (!showVertexIndices) continue;
 
@@ -78,12 +77,10 @@ namespace Procrain.Editor.MapGeneration
             if (!tinVisualizer) return;
 
             // Si se cambio algun valor tambien generamos el mapa
-            if (DrawDefaultInspector() && tinVisualizer.autoUpdate)
-                tinVisualizer.BuildHeightMap();
+            if (DrawDefaultInspector() && tinVisualizer.autoUpdate) tinVisualizer.BuildHeightMap();
 
             // Boton para generar el mapa
-            if (GUILayout.Button("Reset Terrain"))
-                tinVisualizer.ResetTin();
+            if (GUILayout.Button("Reset Terrain")) tinVisualizer.ResetTin();
 
             if (GUILayout.Button("Reset Seed"))
             {
@@ -91,11 +88,9 @@ namespace Procrain.Editor.MapGeneration
                 tinVisualizer.ResetTin();
             }
 
-            if (GUILayout.Button("Next Point"))
-                tinVisualizer.RunIteration();
+            if (GUILayout.Button("Next Point")) tinVisualizer.RunIteration();
 
-            if (GUILayout.Button("Animated Generation"))
-                tinVisualizer.PlayPauseProgressiveGeneration();
+            if (GUILayout.Button("Animated Generation")) tinVisualizer.PlayPauseProgressiveGeneration();
 
 
             // if (GUILayout.Button("Load From File"))

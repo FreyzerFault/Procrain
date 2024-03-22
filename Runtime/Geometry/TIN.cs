@@ -65,8 +65,7 @@ namespace Geometry
         {
             this.aabb = new AABB
                 { min = aabb?.min ?? new Vector2(0, 0), max = aabb?.max ?? new Vector2(size, size) };
-            foreach (var point in points)
-                heightMap.Add(new Vertex(point.x, point.y * this.heightMultiplier, point.z));
+            foreach (var point in points) heightMap.Add(new Vertex(point.x, point.y * this.heightMultiplier, point.z));
         }
 
         /// <summary>
@@ -266,8 +265,7 @@ namespace Geometry
             // Condicion de parada: ningun punto del Mapa de Alturas tiene un error mayor al tolerado
             while (true)
             {
-                if (!AddPointLoopIteration() && iterations >= maxIterations)
-                    break;
+                if (!AddPointLoopIteration() && iterations >= maxIterations) break;
 
                 iterations++;
             }
@@ -310,10 +308,8 @@ namespace Geometry
             }
 
             // No encuentra un Punto o Puntos => Se cumple la condicion de parada
-            if (maxPointsPerIteration == 1 && point == null)
-                return false;
-            if (maxPointsPerIteration > 1 && pointsToAdd.Count == 0)
-                return false;
+            if (maxPointsPerIteration == 1 && point == null) return false;
+            if (maxPointsPerIteration > 1 && pointsToAdd.Count == 0) return false;
 
             var deletedTriangles = new HashSet<Triangle>();
             var deletedEdges = new HashSet<Edge>();
@@ -468,10 +464,8 @@ namespace Geometry
             Edge e2 = null;
 
             // Hay que tener en cuenta que puede ser Eje Frontera
-            if (edge.tIzq != null)
-                e1 = AddEdge(point, edge.tIzq.GetOppositeVertex(edge));
-            if (edge.tDer != null)
-                e2 = AddEdge(point, edge.tDer.GetOppositeVertex(edge));
+            if (edge.tIzq != null) e1 = AddEdge(point, edge.tIzq.GetOppositeVertex(edge));
+            if (edge.tDer != null) e2 = AddEdge(point, edge.tDer.GetOppositeVertex(edge));
 
             if (e1 == null && e2 == null)
                 throw new Exception(
@@ -616,15 +610,13 @@ namespace Geometry
             deletedTriangles ??= new HashSet<Triangle>();
 
             // Si es frontera no hay que legalizarlo
-            if (edge.IsFrontier)
-                return false;
+            if (edge.IsFrontier) return false;
 
             // Buscamos el vecino del eje contrario a Tri
             var neighbour = edge.tIzq == tri ? edge.tDer : edge.tIzq;
 
             // Si no tiene es que el Eje es FRONTERA, no hace falta hacer FLIP
-            if (neighbour == null)
-                return false;
+            if (neighbour == null) return false;
 
             var oppositeVertex = neighbour.GetOppositeVertex(edge);
 
@@ -751,7 +743,8 @@ namespace Geometry
 
                 // Si es mayor al tolerado y mayor al maximo de la cola (el ultimo) lo añadimos
                 if (!(error > errorTolerance) ||
-                    (maxErrorQueue.Count != 0 && !(error > maxErrorQueue.Last()))) continue;
+                    (maxErrorQueue.Count != 0 && !(error > maxErrorQueue.Last())))
+                    continue;
 
                 // Con la condicion de estar mas alejado de la minDistanceBetweenPoints de los otros puntos añadidos
                 var atSafeDistance = pointQueue.Select(
@@ -851,8 +844,7 @@ namespace Geometry
                 switch (test)
                 {
                     // Si esta fuera descarta el Triangulo
-                    case Triangle.PointTriPosition.OUT:
-                        continue;
+                    case Triangle.PointTriPosition.OUT: continue;
 
                     // Si esta DENTRO devuelve el Triangulo
                     case Triangle.PointTriPosition.IN:
@@ -860,14 +852,11 @@ namespace Geometry
                         return true;
 
                     // Si esta en una Arista devuelve la Arista
-                    case Triangle.PointTriPosition.COLINEAR:
-                        return true;
+                    case Triangle.PointTriPosition.COLINEAR: return true;
 
                     // Si es su vertice, descartamos el punto por completo y no devolvemos NADA
-                    case Triangle.PointTriPosition.VERTEX:
-                        return false;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    case Triangle.PointTriPosition.VERTEX: return false;
+                    default: throw new ArgumentOutOfRangeException();
                 }
             }
 
@@ -878,8 +867,7 @@ namespace Geometry
         {
             height = 0;
 
-            if (!GetTriangle(point, out var tri, out var edge))
-                return false;
+            if (!GetTriangle(point, out var tri, out var edge)) return false;
 
             height = tri?.GetHeightInterpolation(point) ?? edge.GetHeightInterpolation(point);
             return true;
@@ -927,8 +915,7 @@ namespace Geometry
                         return new Vector2[] { };
                 }
 
-            if (nextTriangle == null)
-                return new Vector2[] { };
+            if (nextTriangle == null) return new Vector2[] { };
 
             // Si tenemos un Triangulo inicial hacemos un bucle hasta conseguir todas las intersecciones
             var intersections = new List<Vector2>();

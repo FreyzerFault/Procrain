@@ -1,12 +1,11 @@
 using System;
 using System.Linq;
 using Noise;
+using ThreadingUtils;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
-using Utils;
-using Utils.Threading;
 
 namespace MapGeneration.TextureGeneration
 {
@@ -21,10 +20,8 @@ namespace MapGeneration.TextureGeneration
         public static Texture2D BuildTexture2D(HeightMap map, Gradient gradient) =>
             TextureUtils.ColorDataToTexture2D(BuildTextureData(map, gradient), map.Size, map.Size);
 
-
         public static Texture2D BuildTexture2D(Color[] textureData, int width, int height) =>
             TextureUtils.ColorDataToTexture2D(textureData, width, height);
-
 
         // TODO: Generar la Textura de cero, sin tener de iterar por un mapa de alturas
         // TODO: Añadir resolucion

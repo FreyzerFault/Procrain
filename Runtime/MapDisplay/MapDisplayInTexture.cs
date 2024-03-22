@@ -1,11 +1,11 @@
 using System.Collections;
 using MapGeneration.TextureGeneration;
+using ThreadingUtils;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
-using Utils.Threading;
 
 namespace MapDisplay
 {
@@ -29,8 +29,7 @@ namespace MapDisplay
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            if (!textureJobHandle.IsCompleted)
-                textureJobHandle.Complete();
+            if (!textureJobHandle.IsCompleted) textureJobHandle.Complete();
             textureDataThreadSafe.Dispose();
         }
 
@@ -51,12 +50,16 @@ namespace MapDisplay
             {
                 var size = NoiseParams.size;
                 DebugTimer.DebugTime(BuildHeightMap, $"Time to build HeightMap {size} x {size}");
-                DebugTimer.DebugTime(BuildTextureData, $"Time to build TextureData {size} x {size}");
+                DebugTimer.DebugTime(
+                    BuildTextureData,
+                    $"Time to build TextureData {size} x {size}"
+                );
                 DebugTimer.DebugTime(DisplayMap, "Time to display map");
             }
         }
 
-        public void BuildTextureData() => textureData = TextureGenerator.BuildTextureData32(heightMap, gradient);
+        public void BuildTextureData() =>
+            textureData = TextureGenerator.BuildTextureData32(heightMap, gradient);
 
         #region DISPLAY
 
@@ -65,7 +68,11 @@ namespace MapDisplay
         protected void SetTexture()
         {
             if (!paralelized)
-                texture = TextureUtils.ColorDataToTexture2D(textureData, HeightMap.Size, HeightMap.Size);
+                texture = TextureUtils.ColorDataToTexture2D(
+                    textureData,
+                    HeightMap.Size,
+                    HeightMap.Size
+                );
 
             texture.Apply();
 
