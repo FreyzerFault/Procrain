@@ -1,5 +1,5 @@
 using System;
-using Procrain.Editor.Utils;
+using Editor;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -22,7 +22,9 @@ namespace Noise
         // Persistencia = Influencia de cada octava
         // Lacunarity = Frecuencia de cada octava (+ lacunarity -> + caótico)
         [Range(1, 10)] public int numOctaves;
+
         [Range(0, 2)] public float persistance;
+
         [Range(1, 5)] public float lacunarity;
 
         // Desplazamiento (x,y) del ruido
@@ -33,8 +35,13 @@ namespace Noise
         public uint seed;
 
         public PerlinNoiseParams(
-            int size = 241, float scale = 100, int numOctaves = 4, float persistance = 0.5f,
-            float lacunarity = 2f, float2 offset = default, uint seed = 1
+            int size = 241,
+            float scale = 100,
+            int numOctaves = 4,
+            float persistance = 0.5f,
+            float lacunarity = 2f,
+            float2 offset = default,
+            uint seed = 1
         )
         {
             this.size = size;
@@ -49,7 +56,6 @@ namespace Noise
         // Numero de puntos por lado del terreno
         public int SampleSize => size + 1;
 
-        public static PerlinNoiseParams Default() =>
-            new(128, 100, 5);
+        public static PerlinNoiseParams Default() => new(128, 100, 5);
     }
 }

@@ -1,11 +1,11 @@
 using System.Collections;
+using DebugUtils;
 using MapGeneration.TextureGeneration;
 using ThreadingUtils;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.UI;
-using Utils;
 
 namespace MapDisplay
 {

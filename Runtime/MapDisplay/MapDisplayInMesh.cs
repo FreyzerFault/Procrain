@@ -1,8 +1,8 @@
 using System.Collections;
+using DebugUtils;
 using MapGeneration.MeshGeneration;
 using Unity.Jobs;
 using UnityEngine;
-using Utils;
 
 namespace MapDisplay
 {

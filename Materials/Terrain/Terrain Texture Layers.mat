@@ -272,7 +272,7 @@ Material:
     - _Sand_Blend: 0
     - _Sand_Height: 0.247
     - _Sand_Tile: 0.047
-    - _Show_Height_Lines: 1
+    - _Show_Height_Lines: 0
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _Snow_Blend: 3.24

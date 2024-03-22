@@ -1,7 +1,7 @@
-﻿using MapGeneration.InfiniteGeneration;
+﻿using DebugUtils;
+using MapGeneration.InfiniteGeneration;
 using UnityEditor;
 using UnityEngine;
-using Utils;
 
 namespace Editor.MapGeneration
 {

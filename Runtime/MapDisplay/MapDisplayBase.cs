@@ -1,11 +1,11 @@
 using System.Collections;
+using DebugUtils;
 using MapGeneration;
 using Noise;
 using ThreadingUtils;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
-using Utils;
 
 namespace MapDisplay
 {

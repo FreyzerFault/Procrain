@@ -1,8 +1,8 @@
+using Editor;
 using Noise;
-using Procrain.Editor.Utils;
+using ScriptableObjectsUtils;
 using Unity.Mathematics;
 using UnityEngine;
-using Utils;
 using Random = UnityEngine.Random;
 
 namespace MapGeneration
