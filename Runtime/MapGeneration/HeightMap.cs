@@ -63,9 +63,10 @@ namespace MapGeneration
         public float[,] ToArray2D()
         {
             var array = new float[Size, Size];
-            for (var x = 0; x < Size; x++)
             for (var y = 0; y < Size; y++)
-                array[x, y] = GetHeight(x, y);
+            for (var x = 0; x < Size; x++)
+                // Unity Terrain sample heightmap as [y,x]
+                array[y, x] = GetHeight(x, y);
             return array;
         }
 

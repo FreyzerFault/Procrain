@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4034585524543430999}
   - component: {fileID: 3360297171462387349}
   m_Layer: 0
-  m_Name: Procedural Mesh
+  m_Name: Proc Mesh
   m_TagString: Terrain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
