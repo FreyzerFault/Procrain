@@ -17,7 +17,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2333152634366561086
 Transform:
@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 53.883175, y: 53.882893, z: 53.882893}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -166,10 +166,10 @@ MonoBehaviour:
   surfaceFoamDirection2: 0.167
   surfaceFoamSpeed1: 0.09
   surfaceFoamSpeed2: 0.11
-  surfaceFoamTilingAndOffset: {x: -1, y: -1, z: 0.16, w: 0.15}
+  surfaceFoamTilingAndOffset: {x: -1, y: -1, z: 0.18, w: 0.15}
   surfaceFoamOffsetX: -1
   surfaceFoamOffsetY: -1
-  surfaceFoamScale1: 0.16
+  surfaceFoamScale1: 0.18
   surfaceFoamScale2: 0.15
   enableSurfaceFoam: 1
   surfaceFoamHeightMask: 0
@@ -184,12 +184,12 @@ MonoBehaviour:
   intersectionFoamTexture: {fileID: 2800000, guid: 772031b03d9d46e4ab03e15c8e17718c, type: 3}
   intersectionFoamColor: {r: 1, g: 1, b: 1, a: 1}
   intersectionFoamMovement: {x: 0, y: 0}
-  intersectionFoamDirection: 0
-  intersectionFoamSpeed: 0
-  intersectionFoamScale: 0.19
+  intersectionFoamDirection: 0.267
+  intersectionFoamSpeed: 0.1
+  intersectionFoamScale: 0.17
   intersectionFoamSampling: {x: 1, y: 0}
   intersectionFoamCutoff: 1
-  intersectionFoamDistortion: 0
+  intersectionFoamDistortion: 2.02
   enableIntersectionEffects: 1
   intersectionFoamBlend: 1
   intersectionWaterBlend: 0
@@ -218,6 +218,6 @@ MonoBehaviour:
   waveDirection3: 1
   waveDirection4: 0.33
   waterUVs: 1
-  hideComponents: 0
+  hideComponents: 1
   enableFoamShadows: 1
   enableRefraction: 0
