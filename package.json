@@ -1,5 +1,5 @@
 {
-  "name": "procrain",
+  "name": "com.david.procrain",
   "version": "0.1.0",
   "displayName": "Procrain - PROcedural terRAIN",
   "description": "Tool for creating procedural terrains in Unity using Perlin noise.",
@@ -17,7 +17,7 @@
     "Terrain Shader"
   ],
   "author": {
-    "name": "David Martínez Alcántara",
+    "name": "David Mart\u00ednez Alc\u00e1ntara",
     "email": "martinezalcantara29@gmail.com",
     "url": "https://daviduvi.dev"
   },
