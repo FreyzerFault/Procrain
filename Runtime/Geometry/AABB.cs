@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Geometry
+namespace Procrain.Geometry
 {
     public class AABB
     {

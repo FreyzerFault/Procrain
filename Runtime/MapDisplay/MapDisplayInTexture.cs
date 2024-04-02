@@ -1,13 +1,14 @@
 using System.Collections;
-using DebugUtils;
-using MapGeneration.TextureGeneration;
-using ThreadingUtils;
+using DavidUtils;
+using DavidUtils.DebugUtils;
+using DavidUtils.ThreadingUtils;
+using Procrain.MapGeneration.Texture;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MapDisplay
+namespace Procrain.MapDisplay
 {
     [ExecuteAlways]
     public abstract class MapDisplayInTexture : MapDisplayBase

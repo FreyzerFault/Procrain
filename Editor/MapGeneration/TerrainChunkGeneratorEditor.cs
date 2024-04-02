@@ -1,9 +1,9 @@
-﻿using DebugUtils;
-using MapGeneration.InfiniteGeneration;
+﻿using DavidUtils.DebugUtils;
+using Procrain.MapDisplay.InfiniteTerrain;
 using UnityEditor;
 using UnityEngine;
 
-namespace Editor.MapGeneration
+namespace Procrain.Editor.MapGeneration
 {
     [CustomEditor(typeof(TerrainChunkGenerator))]
     public class TerrainChunkGeneratorEditor : UnityEditor.Editor

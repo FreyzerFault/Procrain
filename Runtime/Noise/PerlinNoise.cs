@@ -1,12 +1,12 @@
 using System;
 using System.IO;
-using Geometry;
+using Procrain.Geometry;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
-namespace Noise
+namespace Procrain.Noise
 {
     public static class PerlinNoise
     {

@@ -1,9 +1,9 @@
 using System;
-using Editor;
+using DavidUtils.Editor;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Noise
+namespace Procrain.Noise
 {
     // Clase en la que se almacenan los parametros usados en el ruido
     [Serializable]

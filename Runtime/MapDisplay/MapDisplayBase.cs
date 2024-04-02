@@ -1,13 +1,13 @@
 using System.Collections;
-using DebugUtils;
-using MapGeneration;
-using Noise;
-using ThreadingUtils;
+using DavidUtils.DebugUtils;
+using DavidUtils.ThreadingUtils;
+using Procrain.MapGeneration;
+using Procrain.Noise;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace MapDisplay
+namespace Procrain.MapDisplay
 {
     public abstract class MapDisplayBase : MonoBehaviour
     {
@@ -16,7 +16,8 @@ namespace MapDisplay
 
         public bool paralelized;
 
-        [Space] public TerrainSettingsSo terrainSettingsSo;
+        [Space]
+        public TerrainSettingsSo terrainSettingsSo;
 
         protected HeightMap heightMap;
 
@@ -67,10 +68,12 @@ namespace MapDisplay
         {
             StopAllCoroutines();
 
-            if (!mapJobHandle.IsCompleted) mapJobHandle.Complete();
+            if (!mapJobHandle.IsCompleted)
+                mapJobHandle.Complete();
 
-            if (terrainSettingsSo == null) return;
-            terrainSettingsSo.OnValuesUpdated -= OnValuesUpdated;
+            if (terrainSettingsSo == null)
+                return;
+            terrainSettingsSo.ValuesUpdated -= OnValuesUpdated;
 
             heightMapThreadSafe.Dispose();
             heightCurveThreadSafe.Dispose();
@@ -78,7 +81,8 @@ namespace MapDisplay
 
         protected virtual void OnValidate()
         {
-            if (!autoUpdate) return;
+            if (!autoUpdate)
+                return;
             SubscribeToValuesUpdated();
 
             // OnValuesUpdated();
@@ -86,21 +90,26 @@ namespace MapDisplay
 
         public void SubscribeToValuesUpdated()
         {
-            if (terrainSettingsSo == null) return;
+            if (terrainSettingsSo == null)
+                return;
 
-            terrainSettingsSo.OnValuesUpdated -= OnValuesUpdated;
-            if (autoUpdate) terrainSettingsSo.OnValuesUpdated += OnValuesUpdated;
+            terrainSettingsSo.ValuesUpdated -= OnValuesUpdated;
+            if (autoUpdate)
+                terrainSettingsSo.ValuesUpdated += OnValuesUpdated;
         }
 
         public void OnValuesUpdated()
         {
-            if (!autoUpdate) return;
+            if (!autoUpdate)
+                return;
 
             // Solo regenera el mapa si ya se habia generado por 1º vez
-            if (!HeightMap.IsEmpty) BuildMap();
+            if (!HeightMap.IsEmpty)
+                BuildMap();
 
             // Actualiza la curva de altura para paralelizacion. La normal podria haber cambiado
-            if (paralelized) UpdateHeightCurveThreadSafe();
+            if (paralelized)
+                UpdateHeightCurveThreadSafe();
         }
 
         public abstract void DisplayMap();
@@ -134,7 +143,8 @@ namespace MapDisplay
 
         public void UpdateHeightCurveThreadSafe()
         {
-            if (HeightCurve == null) return;
+            if (HeightCurve == null)
+                return;
             heightCurveThreadSafe.Sample(HeightCurve, heightCurveSamples);
         }
 
@@ -149,9 +159,11 @@ namespace MapDisplay
             var time = Time.time;
 
             heightMapThreadSafe = new HeightMapThreadSafe(NoiseParams.SampleSize, NoiseParams.seed);
-            if (heightCurveThreadSafe.IsEmpty) UpdateHeightCurveThreadSafe();
+            if (heightCurveThreadSafe.IsEmpty)
+                UpdateHeightCurveThreadSafe();
 
-            if (!mapJobHandle.IsCompleted) mapJobHandle.Complete();
+            if (!mapJobHandle.IsCompleted)
+                mapJobHandle.Complete();
 
             // Wait for JobHandle to END
             mapJobHandle = new HeightMapGeneratorThreadSafe.PerlinNoiseMapBuilderJob

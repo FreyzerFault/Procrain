@@ -1,8 +1,8 @@
-using MapGeneration.TerrainGeneration;
+using Procrain.MapGeneration.Terrain;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace MapDisplay
+namespace Procrain.MapDisplay
 {
     // TODO: Texturas y Collider
     [RequireComponent(typeof(Terrain), typeof(TerrainCollider))]

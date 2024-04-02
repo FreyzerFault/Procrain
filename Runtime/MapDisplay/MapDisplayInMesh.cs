@@ -1,10 +1,10 @@
 using System.Collections;
-using DebugUtils;
-using MapGeneration.MeshGeneration;
+using DavidUtils.DebugUtils;
+using Procrain.MapGeneration.Mesh;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace MapDisplay
+namespace Procrain.MapDisplay
 {
     [ExecuteAlways]
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]

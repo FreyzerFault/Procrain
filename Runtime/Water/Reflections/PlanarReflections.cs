@@ -13,7 +13,7 @@ using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 #endif
 
-namespace Water.Reflections
+namespace Procrain.Water.Reflections
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]

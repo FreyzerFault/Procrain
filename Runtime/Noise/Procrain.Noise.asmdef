@@ -1,6 +1,6 @@
 {
     "name": "Procrain.Noise",
-    "rootNamespace": "",
+    "rootNamespace": "Procrain",
     "references": [
         "GUID:d8b63aba1907145bea998dd612889d6b",
         "GUID:8e56582fd59963847b3cb4d5600b8406",

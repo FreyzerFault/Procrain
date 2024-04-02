@@ -1,26 +1,31 @@
-using Editor;
-using Noise;
-using ScriptableObjectsUtils;
+using DavidUtils;
+using DavidUtils.Editor;
+using DavidUtils.ScriptableObjectsUtils;
+using Procrain.Noise;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace MapGeneration
+namespace Procrain.MapGeneration
 {
     [ExecuteAlways]
     [CreateAssetMenu(menuName = "Terrain Params", fileName = "Terrain Params")]
     public class TerrainSettingsSo : AutoUpdatableSoWithBackup<TerrainSettingsSo>
     {
-        [SerializeField] private AnimationCurve heightCurve = AnimationCurveUtils.DefaultCurve();
+        [SerializeField]
+        private AnimationCurve heightCurve = AnimationCurveUtils.DefaultCurve();
 
-        [SerializeField] private float heightMultiplier = 100;
+        [SerializeField]
+        private float heightMultiplier = 100;
 
 #if UNITY_EDITOR
-        [SerializeField] [PowerOfTwo(0, 4, true)]
+        [SerializeField]
+        [PowerOfTwo(0, 4, true)]
 #endif
         private int lod;
 
-        [SerializeField] private PerlinNoiseParams noiseParams = PerlinNoiseParams.Default();
+        [SerializeField]
+        private PerlinNoiseParams noiseParams = PerlinNoiseParams.Default();
 
         public PerlinNoiseParams NoiseParams
         {
@@ -28,7 +33,7 @@ namespace MapGeneration
             set
             {
                 noiseParams = value;
-                OnUpdateValues();
+                NotifyUpdate();
             }
         }
 
@@ -38,7 +43,7 @@ namespace MapGeneration
             set
             {
                 heightCurve = value;
-                OnUpdateValues();
+                NotifyUpdate();
             }
         }
 
@@ -48,7 +53,7 @@ namespace MapGeneration
             set
             {
                 heightMultiplier = value;
-                OnUpdateValues();
+                NotifyUpdate();
             }
         }
 
@@ -58,7 +63,7 @@ namespace MapGeneration
             set
             {
                 lod = value;
-                OnUpdateValues();
+                NotifyUpdate();
             }
         }
 
@@ -68,7 +73,7 @@ namespace MapGeneration
             set
             {
                 noiseParams.offset = value;
-                OnUpdateValues();
+                NotifyUpdate();
             }
         }
 
@@ -78,7 +83,7 @@ namespace MapGeneration
             set
             {
                 noiseParams.seed = value;
-                OnUpdateValues();
+                NotifyUpdate();
             }
         }
 

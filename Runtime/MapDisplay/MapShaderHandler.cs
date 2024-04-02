@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MapDisplay
+namespace Procrain.MapDisplay
 {
     public enum RegionType { Water, Sand, Grass, Rock, Snow }
 

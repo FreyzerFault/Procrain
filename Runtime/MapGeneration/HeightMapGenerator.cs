@@ -1,10 +1,10 @@
-using Noise;
-using ThreadingUtils;
+using DavidUtils.ThreadingUtils;
+using Procrain.Noise;
 using Unity.Burst;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace MapGeneration
+namespace Procrain.MapGeneration
 {
     public static class HeightMapGenerator
     {

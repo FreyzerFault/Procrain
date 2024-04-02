@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Geometry
+namespace Procrain.Geometry
 {
     public class Edge
     {

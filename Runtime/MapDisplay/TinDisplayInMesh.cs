@@ -1,7 +1,7 @@
-﻿using Geometry;
-using MapGeneration.TerrainGeneration.TINGeneration;
+﻿using Procrain.Geometry;
+using Procrain.MapGeneration.TIN;
 
-namespace MapDisplay
+namespace Procrain.MapDisplay
 {
     public class TinDisplayInMesh : MapDisplayInMesh
     {

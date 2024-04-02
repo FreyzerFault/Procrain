@@ -1,9 +1,9 @@
 using System;
-using ThreadingUtils;
+using DavidUtils.ThreadingUtils;
 using Unity.Collections;
 using UnityEngine;
 
-namespace MapGeneration
+namespace Procrain.MapGeneration
 {
     public interface IHeightMap
     {
@@ -47,7 +47,7 @@ namespace MapGeneration
                 this.map[x + y * map.GetLength(0)] = map[x, y];
         }
 
-        public HeightMap(Terrain terrain)
+        public HeightMap(UnityEngine.Terrain terrain)
             : this(
                 terrain.terrainData.GetHeights(
                     0,

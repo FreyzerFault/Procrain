@@ -4,7 +4,7 @@ using System.Linq;
 using Unity.Collections;
 using UnityEngine;
 
-namespace Geometry
+namespace Procrain.Geometry
 {
     public class Tin
     {

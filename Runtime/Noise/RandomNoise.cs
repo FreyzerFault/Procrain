@@ -1,6 +1,6 @@
 using Unity.Mathematics;
 
-namespace Noise
+namespace Procrain.Noise
 {
     public static class RandomNoise
     {
