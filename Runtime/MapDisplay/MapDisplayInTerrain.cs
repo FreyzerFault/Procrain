@@ -13,20 +13,25 @@ namespace Procrain.MapDisplay
 
         [SerializeField] private Material terrainMaterial;
 
-        [Space] private Terrain terrain;
+        [Space] private Terrain _terrain;
 
-        private TerrainCollider terrainCollider;
+        private TerrainCollider _terrainCollider;
+
+        public Terrain Terrain => _terrain ? _terrain : GetComponent<Terrain>();
+
+        public TerrainCollider TerrainCollider =>
+            _terrainCollider ? _terrainCollider : GetComponent<TerrainCollider>();
 
         private TerrainData TerrainData
         {
-            get => terrain.terrainData;
-            set => terrain.terrainData = value;
+            get => Terrain.terrainData;
+            set => Terrain.terrainData = value;
         }
 
         private void Awake()
         {
-            terrain = GetComponent<Terrain>();
-            terrainCollider = GetComponent<TerrainCollider>();
+            _terrain = GetComponent<Terrain>();
+            _terrainCollider = GetComponent<TerrainCollider>();
         }
 
         private void Update()
@@ -39,8 +44,8 @@ namespace Procrain.MapDisplay
         {
             if (TerrainData == null) TerrainData = new TerrainData();
             TerrainGenerator.ApplyToTerrainData(TerrainData, heightMap, HeightMultiplier);
-            terrainCollider.terrainData = TerrainData;
-            terrain.materialTemplate = terrainMaterial;
+            TerrainCollider.terrainData = TerrainData;
+            Terrain.materialTemplate = terrainMaterial;
         }
     }
 }
