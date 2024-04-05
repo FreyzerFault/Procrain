@@ -21,7 +21,7 @@ namespace Procrain.MapDisplay
         protected override void BuildMeshData() =>
             meshData = TinGenerator.BuildTinMeshData(
                 out tin,
-                heightMap,
+                Map,
                 errorTolerance,
                 HeightMultiplier,
                 maxIterations

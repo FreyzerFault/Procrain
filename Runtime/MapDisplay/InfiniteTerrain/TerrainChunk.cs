@@ -100,7 +100,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
             if (meshDataPerLOD.TryGetValue(LOD, out meshData)) return;
 
             // Si no la genera y la guarda
-            meshData = MeshGenerator.BuildMeshData(heightMap, LOD, HeightMultiplier);
+            meshData = MeshGenerator.BuildMeshData(Map, LOD, HeightMultiplier);
             meshDataPerLOD.Add(LOD, meshData);
         }
 
@@ -115,7 +115,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 
         protected override void BuildHeightMap()
         {
-            heightMap = HeightMapGenerator.CreatePerlinNoiseHeightMap(
+            Map = HeightMapGenerator.CreatePerlinNoiseHeightMap(
                 localNoiseParams,
                 HeightCurve
             );

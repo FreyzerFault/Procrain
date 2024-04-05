@@ -43,7 +43,7 @@ namespace Procrain.MapDisplay
         public override void DisplayMap()
         {
             if (TerrainData == null) TerrainData = new TerrainData();
-            TerrainGenerator.ApplyToTerrainData(TerrainData, heightMap, HeightMultiplier);
+            TerrainGenerator.ApplyToTerrainData(TerrainData, Map, HeightMultiplier);
             TerrainCollider.terrainData = TerrainData;
             Terrain.materialTemplate = terrainMaterial;
         }

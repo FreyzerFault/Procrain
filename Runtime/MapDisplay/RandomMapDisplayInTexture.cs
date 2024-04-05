@@ -10,7 +10,7 @@ namespace Procrain.MapDisplay
         [Space] public uint seed = 256;
 
         protected override void BuildHeightMap() =>
-            heightMap = new HeightMap(RandomNoise.BuildHeightMapRandom(size, seed), size, seed);
+            Map = new HeightMap(RandomNoise.BuildHeightMapRandom(size, seed), size, seed);
 
         public override void ResetSeed() => seed = PerlinNoise.GenerateRandomSeed();
     }

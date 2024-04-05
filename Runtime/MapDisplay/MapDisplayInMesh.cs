@@ -63,7 +63,7 @@ namespace Procrain.MapDisplay
         }
 
         protected virtual void BuildMeshData() =>
-            meshData = MeshGenerator.BuildMeshData(heightMap, LOD, HeightMultiplier);
+            meshData = MeshGenerator.BuildMeshData(Map, LOD, HeightMultiplier);
 
         #region LoD
 
@@ -105,8 +105,8 @@ namespace Procrain.MapDisplay
         private void InitializeMeshDataThreadSafe()
         {
             // Si no cambia el tamaño de la malla, no hace falta crear una nueva
-            if (meshDataThreadSafe.IsEmpty || meshDataThreadSafe.width != heightMap.Size)
-                meshDataThreadSafe = new MeshDataThreadSafe(heightMap.Size, heightMap.Size, LOD);
+            if (meshDataThreadSafe.IsEmpty || meshDataThreadSafe.width != Map.Size)
+                meshDataThreadSafe = new MeshDataThreadSafe(Map.Size, Map.Size, LOD);
             else
                 meshDataThreadSafe.Reset();
         }

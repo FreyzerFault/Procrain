@@ -1,6 +1,7 @@
 using System.Collections;
 using DavidUtils.DebugUtils;
 using DavidUtils.ThreadingUtils;
+using Map;
 using Procrain.MapGeneration;
 using Procrain.Noise;
 using Unity.Jobs;
@@ -19,9 +20,20 @@ namespace Procrain.MapDisplay
 
         [Space] public TerrainSettingsSo terrainSettingsSo;
 
-        protected HeightMap heightMap;
+        protected HeightMap map;
+        protected HeightMap Map
+        {
+            get => MapManager.Instance == null ? map : MapManager.Instance.heightMap;
+            set
+            {
+                map = value;
+                if (MapManager.Instance != null) MapManager.Instance.heightMap = value;
+            }
+        }
 
-        protected IHeightMap HeightMap => paralelized ? heightMapThreadSafe : heightMap;
+        // TODO - Mover el HeigthMapThreadSafe al MapManager, que tenga la responsabilidad de almacenarlo
+        // Para que se comparta entre toda la escena
+        protected IHeightMap HeightMap => paralelized ? heightMapThreadSafe : Map;
 
         public virtual PerlinNoiseParams NoiseParams
         {
@@ -61,7 +73,7 @@ namespace Procrain.MapDisplay
 
         protected virtual void Start()
         {
-            if (heightMap.IsEmpty) BuildMap();
+            if (Map == null || Map.IsEmpty) BuildMap();
             SubscribeToValuesUpdated();
         }
 
@@ -121,7 +133,7 @@ namespace Procrain.MapDisplay
         }
 
         protected virtual void BuildHeightMap() =>
-            heightMap = HeightMapGenerator.CreatePerlinNoiseHeightMap(NoiseParams, HeightCurve);
+            Map = HeightMapGenerator.CreatePerlinNoiseHeightMap(NoiseParams, HeightCurve);
 
         public virtual void ResetSeed() => Seed = PerlinNoise.GenerateRandomSeed();
 

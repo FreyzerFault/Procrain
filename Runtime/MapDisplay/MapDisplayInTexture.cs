@@ -60,7 +60,7 @@ namespace Procrain.MapDisplay
         }
 
         public void BuildTextureData() =>
-            textureData = TextureGenerator.BuildTextureData32(heightMap, gradient);
+            textureData = TextureGenerator.BuildTextureData32(Map, gradient);
 
         #region DISPLAY
 
