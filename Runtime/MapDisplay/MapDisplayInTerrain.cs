@@ -11,10 +11,10 @@ namespace Procrain.MapDisplay
     {
         public bool movement;
 
+        [Range(1,16)] public int resolutionAmplifier = 1;
         [SerializeField] private Material terrainMaterial;
-
-        [Space] private Terrain _terrain;
-
+        
+        private Terrain _terrain;
         private TerrainCollider _terrainCollider;
 
         public Terrain Terrain => _terrain ? _terrain : GetComponent<Terrain>();
@@ -43,7 +43,7 @@ namespace Procrain.MapDisplay
         public override void DisplayMap()
         {
             if (TerrainData == null) TerrainData = new TerrainData();
-            TerrainGenerator.ApplyToTerrainData(TerrainData, Map, HeightMultiplier);
+            TerrainGenerator.ApplyToTerrainData(TerrainData, Map, HeightMultiplier, resolutionAmplifier);
             TerrainCollider.terrainData = TerrainData;
             Terrain.materialTemplate = terrainMaterial;
         }

@@ -11,14 +11,15 @@ namespace Procrain.MapGeneration.Terrain
         public static TerrainData ApplyToTerrainData(
             TerrainData terrainData,
             HeightMap heightMap,
-            float heightMultiplier
+            float heightMultiplier,
+            int resolutionAmplifier = 1
         )
         {
             if (terrainData == null) terrainData = new TerrainData();
 
             var size = heightMap.Size;
             terrainData.heightmapResolution = size + 1;
-            terrainData.size = new Vector3(size, heightMultiplier, size);
+            terrainData.size = new Vector3(size / resolutionAmplifier, heightMultiplier, size / resolutionAmplifier);
             terrainData.SetHeights(0, 0, HeightMap.FlipCoordsXY(heightMap.ToArray2D()));
 
             return terrainData;
