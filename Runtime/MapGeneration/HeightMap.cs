@@ -16,6 +16,7 @@ namespace Procrain.MapGeneration
         public void ApplyHeightCurve(AnimationCurve heightCurve);
     }
 
+    [Serializable]
     public class HeightMap : IHeightMap
     {
         public readonly float[] map;

@@ -255,11 +255,13 @@ Material:
     - _Grass_Tile: 0.395
     - _GroundToRockBlend: 0.035
     - _Ground_Height: 0.3
+    - _Ground_Humidity: 1
     - _Ground_Tile: 0.028
     - _LowDetailBlend: 5
     - _LowDetailDistance: 30.55
     - _Max_Height: 100
     - _Metallic: 0
+    - _Metallic_Base: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0
