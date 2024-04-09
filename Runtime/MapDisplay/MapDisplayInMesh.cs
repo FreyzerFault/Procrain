@@ -1,14 +1,13 @@
-using System.Collections;
-using DavidUtils.DebugUtils;
+using System;
+using Map;
 using Procrain.MapGeneration.Mesh;
-using Unity.Jobs;
 using UnityEngine;
 
 namespace Procrain.MapDisplay
 {
     [ExecuteAlways]
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-    public class MapDisplayInMesh : MapDisplayInTexture
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
+    public class MapDisplayInMesh : MapDisplayBase
     {
         public enum TextureMode
         {
@@ -16,129 +15,87 @@ namespace Procrain.MapDisplay
             UseShader
         }
 
-        [Space] public TextureMode textureMode = TextureMode.UseShader;
+        public TextureMode textureMode = TextureMode.UseShader;
 
-        private MeshCollider meshCollider;
-        protected IMeshData meshData;
-        private MeshFilter meshFilter;
+        public bool useLocalLoD;
 
-        private IMeshData MeshData => paralelized ? meshDataThreadSafe : meshData;
+        [Range(0, 16)]
+        protected int localLoD;
+        protected int LoD
+        {
+            get => useLocalLoD ? localLoD : TerrainSettings.LOD;
+            set
+            {
+                if (LoD == value)
+                    return;
+
+                if (useLocalLoD)
+                {
+                    OnLocalLoDUpdate(value);
+                    localLoD = value;
+                }
+                else
+                {
+                    TerrainSettings.LOD = value;
+                }
+            }
+        }
+
+        private MeshCollider _meshCollider;
+        private MeshFilter _meshFilter;
+        private MeshRenderer _meshRenderer;
 
         protected virtual void Awake()
         {
-            meshFilter = GetComponent<MeshFilter>();
-            textureRenderer = GetComponent<MeshRenderer>();
-            meshCollider = GetComponent<MeshCollider>();
+            _meshFilter = GetComponent<MeshFilter>();
+            _meshCollider = GetComponent<MeshCollider>();
+            _meshRenderer = GetComponent<MeshRenderer>();
         }
 
-        protected override void OnDestroy()
+        private void Start()
         {
-            base.OnDestroy();
-            meshDataThreadSafe.Dispose();
+            var meshData = MapManager.Instance.GetMeshData(LoD);
+            if (meshData != null)
+                ApplyMeshData(LoD, meshData);
+
+            var texture = MapManager.Instance.texture;
+            if (texture != null)
+                ApplyTexture(texture);
+
+            MapManager.Instance.OnTextureUpdated += ApplyTexture;
+            MapManager.Instance.OnMeshUpdated += ApplyMeshData;
         }
 
-        public override void BuildMap()
+        protected virtual void OnDestroy()
         {
-            if (terrainSettingsSo == null) return;
-            if (paralelized)
-            {
-                StartCoroutine(BuildMapParallelizedCoroutine());
-            }
-            else
-            {
-                var size = NoiseParams.size;
-                DebugTimer.DebugTime(BuildHeightMap, $"Time to build HeightMap {size} x {size}");
-                if (textureMode == TextureMode.SetTexture)
-                    DebugTimer.DebugTime(
-                        BuildTextureData,
-                        $"Time to build TextureData {size} x {size}"
-                    );
-
-                DebugTimer.DebugTime(
-                    BuildMeshData,
-                    $"Time to build MeshData {NoiseParams.SampleSize} x {NoiseParams.SampleSize}"
-                );
-                DebugTimer.DebugTime(DisplayMap, "Time to display map");
-            }
+            MapManager.Instance.OnTextureUpdated -= ApplyTexture;
+            MapManager.Instance.OnMeshUpdated -= ApplyMeshData;
         }
 
-        protected virtual void BuildMeshData() =>
-            meshData = MeshGenerator.BuildMeshData(Map, LOD, HeightMultiplier);
-
-        #region LoD
-
-        protected void UpdateLOD(int newLod)
+        protected void ApplyTexture(Texture2D texture)
         {
-            if (newLod == LOD) return;
-            BuildMeshData(); // Esto es paralelizable
-            UpdateMesh(); // Esto no
+            if (textureMode != TextureMode.SetTexture)
+                return;
+            texture.Apply();
+            _meshRenderer.sharedMaterial.mainTexture = texture;
         }
 
-        #endregion
-
-        #region DISPLAY
-
-        public override void DisplayMap()
+        protected void ApplyMeshData(int lod, IMeshData meshData)
         {
-            if (textureMode == TextureMode.SetTexture) SetTexture();
+            if (useLocalLoD && localLoD != lod)
+                return;
 
-            UpdateMesh();
+            var mesh = meshData.CreateMesh();
+
+            _meshFilter.sharedMesh = mesh;
+            _meshCollider.sharedMesh = mesh;
         }
 
-        private void UpdateMesh()
+        protected virtual void OnLocalLoDUpdate(int newLod)
         {
-            if (meshFilter == null) Awake();
-
-            var mesh = MeshData.CreateMesh();
-
-            meshFilter.sharedMesh = mesh;
-
-            if (meshCollider != null) meshCollider.sharedMesh = mesh;
+            var meshData = MapManager.Instance.GetMeshData(LoD);
+            if (meshData != null)
+                ApplyMeshData(LoD, meshData);
         }
-
-        #endregion
-
-        #region PARALELIZATION
-
-        private MeshDataThreadSafe meshDataThreadSafe;
-
-        private void InitializeMeshDataThreadSafe()
-        {
-            // Si no cambia el tamaño de la malla, no hace falta crear una nueva
-            if (meshDataThreadSafe.IsEmpty || meshDataThreadSafe.width != Map.Size)
-                meshDataThreadSafe = new MeshDataThreadSafe(Map.Size, Map.Size, LOD);
-            else
-                meshDataThreadSafe.Reset();
-        }
-
-        protected override IEnumerator BuildMapParallelizedCoroutine()
-        {
-            yield return BuildHeightMapParallelizedCoroutine();
-
-            if (textureMode == TextureMode.SetTexture) yield return BuildTextureParallelizedCoroutine();
-
-            yield return BuildMeshParallelizedCoroutine();
-
-            DisplayMap();
-        }
-
-        private IEnumerator BuildMeshParallelizedCoroutine()
-        {
-            InitializeMeshDataThreadSafe();
-
-            var meshJob = new MeshGeneratorThreadSafe.BuildMeshDataJob
-            {
-                meshData = meshDataThreadSafe,
-                heightMap = heightMapThreadSafe,
-                lod = LOD,
-                heightMultiplier = HeightMultiplier
-            }.Schedule();
-
-            yield return new WaitWhile(() => !meshJob.IsCompleted);
-
-            meshJob.Complete();
-        }
-
-        #endregion
     }
 }

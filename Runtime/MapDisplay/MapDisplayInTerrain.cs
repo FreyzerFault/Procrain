@@ -1,3 +1,6 @@
+using System;
+using Map;
+using Procrain.MapGeneration;
 using Procrain.MapGeneration.Terrain;
 using Unity.Mathematics;
 using UnityEngine;
@@ -9,24 +12,18 @@ namespace Procrain.MapDisplay
     [ExecuteAlways]
     public class MapDisplayInTerrain : MapDisplayBase
     {
-        public bool movement;
+        [Range(1, 16)]
+        public int resolutionAmplifier = 1;
 
-        [Range(1,16)] public int resolutionAmplifier = 1;
-        [SerializeField] private Material terrainMaterial;
-        
+        [SerializeField]
+        private Material terrainMaterial;
+
         private Terrain _terrain;
         private TerrainCollider _terrainCollider;
 
-        public Terrain Terrain => _terrain ? _terrain : GetComponent<Terrain>();
-
-        public TerrainCollider TerrainCollider =>
+        private Terrain Terrain => _terrain ? _terrain : GetComponent<Terrain>();
+        private TerrainCollider TerrainCollider =>
             _terrainCollider ? _terrainCollider : GetComponent<TerrainCollider>();
-
-        private TerrainData TerrainData
-        {
-            get => Terrain.terrainData;
-            set => Terrain.terrainData = value;
-        }
 
         private void Awake()
         {
@@ -34,18 +31,41 @@ namespace Procrain.MapDisplay
             _terrainCollider = GetComponent<TerrainCollider>();
         }
 
-        private void Update()
+        private void Start() => MapManager.Instance.OnMapUpdated += UpdateTerrain;
+
+        private void OnDestroy() => MapManager.Instance.OnMapUpdated -= UpdateTerrain;
+
+        private void UpdateTerrain(IHeightMap heightMap)
         {
-            if (!movement) return;
-            Offset += new float2(1, 0);
+            var terrainData = Terrain.terrainData;
+            if (terrainData == null)
+                terrainData = new TerrainData();
+
+            terrainData.ApplyToHeightMap(
+                heightMap,
+                TerrainSettings.HeightMultiplier,
+                resolutionAmplifier
+            );
+            TerrainCollider.terrainData = terrainData;
+            UpdateMaterial();
         }
 
-        public override void DisplayMap()
-        {
-            if (TerrainData == null) TerrainData = new TerrainData();
-            TerrainGenerator.ApplyToTerrainData(TerrainData, Map, HeightMultiplier, resolutionAmplifier);
-            TerrainCollider.terrainData = TerrainData;
+        private void UpdateMaterial() =>
+            // TODO: Actualizar Uniforms del Shader
             Terrain.materialTemplate = terrainMaterial;
+
+        #region MOVEMENT
+
+        // MOVIMIENTO DEL HEIGHTMAP en una dirección para TESTING
+        public bool movement;
+
+        private void Update()
+        {
+            if (!movement)
+                return;
+            TerrainSettings.Offset += new float2(1, 0);
         }
+
+        #endregion
     }
 }

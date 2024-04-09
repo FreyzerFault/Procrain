@@ -11,6 +11,7 @@ namespace Procrain.MapGeneration
         public int Length { get; }
         public bool IsEmpty { get; }
         public int Size { get; }
+        public float[] ToArray();
         public float[,] ToArray2D();
         public float GetHeight(int x, int y);
         public void ApplyHeightCurve(AnimationCurve heightCurve);
@@ -34,9 +35,7 @@ namespace Procrain.MapGeneration
         }
 
         public HeightMap(NativeArray<float> map, int size = 129, uint seed = 0)
-            : this(map.ToArray(), size, seed)
-        {
-        }
+            : this(map.ToArray(), size, seed) { }
 
         public HeightMap(float[,] map, int size = 129, uint seed = 0)
         {
@@ -60,17 +59,17 @@ namespace Procrain.MapGeneration
                     )
                 ),
                 terrain.terrainData.heightmapResolution
-            )
-        {
-            NormalizeToMaxHeight();
-        }
+            ) => NormalizeToMaxHeight();
 
         private void NormalizeToMaxHeight()
         {
             var maxHeight = map.Max();
             var minHeight = map.Min();
-            for (var i = 0; i < map.Length; i++) map[i] = Mathf.InverseLerp(minHeight, maxHeight, map[i]);
+            for (var i = 0; i < map.Length; i++)
+                map[i] = Mathf.InverseLerp(minHeight, maxHeight, map[i]);
         }
+
+        public float[] ToArray() => map;
 
         public float[,] ToArray2D()
         {
@@ -87,7 +86,8 @@ namespace Procrain.MapGeneration
 
         public void ApplyHeightCurve(AnimationCurve heightCurve)
         {
-            for (var i = 0; i < map.Length; i++) map[i] = heightCurve.Evaluate(map[i]);
+            for (var i = 0; i < map.Length; i++)
+                map[i] = heightCurve.Evaluate(map[i]);
         }
 
         public static float[,] FlipCoordsXY(float[,] map)
@@ -116,6 +116,8 @@ namespace Procrain.MapGeneration
         public bool IsEmpty => map is { Length: 0 };
         public int Size { get; }
 
+        public float[] ToArray() => map.ToArray();
+
         public float[,] ToArray2D()
         {
             var array = new float[Size, Size];
@@ -129,15 +131,18 @@ namespace Procrain.MapGeneration
 
         public void ApplyHeightCurve(AnimationCurve heightCurve)
         {
-            for (var i = 0; i < map.Length; i++) map[i] = heightCurve.Evaluate(map[i]);
+            for (var i = 0; i < map.Length; i++)
+                map[i] = heightCurve.Evaluate(map[i]);
         }
 
         // NO paralelizable
         public void ApplyHeightCurve(SampledAnimationCurve heightCurve = default)
         {
-            if (heightCurve.IsEmpty) return;
+            if (heightCurve.IsEmpty)
+                return;
 
-            for (var i = 0; i < map.Length; i++) map[i] = heightCurve.Evaluate(map[i]);
+            for (var i = 0; i < map.Length; i++)
+                map[i] = heightCurve.Evaluate(map[i]);
         }
 
         public void Dispose() => map.Dispose();

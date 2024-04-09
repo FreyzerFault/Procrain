@@ -1,46 +1,29 @@
 using System.Collections.Generic;
+using Map;
 using Procrain.MapGeneration;
 using Procrain.MapGeneration.Mesh;
+using Procrain.MapGeneration.Texture;
 using Procrain.Noise;
 using UnityEngine;
 
 namespace Procrain.MapDisplay.InfiniteTerrain
 {
-    public class TerrainChunk : MapDisplayInMesh
+    public class TerrainChunk : MapDisplayInMesh_LoDByPlayer
     {
-        [SerializeField] private Vector2Int chunkCoord;
+        private IHeightMap localHeightMap;
 
-        [SerializeField] private PerlinNoiseParams localNoiseParams = PerlinNoiseParams.Default();
+        [SerializeField]
+        private Vector2Int chunkCoord;
 
-        // LOD local del Chunk
-        [SerializeField] private int lod;
+        [SerializeField]
+        private PerlinNoiseParams localNoiseParams = PerlinNoiseParams.Default();
 
-        private readonly Dictionary<int, IMeshData> meshDataPerLOD = new();
-        private Bounds bounds;
-
-        private Transform playerTransform;
-
-        public override int LOD
-        {
-            get => lod;
-            set => lod = value;
-        }
-
-        public override PerlinNoiseParams NoiseParams
-        {
-            get => localNoiseParams;
-            set
-            {
-                localNoiseParams = value;
-                BuildHeightMap();
-            }
-        }
-
+        private readonly Dictionary<int, IMeshData> _meshDataPerLOD = new();
+        private Bounds _bounds;
         private int Size => localNoiseParams.size;
-
         private Vector2Int PlayerChunk =>
             GetChunkCoord(
-                playerTransform?.position ?? GameObject.FindWithTag("Player").transform.position
+                _player?.transform.position ?? GameObject.FindWithTag("Player").transform.position
             );
 
         private float Extent => Size / 2f;
@@ -62,8 +45,12 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 
         public Gradient Gradient
         {
-            get => gradient;
-            set => ApplyGradient(value);
+            get => MapManager.Instance.heightGradient;
+            set
+            {
+                MapManager.Instance.heightGradient = value;
+                ApplyGradient(value);
+            }
         }
 
         // =================================================================================================== //
@@ -86,22 +73,23 @@ namespace Procrain.MapDisplay.InfiniteTerrain
         protected override void Awake()
         {
             base.Awake();
-            playerTransform = GameObject.FindWithTag("Player")?.transform;
-            localNoiseParams = terrainSettingsSo.NoiseParams;
+
+            localNoiseParams = TerrainSettings.NoiseParams;
         }
 
-        // No construir el mapa al iniciar
-        protected override void Start() =>
-            playerTransform = GameObject.FindWithTag("Player")?.transform;
-
-        protected override void BuildMeshData()
+        private void BuildMeshData(int lod)
         {
             // Actualiza la Malla al LOD actual si ya fue generada
-            if (meshDataPerLOD.TryGetValue(LOD, out meshData)) return;
+            if (_meshDataPerLOD.TryGetValue(lod, out var meshData))
+                return;
 
             // Si no la genera y la guarda
-            meshData = MeshGenerator.BuildMeshData(Map, LOD, HeightMultiplier);
-            meshDataPerLOD.Add(LOD, meshData);
+            meshData = MeshGenerator.BuildMeshData(
+                MapManager.Instance.HeightMap,
+                lod,
+                TerrainSettings.HeightMultiplier
+            );
+            _meshDataPerLOD.Add(lod, meshData);
         }
 
         // Cuando se posiciona en su coordenada se construye el Mapa
@@ -113,23 +101,28 @@ namespace Procrain.MapDisplay.InfiniteTerrain
             BuildHeightMap();
         }
 
-        protected override void BuildHeightMap()
+        private void BuildHeightMap()
         {
-            Map = HeightMapGenerator.CreatePerlinNoiseHeightMap(
+            localHeightMap = HeightMapGenerator.CreatePerlinNoiseHeightMap(
                 localNoiseParams,
-                HeightCurve
+                TerrainSettings.HeightCurve
             );
-            meshDataPerLOD.Clear();
+
+            // Al regenerar el Mapa de Alturas, quedan obsoletas todas las Mallas
+            _meshDataPerLOD.Clear();
         }
 
         private void ApplyGradient(Gradient newGradient)
         {
-            gradient = newGradient;
-            if (textureMode != TextureMode.SetTexture) return;
+            if (textureMode != TextureMode.SetTexture)
+                return;
 
-            BuildTextureData();
-            SetTexture();
+            var texture = BuildTextureData();
+            ApplyTexture(texture);
         }
+
+        private Texture2D BuildTextureData() =>
+            TextureGenerator.BuildTexture2D(localHeightMap, MapManager.Instance.heightGradient);
 
         /// <summary>
         ///     Actualiza la Visibilidad del Chunk (si debe ser renderizado o no).
@@ -145,20 +138,20 @@ namespace Procrain.MapDisplay.InfiniteTerrain
             Visible = chunkDistance <= maxRenderDist;
 
             // Si no está visible no hace falta actualizar el LOD
-            if (!Visible) return;
-            UpdateLOD();
+            if (!Visible)
+                return;
+
+            LoD = LodByDistToPlayer;
         }
 
-        public void UpdateLOD()
+        protected override void OnLocalLoDUpdate(int newLod)
         {
-            // LOD = Distancia en Chunks al Viewer
-            var newLOD = LodByDistToPlayer;
-            if (newLOD == LOD && meshData != null) return;
+            if (newLod == LoD)
+                return;
+            if (!_meshDataPerLOD.TryGetValue(newLod, out var meshData))
+                BuildMeshData(newLod);
 
-            // LOD changed => Reload Mesh
-            LOD = newLOD;
-            BuildMeshData();
-            DisplayMap();
+            ApplyMeshData(newLod, meshData);
         }
 
         // Transformaciones de Espacio de Mundo al Espacio del Chunk:

@@ -43,7 +43,8 @@ namespace Procrain.MapGeneration.Mesh
 
         public UnityEngine.Mesh ApplyMesh(UnityEngine.Mesh mesh)
         {
-            if (mesh == null) mesh = new UnityEngine.Mesh();
+            if (mesh == null)
+                mesh = new UnityEngine.Mesh();
 
             mesh.Clear();
 
@@ -60,7 +61,9 @@ namespace Procrain.MapGeneration.Mesh
         }
 
         public void AddVertex(Vector3 vertex) => vertices[vertIndex++] = vertex;
+
         public void AddUV(Vector2 uv) => uvs[uvIndex++] = uv;
+
         public void AddColor(Color color) => colors[colorIndex++] = color;
 
         public void AddTriangle(int a, int b, int c)
@@ -68,8 +71,15 @@ namespace Procrain.MapGeneration.Mesh
             if (a >= vertices.Length || b >= vertices.Length || c >= vertices.Length)
             {
                 Debug.LogError(
-                    "Triangle out of Bounds!!! " + vertices.Length + " Vertices. Triangle(" + a + ", " + b +
-                    ", " + c + ")"
+                    "Triangle out of Bounds!!! "
+                        + vertices.Length
+                        + " Vertices. Triangle("
+                        + a
+                        + ", "
+                        + b
+                        + ", "
+                        + c
+                        + ")"
                 );
                 return;
             }
@@ -100,7 +110,8 @@ namespace Procrain.MapGeneration.Mesh
 
         public UnityEngine.Mesh ApplyMesh(UnityEngine.Mesh mesh)
         {
-            if (mesh == null) mesh = new UnityEngine.Mesh();
+            if (mesh == null)
+                mesh = new UnityEngine.Mesh();
 
             mesh.Clear();
 
@@ -117,23 +128,34 @@ namespace Procrain.MapGeneration.Mesh
         }
 
         public void AddVertex(Vector3 vertex) => vertices.Add(vertex);
-        public void AddVertex(Vector2 vertex, float height) => vertices.Add(new Vector3(vertex.x, height, vertex.y));
-        public void AddVertex(float x, float y, float height) => vertices.Add(new Vector3(x, height, y));
+
+        public void AddVertex(Vector2 vertex, float height) =>
+            vertices.Add(new Vector3(vertex.x, height, vertex.y));
+
+        public void AddVertex(float x, float y, float height) =>
+            vertices.Add(new Vector3(x, height, y));
 
         public void AddUV(Vector2 uv) => uvs.Add(uv);
+
         public void AddUV(float u, float v) => uvs.Add(new Vector2(u, v));
 
         public void AddColor(Color color) => colors.Add(color);
+
         public void AddColor(float r, float g, float b) => colors.Add(new Color(r, g, b));
 
         public void AddTriangle(int a, int b, int c)
         {
             if (a >= vertices.Count || b >= vertices.Count || c >= vertices.Count)
                 throw new Exception(
-                    "Triangle out of Bounds!!! " + vertices.Count + " Vertices. Triangle(" + a + ", " +
-                    b +
-                    ", " +
-                    c + ")"
+                    "Triangle out of Bounds!!! "
+                        + vertices.Count
+                        + " Vertices. Triangle("
+                        + a
+                        + ", "
+                        + b
+                        + ", "
+                        + c
+                        + ")"
                 );
 
             triangles.Add(a);
@@ -142,7 +164,7 @@ namespace Procrain.MapGeneration.Mesh
         }
     }
 
-    public struct MeshDataThreadSafe : IMeshData, IDisposable
+    public struct MeshData_ThreadSafe : IMeshData, IDisposable
     {
         private NativeArray<float3> vertices;
         private NativeArray<int> triangles;
@@ -160,9 +182,11 @@ namespace Procrain.MapGeneration.Mesh
 
         public bool IsEmpty => !vertices.IsCreated || vertices.Length == 0;
 
-        public MeshDataThreadSafe(int lod = 0) : this() => this.lod = lod;
+        public MeshData_ThreadSafe(int lod = 0)
+            : this() => this.lod = lod;
 
-        public MeshDataThreadSafe(int width, int height, int lod = 0) : this(lod)
+        public MeshData_ThreadSafe(int width, int height, int lod = 0)
+            : this(lod)
         {
             this.width = width;
             this.height = height;
@@ -172,9 +196,12 @@ namespace Procrain.MapGeneration.Mesh
             colors = new NativeArray<Color>(width * height, Allocator.Persistent);
         }
 
-        public MeshDataThreadSafe(
-            NativeArray<float3> vertices, NativeArray<int> triangles, NativeArray<float2> uvs,
-            NativeArray<Color> colors, int lod = 0
+        public MeshData_ThreadSafe(
+            NativeArray<float3> vertices,
+            NativeArray<int> triangles,
+            NativeArray<float2> uvs,
+            NativeArray<Color> colors,
+            int lod = 0
         )
             : this(lod)
         {
@@ -189,7 +216,8 @@ namespace Procrain.MapGeneration.Mesh
 
         public UnityEngine.Mesh ApplyMesh(UnityEngine.Mesh mesh)
         {
-            if (mesh == null) mesh = new UnityEngine.Mesh();
+            if (mesh == null)
+                mesh = new UnityEngine.Mesh();
 
             mesh.Clear();
 
@@ -206,12 +234,18 @@ namespace Procrain.MapGeneration.Mesh
         }
 
         public void AddVertex(float3 vertex) => vertices[vertIndex++] = vertex;
+
         public void AddUV(float2 uv) => uvs[uvIndex++] = uv;
+
         public void AddColor(Color color) => colors[colorIndex++] = color;
 
         public void AddTriangle(int3 indices)
         {
-            if (indices.x >= vertices.Length || indices.y >= vertices.Length || indices.z >= vertices.Length)
+            if (
+                indices.x >= vertices.Length
+                || indices.y >= vertices.Length
+                || indices.z >= vertices.Length
+            )
             {
                 var array = vertices;
                 LogTriOutOfBoundsError(array, indices);
@@ -240,13 +274,17 @@ namespace Procrain.MapGeneration.Mesh
         }
 
         [BurstDiscard]
-        public static void LogTriOutOfBoundsError(NativeArray<float3> vertices, int3 triIndices)
-        {
+        public static void LogTriOutOfBoundsError(NativeArray<float3> vertices, int3 triIndices) =>
             Debug.LogError(
-                "Triangle out of Bounds!!! " + vertices.Length + " Vertices. Triangle(" + triIndices.x + ", "
-                + triIndices.y +
-                ", " + triIndices.z + ")"
+                "Triangle out of Bounds!!! "
+                    + vertices.Length
+                    + " Vertices. Triangle("
+                    + triIndices.x
+                    + ", "
+                    + triIndices.y
+                    + ", "
+                    + triIndices.z
+                    + ")"
             );
-        }
     }
 }
