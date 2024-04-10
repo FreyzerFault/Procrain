@@ -1,5 +1,4 @@
-using System;
-using Map;
+using Procrain.Core;
 using Procrain.MapGeneration;
 using Procrain.MapGeneration.Terrain;
 using Unity.Mathematics;
@@ -9,7 +8,6 @@ namespace Procrain.MapDisplay
 {
     // TODO: Texturas y Collider
     [RequireComponent(typeof(Terrain), typeof(TerrainCollider))]
-    [ExecuteAlways]
     public class MapDisplayInTerrain : MapDisplayBase
     {
         [Range(1, 16)]
@@ -31,18 +29,27 @@ namespace Procrain.MapDisplay
             _terrainCollider = GetComponent<TerrainCollider>();
         }
 
-        private void Start() => MapManager.Instance.OnMapUpdated += UpdateTerrain;
-
-        private void OnDestroy() => MapManager.Instance.OnMapUpdated -= UpdateTerrain;
-
-        private void UpdateTerrain(IHeightMap heightMap)
+        protected override void OnHeightMapUpdated(IHeightMap heightMap)
         {
-            var terrainData = Terrain.terrainData;
+            UpdateTerrainData(heightMap);
+            UpdateMaterial();
+        }
+
+        public override void DisplayMap()
+        {
+            if (HeightMap == null) return;
+            UpdateTerrainData(HeightMap);
+            UpdateMaterial();
+        }
+        
+        private void UpdateTerrainData(IHeightMap heightMap)
+        {
+            TerrainData terrainData = Terrain.terrainData;
             if (terrainData == null)
                 terrainData = new TerrainData();
 
             terrainData.ApplyToHeightMap(
-                heightMap,
+                HeightMap,
                 TerrainSettings.HeightMultiplier,
                 resolutionAmplifier
             );

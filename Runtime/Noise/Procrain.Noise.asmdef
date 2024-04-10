@@ -2,10 +2,10 @@
     "name": "Procrain.Noise",
     "rootNamespace": "Procrain",
     "references": [
-        "GUID:d8b63aba1907145bea998dd612889d6b",
         "GUID:8e56582fd59963847b3cb4d5600b8406",
         "GUID:d95f62dca18902045bd3f2c6a5898a9d",
-        "GUID:7e1058974e6f90f4fa0edf5d8fc9f38b"
+        "GUID:7e1058974e6f90f4fa0edf5d8fc9f38b",
+        "GUID:d8b63aba1907145bea998dd612889d6b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

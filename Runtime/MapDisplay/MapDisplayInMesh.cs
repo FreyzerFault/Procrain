@@ -1,11 +1,9 @@
-using System;
-using Map;
+using Procrain.Core;
 using Procrain.MapGeneration.Mesh;
 using UnityEngine;
 
 namespace Procrain.MapDisplay
 {
-    [ExecuteAlways]
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
     public class MapDisplayInMesh : MapDisplayBase
     {
@@ -52,24 +50,27 @@ namespace Procrain.MapDisplay
             _meshRenderer = GetComponent<MeshRenderer>();
         }
 
-        private void Start()
+        protected override void Start()
         {
-            var meshData = MapManager.Instance.GetMeshData(LoD);
+            IMeshData meshData = MapManager.Instance.GetMeshData(LoD);
             if (meshData != null)
                 ApplyMeshData(LoD, meshData);
 
-            var texture = MapManager.Instance.texture;
+            Texture2D texture = MapManager.Instance.texture;
             if (texture != null)
                 ApplyTexture(texture);
-
-            MapManager.Instance.OnTextureUpdated += ApplyTexture;
-            MapManager.Instance.OnMeshUpdated += ApplyMeshData;
         }
 
-        protected virtual void OnDestroy()
+        protected override void OnTextureUpdated(Texture2D texture) => ApplyTexture(Texture);
+        protected override void OnMeshDataUpdated(int lod, IMeshData meshData) => ApplyMeshData(lod, meshData);
+
+        public override void DisplayMap()
         {
-            MapManager.Instance.OnTextureUpdated -= ApplyTexture;
-            MapManager.Instance.OnMeshUpdated -= ApplyMeshData;
+            if (Texture != null)
+                ApplyTexture(Texture);
+            
+            if (MeshData != null)
+                ApplyMeshData(LoD, MeshData);
         }
 
         protected void ApplyTexture(Texture2D texture)
@@ -82,8 +83,7 @@ namespace Procrain.MapDisplay
 
         protected void ApplyMeshData(int lod, IMeshData meshData)
         {
-            if (useLocalLoD && localLoD != lod)
-                return;
+            if (useLocalLoD && localLoD != lod) return;
 
             var mesh = meshData.CreateMesh();
 
@@ -93,9 +93,8 @@ namespace Procrain.MapDisplay
 
         protected virtual void OnLocalLoDUpdate(int newLod)
         {
-            var meshData = MapManager.Instance.GetMeshData(LoD);
-            if (meshData != null)
-                ApplyMeshData(LoD, meshData);
+            IMeshData meshData = MapManager.Instance.GetMeshData(LoD);
+            if (meshData != null) ApplyMeshData(LoD, meshData);
         }
     }
 }

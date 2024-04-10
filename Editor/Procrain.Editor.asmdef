@@ -1,27 +1,26 @@
 {
-  "name": "Procrain.Editor",
-  "rootNamespace": "Procrain",
-  "references": [
-    "GUID:62bb8079c7bec1b4695edd7c435ad5e1",
-    "GUID:b41b7865b149c7d4b9c749c4446a484a",
-    "GUID:d95f62dca18902045bd3f2c6a5898a9d",
-    "GUID:7e1058974e6f90f4fa0edf5d8fc9f38b",
-    "GUID:e28886e1dcd808a408bf45ea4102ddff",
-    "GUID:8e56582fd59963847b3cb4d5600b8406",
-    "GUID:15fc0a57446b3144c949da3e2b9737a9",
-    "GUID:48c9f6afdac61634db0e0f241c7d4d51",
-    "GUID:7e2ab7a3c00b1264380f464bf725bd24",
-    "GUID:7f9a9de32b1bf754cb15b0cced54475d"
-  ],
-  "includePlatforms": [
-    "Editor"
-  ],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "Procrain.Editor",
+    "rootNamespace": "Procrain",
+    "references": [
+        "GUID:7f9a9de32b1bf754cb15b0cced54475d",
+        "GUID:62bb8079c7bec1b4695edd7c435ad5e1",
+        "GUID:b41b7865b149c7d4b9c749c4446a484a",
+        "GUID:8e56582fd59963847b3cb4d5600b8406",
+        "GUID:d95f62dca18902045bd3f2c6a5898a9d",
+        "GUID:7e1058974e6f90f4fa0edf5d8fc9f38b",
+        "GUID:48c9f6afdac61634db0e0f241c7d4d51",
+        "GUID:e28886e1dcd808a408bf45ea4102ddff",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Map;
+using Procrain.Core;
 using Procrain.MapGeneration;
 using Procrain.MapGeneration.Mesh;
 using Procrain.MapGeneration.Texture;
@@ -114,10 +114,9 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 
         private void ApplyGradient(Gradient newGradient)
         {
-            if (textureMode != TextureMode.SetTexture)
-                return;
+            if (textureMode != TextureMode.SetTexture) return;
 
-            var texture = BuildTextureData();
+            Texture2D texture = BuildTextureData();
             ApplyTexture(texture);
         }
 

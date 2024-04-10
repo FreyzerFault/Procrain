@@ -1,13 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Core;
 using DavidUtils;
 using DavidUtils.DebugUtils;
 using DavidUtils.ExtensionMethods;
 using DavidUtils.ThreadingUtils;
-using Map;
-using Map.Rendering;
 using Procrain.Geometry;
 using Procrain.MapGeneration;
 using Procrain.MapGeneration.Mesh;
@@ -18,80 +15,69 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace Procrain
+namespace Procrain.Core
 {
-    public enum MapState
-    {
-        Minimap,
-        Fullscreen,
-        Hidden
-    }
-
-    [ExecuteAlways]
     public class MapManager : Singleton<MapManager>
     {
         public bool debugTimer = true;
 
-        // WATER
-        [SerializeField]
-        private GameObject water;
+        #region WATER
+        
+        [SerializeField] private GameObject water;
         public float WaterHeight => water == null ? 0 : water.transform.position.y;
+        
+        #endregion
 
-        // TERRAIN CONTEXT
+        #region TERRAIN
+
         public static Terrain Terrain => Terrain.activeTerrain;
         public float TerrainWidth => Terrain.terrainData.size.x;
         public float TerrainHeight => Terrain.terrainData.size.z;
 
-        // PLAYER CONTEXT
-        [SerializeField]
-        private GameObject player;
+        #endregion
+
+        #region PLAYER
+
+        [SerializeField] private GameObject player;
+        
         public Vector3 PlayerPosition => player.transform.position;
         public Vector3 PlayerForward => player.transform.forward;
-        public Vector2 PlayerNormalizedPosition =>
-            Terrain.GetNormalizedPosition(player.transform.position);
-        public Vector2 PlayerDistanceToTopRightCorner => Vector2.one - PlayerNormalizedPosition;
+        
+        public Vector2 PlayerNormalizedPosition => Terrain.GetNormalizedPosition(player.transform.position);
         private float PlayerRotationAngle => player.transform.eulerAngles.y;
-        public Quaternion PlayerRotationForUI =>
-            Quaternion.AngleAxis(90 + PlayerRotationAngle, Vector3.back);
+        public Quaternion PlayerRotationForUI => Quaternion.AngleAxis(90 + PlayerRotationAngle, Vector3.back);
 
+        #endregion
+        
         protected override void Awake()
         {
             base.Awake();
+            
             player = GameObject.FindGameObjectWithTag("Player");
             water = GameObject.FindGameObjectWithTag("Water");
-
-            HandleStateChanged(mapState);
 
             BuildMap();
 
             SubscribeToValuesUpdated();
         }
-
-        private void Start()
-        {
-            var mainPathFindingObj = GameObject.FindWithTag("Map Path Main");
-            if (mainPathFindingObj != null)
-                mainPathFindingGenerator = mainPathFindingObj.GetComponent<PathFindingGenerator>();
-        }
-
+        
         private void OnDestroy()
         {
-            // Cancel all processes
+            // Cancel all processes and Threading JOBS
             StopAllCoroutines();
-            if (!_heightMapJobHandle.IsCompleted)
-                _heightMapJobHandle.Complete();
+            if (!_heightMapJobHandle.IsCompleted) _heightMapJobHandle.Complete();
+            if (!_textureJobHandle.IsCompleted) _textureJobHandle.Complete();
 
-            if (terrainSettings == null)
-                return;
+            // UNSUSCRIBE
+            if (terrainSettings == null) return;
             terrainSettings.ValuesUpdated -= OnValuesUpdated;
-
-            _heightMapJobHandle.Complete();
-            _textureJobHandle.Complete();
 
             _heightMapThreadSafe.Dispose();
             _heightCurveThreadSafe.Dispose();
             _textureDataThreadSafe.Dispose();
-            MeshData_ThreadSafe.Dispose();
+            
+            foreach (MeshData_ThreadSafe meshDataThreadSafe in _meshDataByLoD_ThreadSafe.Values)
+                meshDataThreadSafe.Dispose();
         }
 
         #region TERRAIN SETTINGS
@@ -101,32 +87,27 @@ namespace Procrain
 
         protected virtual void OnValidate()
         {
-            if (!autoUpdate)
-                return;
+            if (!autoUpdate) return;
             SubscribeToValuesUpdated();
 
-            if (paralelized)
-                SampleGradient();
+            if (paralelized) SampleGradient();
         }
 
         public void SubscribeToValuesUpdated()
         {
-            if (terrainSettings == null)
-                return;
+            if (terrainSettings == null) return;
+            
             terrainSettings.ValuesUpdated -= OnValuesUpdated;
 
-            if (autoUpdate)
-                terrainSettings.ValuesUpdated += OnValuesUpdated;
+            if (autoUpdate) terrainSettings.ValuesUpdated += OnValuesUpdated;
         }
 
         public void OnValuesUpdated()
         {
-            if (!autoUpdate)
-                return;
+            if (!autoUpdate) return;
 
             // Actualiza la curva de altura para paralelizacion. La normal podria haber cambiado
-            if (paralelized)
-                UpdateHeightCurveThreadSafe();
+            if (paralelized) UpdateHeightCurveThreadSafe();
 
             BuildMap();
         }
@@ -136,6 +117,9 @@ namespace Procrain
         #endregion
 
         #region MAP BUILDER
+        
+        public bool buildTexture = true;
+        public bool buildMesh = true;
 
         public event Action<IHeightMap> OnMapUpdated;
         public event Action<Texture2D> OnTextureUpdated;
@@ -143,24 +127,26 @@ namespace Procrain
 
         public void BuildMap()
         {
-            if (paralelized)
-                StartCoroutine(BuildMapParallelizedCoroutine());
-            else
-                BuildMapSequential();
+            if (paralelized) StartCoroutine(BuildMapParallelizedCoroutine());
+            else BuildMapSequential();
         }
 
         public void BuildMapSequential()
         {
-            BuildHeightMap_Sequential();
-            BuildTexture2D_Sequential();
-            BuildMeshData_Sequential(terrainSettings.LOD);
+            DebugTimer.DebugTime(BuildHeightMap_Sequential, $"Time to build HeightMap {MapSampleSize} x {MapSampleSize}");
+            if (buildTexture)
+                DebugTimer.DebugTime(BuildTexture2D_Sequential, $"Time to build Texture {MapSize} x {MapSize}");
+            if (buildMesh)
+                DebugTimer.DebugTime(() => BuildMeshData_Sequential(), $"Time to build MeshData {MapSampleSize} x {MapSampleSize}");
         }
 
         private IEnumerator BuildMapParallelizedCoroutine()
         {
             yield return BuildHeightMap_ParallelizedCoroutine();
-            yield return BuildTexture2D_ParallelizedCoroutine();
-            yield return BuildMeshData_ParallelizedCoroutine();
+            if (buildTexture)
+                yield return BuildTexture2D_ParallelizedCoroutine();
+            if (buildMesh)
+                yield return BuildMeshData_ParallelizedCoroutine();
         }
 
         #region HEIGHT MAP
@@ -169,26 +155,17 @@ namespace Procrain
         public int MapSampleSize => terrainSettings.NoiseParams.SampleSize;
         private int MapSize => terrainSettings.NoiseParams.size;
 
-        private void BuildHeightMap()
+        public void BuildHeightMap()
         {
-            if (paralelized)
-                StartCoroutine(BuildHeightMap_ParallelizedCoroutine());
-            else
-                DebugTimer.DebugTime(
-                    BuildHeightMap_Sequential,
-                    $"Time to build HeightMap {MapSampleSize} x {MapSampleSize}"
-                );
+            if (paralelized) StartCoroutine(BuildHeightMap_ParallelizedCoroutine());
+            else DebugTimer.DebugTime(BuildHeightMap_Sequential, $"Time to build HeightMap {MapSampleSize} x {MapSampleSize}");
         }
 
         private void BuildHeightMap_Sequential()
         {
-            _heightMap =
-                terrainSettings != null
-                    ? HeightMapGenerator.CreatePerlinNoiseHeightMap(
-                        terrainSettings.NoiseParams,
-                        terrainSettings.HeightCurve
-                    )
-                    : new HeightMap(Terrain);
+            _heightMap = terrainSettings != null
+                ? HeightMapGenerator.CreatePerlinNoiseHeightMap(terrainSettings.NoiseParams, terrainSettings.HeightCurve)
+                : new HeightMap(Terrain);
             OnMapUpdated?.Invoke(_heightMap);
         }
 
@@ -197,35 +174,26 @@ namespace Procrain
         #region TEXTURE
 
         public Gradient heightGradient = new();
-        public Color32[] textureData;
+        [NonSerialized] public Color32[] textureData;
         public Texture2D texture;
 
         private void BuildTexture2D()
         {
-            if (paralelized)
-                StartCoroutine(BuildTexture2D_ParallelizedCoroutine());
-            else
-                DebugTimer.DebugTime(
-                    BuildTexture2D_Sequential,
-                    $"Time to build Texture {MapSize} x {MapSize}"
-                );
+            if (paralelized) StartCoroutine(BuildTexture2D_ParallelizedCoroutine());
+            else DebugTimer.DebugTime(BuildTexture2D_Sequential, $"Time to build Texture {MapSize} x {MapSize}");
         }
 
         public void BuildTexture2D_Sequential()
         {
             textureData = TextureGenerator.BuildTextureData32(_heightMap, heightGradient);
-            texture = TextureGenerator.BuildTexture2D(textureData, MapSize, MapSize);
+            texture = TextureGenerator.BuildTexture2D(textureData, MapSampleSize, MapSampleSize);
             OnTextureUpdated?.Invoke(texture);
         }
 
         // Usa una resolucion distinta
         public void BuildTexture2D_Sequential(Vector2Int resolution)
         {
-            textureData = TextureGenerator.BuildTextureData(
-                terrainSettings.NoiseParams,
-                heightGradient,
-                resolution
-            );
+            textureData = TextureGenerator.BuildTextureData(terrainSettings.NoiseParams, heightGradient, resolution);
             texture = TextureGenerator.BuildTexture2D(textureData, resolution.x, resolution.y);
             OnTextureUpdated?.Invoke(texture);
         }
@@ -234,53 +202,49 @@ namespace Procrain
 
         #region MESH
 
-        private readonly Dictionary<int, IMeshData> meshDataByLoD = new();
-        private IMeshData MeshData =>
-            paralelized ? MeshData_ThreadSafe : meshDataByLoD[terrainSettings.LOD];
+        private readonly Dictionary<int, IMeshData> _meshDataByLoD = new();
+        private IMeshData MeshData => paralelized ? MeshData_ThreadSafe : _meshDataByLoD[terrainSettings.LOD];
+
+        private Mesh mesh;
 
         // Query Mesh by LoD. If not built, build it.
         // If paralellized, return null. So caller may wait for it to get built.
         public IMeshData GetMeshData(int lod = -1)
         {
-            if (lod == -1)
-                lod = terrainSettings.LOD;
+            if (lod == -1) lod = terrainSettings.LOD;
             if (paralelized)
             {
-                if (_meshDataByLoD_ThreadSafe.TryGetValue(lod, out var meshData))
+                if (_meshDataByLoD_ThreadSafe.TryGetValue(lod, out MeshData_ThreadSafe meshData))
                     return meshData;
+                
+                // No hay MeshData para el este LoD => La generamos
                 StartCoroutine(BuildMeshData_ParallelizedCoroutine(lod));
                 return null;
             }
             else
             {
-                if (meshDataByLoD.TryGetValue(lod, out var meshData))
+                if (_meshDataByLoD.TryGetValue(lod, out IMeshData meshData))
                     return meshData;
+                
                 BuildMeshData(lod);
-                return meshDataByLoD[lod];
+                return _meshDataByLoD[lod];
             }
         }
 
         public void BuildMeshData(int lod = -1)
         {
-            if (lod == -1)
-                lod = terrainSettings.LOD;
-            if (paralelized)
-                StartCoroutine(BuildMeshData_ParallelizedCoroutine(lod));
-            else
-                DebugTimer.DebugTime(
-                    () => BuildMeshData_Sequential(lod),
-                    $"Time to build MeshData {MapSampleSize} x {MapSampleSize}"
-                );
+            if (lod == -1) lod = terrainSettings.LOD;
+            if (paralelized) StartCoroutine(BuildMeshData_ParallelizedCoroutine(lod));
+            else DebugTimer.DebugTime(() => BuildMeshData_Sequential(lod), $"Time to build MeshData {MapSampleSize} x {MapSampleSize}");
         }
 
-        private void BuildMeshData_Sequential(int lod)
+        private void BuildMeshData_Sequential(int lod = -1)
         {
-            var meshData = MeshGenerator.BuildMeshData(
-                _heightMap,
-                lod,
-                terrainSettings.HeightMultiplier
-            );
-            meshDataByLoD[lod] = meshData;
+            if (lod == -1) lod = terrainSettings.LOD;
+            
+            IMeshData meshData = MeshGenerator.BuildMeshData(_heightMap, lod, terrainSettings.HeightMultiplier);
+            _meshDataByLoD[lod] = meshData;
+            mesh = meshData.CreateMesh();
             OnMeshUpdated?.Invoke(lod, meshData);
         }
 
@@ -291,8 +255,8 @@ namespace Procrain
         // Generar Malla del TIN
         public Tin BuildTin(float errorTolerance, int maxIterations)
         {
-            meshDataByLoD[0] = TinGenerator.BuildTinMeshData(
-                out var tin,
+            _meshDataByLoD[0] = TinGenerator.BuildTinMeshData(
+                out Tin tin,
                 _heightMap,
                 errorTolerance,
                 terrainSettings.HeightMultiplier,
@@ -330,17 +294,16 @@ namespace Procrain
 
         public void UpdateHeightCurveThreadSafe()
         {
-            if (terrainSettings.HeightCurve == null)
-                return;
+            if (terrainSettings.HeightCurve == null) return;
             _heightCurveThreadSafe.Sample(HeightCurve, _heightCurveSamples);
         }
 
         protected IEnumerator BuildHeightMap_ParallelizedCoroutine()
         {
-            var time = Time.time;
+            float time = Time.time;
 
-            var sampleSize = terrainSettings.NoiseParams.SampleSize;
-            var seed = terrainSettings.NoiseParams.seed;
+            int sampleSize = terrainSettings.NoiseParams.SampleSize;
+            uint seed = terrainSettings.NoiseParams.seed;
 
             // Initialize HeightMapThreadSafe
             _heightMapThreadSafe = new HeightMapThreadSafe(sampleSize, seed);
@@ -367,8 +330,7 @@ namespace Procrain
             _heightMapJobHandle.Complete();
             OnMapUpdated?.Invoke(_heightMapThreadSafe);
 
-            if (debugTimer)
-                Debug.Log($"{(Time.time - time) * 1000:F1} ms para generar el mapa");
+            if (debugTimer) Debug.Log($"{(Time.time - time) * 1000:F1} ms para generar el mapa");
         }
 
         #endregion
@@ -379,13 +341,11 @@ namespace Procrain
         private GradientThreadSafe _gradientThreadSafe;
         private JobHandle _textureJobHandle;
 
-        protected IEnumerable<Color32> TextureData =>
-            paralelized ? _textureDataThreadSafe : textureData;
+        protected IEnumerable<Color32> TextureData => paralelized ? _textureDataThreadSafe : textureData;
 
         private void SampleGradient()
         {
-            if (heightGradient == null)
-                return;
+            if (heightGradient == null) return;
             _gradientThreadSafe.SetGradient(heightGradient);
         }
 
@@ -394,27 +354,25 @@ namespace Procrain
             // Inicializamos la Textura o la reinicializamos si cambia su tamaño
             if (texture == null || texture.width != _heightMapThreadSafe.Size)
             {
-                var size = _heightMapThreadSafe.Size;
+                int size = _heightMapThreadSafe.Size;
                 texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
             }
 
             _textureDataThreadSafe = texture.GetRawTextureData<Color32>();
         }
 
-        protected IEnumerator BuildTexture2D_ParallelizedCoroutine()
+        private IEnumerator BuildTexture2D_ParallelizedCoroutine()
         {
-            var time = Time.time;
+            float time = Time.time;
 
             // Sample Gradient if empty
-            if (_gradientThreadSafe.IsEmpty)
-                SampleGradient();
+            if (_gradientThreadSafe.IsEmpty) SampleGradient();
 
             // Get TextureData reference from Texture2D to modify it
             InitializeTextureDataThreadSafe();
 
             // If last Job didn't end, wait for it
-            if (!_textureJobHandle.IsCompleted)
-                _textureJobHandle.Complete();
+            if (!_textureJobHandle.IsCompleted) _textureJobHandle.Complete();
 
             // Wait for JobHandle to END
             _textureJobHandle = new TextureGeneratorThreadSafe.MapToTextureJob
@@ -430,8 +388,7 @@ namespace Procrain
 
             OnTextureUpdated?.Invoke(texture);
 
-            if (debugTimer)
-                Debug.Log($"{(Time.time - time) * 1000:F1} ms para generar la textura");
+            if (debugTimer) Debug.Log($"{(Time.time - time) * 1000:F1} ms para generar la textura");
         }
 
         #endregion
@@ -448,11 +405,9 @@ namespace Procrain
         private void InitializeMeshDataThreadSafe(int lod)
         {
             // If no Mesh with this LoD, or Mesh Size changed, reinitialize MeshData
-            if (
-                !_meshDataByLoD_ThreadSafe.TryGetValue(lod, out var meshData)
+            if (!_meshDataByLoD_ThreadSafe.TryGetValue(lod, out var meshData)
                 || meshData.IsEmpty
-                || meshData.width != MapSampleSize
-            )
+                || meshData.width != MapSampleSize)
                 MeshData_ThreadSafe = new MeshData_ThreadSafe(MapSize, MapSize);
             else
                 MeshData_ThreadSafe.Reset();
@@ -460,13 +415,13 @@ namespace Procrain
 
         private IEnumerator BuildMeshData_ParallelizedCoroutine(int lod = -1)
         {
-            var time = Time.time;
+            float time = Time.time;
 
             InitializeMeshDataThreadSafe(lod);
 
-            var meshData = _meshDataByLoD_ThreadSafe[lod];
+            MeshData_ThreadSafe meshData = _meshDataByLoD_ThreadSafe[lod];
 
-            var meshJob = new MeshGeneratorThreadSafe.BuildMeshDataJob
+            JobHandle meshJob = new MeshGeneratorThreadSafe.BuildMeshDataJob
             {
                 meshData = meshData,
                 heightMap = _heightMapThreadSafe,
@@ -477,13 +432,13 @@ namespace Procrain
             yield return new WaitWhile(() => !meshJob.IsCompleted);
 
             meshJob.Complete();
+            
+            mesh = meshData.CreateMesh();
 
             OnMeshUpdated?.Invoke(lod, meshData);
 
             if (debugTimer)
-                Debug.Log(
-                    $"{(Time.time - time) * 1000:F1} ms para generar la Malla {MapSampleSize} x {MapSampleSize}, LoD {lod}"
-                );
+                Debug.Log($"{(Time.time - time) * 1000:F1} ms para generar la Malla {MapSampleSize} x {MapSampleSize}, LoD {lod}");
         }
 
         #endregion
@@ -492,143 +447,21 @@ namespace Procrain
 
         #endregion
 
-        #region STATE
+        #region DEBUG
 
-        [SerializeField]
-        private MapState mapState;
-
-        [SerializeField]
-        private GameObject minimap;
-
-        [SerializeField]
-        private GameObject fullScreenMap;
-
-        private GameObject MinimapParent => minimap.transform.parent.gameObject;
-        private GameObject FullScreenMapParent => fullScreenMap.transform.parent.gameObject;
-
-        public event Action<MapState> OnStateChanged;
-
-        public MapState MapState
+        private void OnDrawGizmos()
         {
-            get => mapState;
-            private set
+            var textureSize = 10;
+            Vector3 textureOffset = -Vector3.one * textureSize / 2;
+            Vector3 meshOffset = Vector3.back * 5;
+            Vector3 meshScale = new Vector3(0.01f, 0.1f, 0.01f);
+            if (buildTexture)
+                Gizmos.DrawGUITexture(new Rect(transform.position + textureOffset, Vector3.one * textureSize), texture);
+            if (buildMesh)
             {
-                mapState = value;
-                HandleStateChanged(value);
+                Gizmos.DrawMesh(mesh, transform.position + meshOffset, Quaternion.identity, meshScale);
+                Gizmos.DrawWireMesh(mesh, transform.position + meshOffset, Quaternion.identity, meshScale);
             }
-        }
-
-        private void HandleStateChanged(MapState state)
-        {
-            if (!fullScreenMap.activeSelf || !minimap.activeSelf)
-                return;
-            FullScreenMapParent.SetActive(false);
-            MinimapParent.SetActive(false);
-
-            switch (state)
-            {
-                case MapState.Fullscreen:
-                    FullScreenMapParent.SetActive(true);
-                    break;
-                case MapState.Minimap:
-                    MinimapParent.SetActive(true);
-                    break;
-            }
-
-            OnStateChanged?.Invoke(state);
-        }
-
-        public void ToggleMap()
-        {
-            MapState = MapState switch
-            {
-                MapState.Minimap => MapState.Fullscreen,
-                MapState.Fullscreen => MapState.Minimap,
-                _ => MapState.Fullscreen
-            };
-
-            GameManager.Instance.State =
-                MapState == MapState.Fullscreen
-                    ? GameManager.GameState.Paused
-                    : GameManager.GameState.Playing;
-        }
-
-        #endregion
-
-        #region ZOOM
-
-        [SerializeField]
-        private float zoomMap = 1;
-
-        [SerializeField]
-        private float zoomMinimap = 1;
-        public event Action<float> OnZoomMapChanged;
-
-        public float Zoom
-        {
-            get =>
-                mapState switch
-                {
-                    MapState.Minimap => zoomMinimap,
-                    MapState.Fullscreen => zoomMap,
-                    _ => -1
-                };
-            set
-            {
-                value = Mathf.Max(value, 1);
-                switch (mapState)
-                {
-                    case MapState.Fullscreen:
-                        zoomMap = value;
-                        OnZoomMapChanged?.Invoke(value);
-                        break;
-                    case MapState.Minimap:
-                        zoomMinimap = value;
-                        OnZoomMapChanged?.Invoke(value);
-                        break;
-                    case MapState.Hidden:
-                    default:
-                        break;
-                }
-            }
-        }
-
-        public void ZoomInOut(float zoomScale = 1)
-        {
-            if (minimap == null || fullScreenMap == null)
-                return;
-            switch (MapState)
-            {
-                case MapState.Minimap:
-                    minimap.GetComponent<MapRendererUI>().ZoomIn(zoomScale);
-                    break;
-                case MapState.Fullscreen:
-                    fullScreenMap.GetComponent<MapRendererUI>().ZoomIn(zoomScale);
-                    break;
-            }
-        }
-
-        #endregion
-
-        #region PATHFINDING
-
-        public PathFindingGenerator mainPathFindingGenerator;
-
-        public bool IsLegalPos(Vector2 normPos) => IsLegalPos(Terrain.GetWorldPosition(normPos));
-
-        public bool IsLegalPos(Vector3 pos)
-        {
-            var aboveWater = pos.y >= WaterHeight;
-
-            // TODO : Test this en todas las coords
-            var inBounds = Terrain.terrainData.bounds.Contains(pos);
-
-            // If Pathfinding used, check legality in PathFinding rules
-            if (mainPathFindingGenerator == null)
-                return aboveWater && inBounds;
-
-            var pathFindingLegalPos = mainPathFindingGenerator.IsLegalPos(pos);
-            return aboveWater && inBounds && pathFindingLegalPos;
         }
 
         #endregion

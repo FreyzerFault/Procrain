@@ -1,10 +1,12 @@
 using DavidUtils;
-using DavidUtils.Editor;
 using DavidUtils.ScriptableObjectsUtils;
 using Procrain.Noise;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
+#if UNITY_EDITOR
+using DavidUtils.Editor;
+#endif
 
 namespace Procrain.MapGeneration
 {
@@ -18,8 +20,8 @@ namespace Procrain.MapGeneration
         [SerializeField]
         private float heightMultiplier = 100;
 
-#if UNITY_EDITOR
         [SerializeField]
+#if UNITY_EDITOR
         [PowerOfTwo(0, 4, true)]
 #endif
         private int lod;

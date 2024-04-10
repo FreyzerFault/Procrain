@@ -1,7 +1,9 @@
 using System;
-using DavidUtils.Editor;
 using Unity.Mathematics;
 using UnityEngine;
+#if UNITY_EDITOR
+using DavidUtils.Editor;
+#endif
 
 namespace Procrain.Noise
 {
@@ -10,7 +12,11 @@ namespace Procrain.Noise
     public struct PerlinNoiseParams
     {
         // Tamaño del terreno (width = height)
-        [PowerOfTwo(5, 12, label2d: true)] public int size;
+        
+#if UNITY_EDITOR
+        [PowerOfTwo(5, 12, label2d: true)]
+#endif
+        public int size;
 
         // Resolución del sampleo del ruido
         // - => mayor suavidad

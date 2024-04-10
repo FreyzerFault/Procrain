@@ -1,26 +1,28 @@
-using Map;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Procrain.MapDisplay
 {
-    [ExecuteAlways]
     public abstract class MapDisplayInTexture : MapDisplayBase
     {
-        private RawImage _image;
+        protected Image image;
         protected Renderer textureRenderer;
 
         private void Awake()
         {
             textureRenderer = GetComponent<Renderer>();
-            _image = GetComponent<RawImage>();
+            image = GetComponent<Image>();
+        }
+        
+        protected override void OnTextureUpdated(Texture2D texture) => UpdateTexture(texture);
+
+        public override void DisplayMap()
+        {
+            if (Texture == null) return;
+            UpdateTexture(Texture);
         }
 
-        private void Start() => MapManager.Instance.OnTextureUpdated += SetTexture;
-
-        private void OnDestroy() => MapManager.Instance.OnTextureUpdated -= SetTexture;
-
-        protected void SetTexture(Texture2D texture)
+        public void UpdateTexture(Texture2D texture)
         {
             texture.Apply();
 
@@ -33,6 +35,6 @@ namespace Procrain.MapDisplay
         private void SetTextureRenderer(Texture tex) =>
             textureRenderer.sharedMaterial.mainTexture = tex;
 
-        private void SetTextureImage(Texture2D tex) => _image.texture = tex;
+        private void SetTextureImage(Texture2D tex) => image.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.zero);
     }
 }

@@ -1,5 +1,4 @@
-using Map;
-using Procrain.MapDisplay;
+using Procrain.Core;
 using UnityEditor;
 using UnityEngine;
 
