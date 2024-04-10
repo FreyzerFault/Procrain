@@ -61,7 +61,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
             get
             {
                 // Si no es potencia de 2, redondea al siguiente
-                var dist = Mathf.FloorToInt(Vector2Int.Distance(PlayerChunk, chunkCoord));
+                int dist = Mathf.FloorToInt(Vector2Int.Distance(PlayerChunk, chunkCoord));
                 return dist == 0 ? 0 : Mathf.ClosestPowerOfTwo(dist);
             }
         }
@@ -80,7 +80,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
         private void BuildMeshData(int lod)
         {
             // Actualiza la Malla al LOD actual si ya fue generada
-            if (_meshDataPerLOD.TryGetValue(lod, out var meshData))
+            if (_meshDataPerLOD.TryGetValue(lod, out IMeshData meshData))
                 return;
 
             // Si no la genera y la guarda
@@ -114,7 +114,8 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 
         private void ApplyGradient(Gradient newGradient)
         {
-            if (textureMode != TextureMode.SetTexture) return;
+            if (textureMode != TextureMode.SetTexture)
+                return;
 
             Texture2D texture = BuildTextureData();
             ApplyTexture(texture);
@@ -131,7 +132,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
         public void UpdateVisibility(int maxRenderDist)
         {
             // La distancia del jugador al chunk
-            var chunkDistance = Mathf.FloorToInt(Vector2Int.Distance(ChunkCoord, PlayerChunk));
+            int chunkDistance = Mathf.FloorToInt(Vector2Int.Distance(ChunkCoord, PlayerChunk));
 
             // Sera visible si la distancia al player viewer es menor a la permitida
             Visible = chunkDistance <= maxRenderDist;
@@ -147,7 +148,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
         {
             if (newLod == LoD)
                 return;
-            if (!_meshDataPerLOD.TryGetValue(newLod, out var meshData))
+            if (!_meshDataPerLOD.TryGetValue(newLod, out IMeshData meshData))
                 BuildMeshData(newLod);
 
             ApplyMeshData(newLod, meshData);
