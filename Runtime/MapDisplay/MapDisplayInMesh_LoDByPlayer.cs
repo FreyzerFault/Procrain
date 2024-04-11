@@ -27,7 +27,7 @@ namespace Procrain.MapDisplay
             _player.OnPlayerMove -= OnPlayerMove;
         }
 
-        private void OnPlayerMove(Vector3 moveInput)
+        private void OnPlayerMove(Vector2 moveInput)
         {
             localLoD = CalculateLoDByPlayerPos(_player.transform.position);
             OnLocalLoDUpdate(localLoD);
