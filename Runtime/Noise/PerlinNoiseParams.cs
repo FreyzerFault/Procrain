@@ -1,4 +1,3 @@
-using System;
 using Unity.Mathematics;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -7,61 +6,61 @@ using DavidUtils.Editor;
 
 namespace Procrain.Noise
 {
-    // Clase en la que se almacenan los parametros usados en el ruido
-    [Serializable]
-    public struct PerlinNoiseParams
-    {
-        // Tamaño del terreno (width = height)
-        
+	// Clase en la que se almacenan los parametros usados en el ruido
+	[CreateAssetMenu(menuName = "Procrain/Perlin Noise Params", fileName = "Perlin Noise Params")]
+	public class PerlinNoiseParams : ScriptableObject
+	{
+		// Tamaño del terreno (width = height)
+
 #if UNITY_EDITOR
-        [PowerOfTwo(5, 12, label2d: true)]
+		[PowerOfTwo(5, 12, label2d: true)]
 #endif
-        public int size;
+		public int size;
 
-        // Resolución del sampleo del ruido
-        // - => mayor suavidad
-        // + => mayor detalle
-        public float scale;
+		// Resolución del sampleo del ruido
+		// - => mayor suavidad
+		// + => mayor detalle
+		public float scale;
 
-        // Octavas del ruido
-        // Capas de ruido con distinta frecuencia que se suman para dar mayor complejidad
-        // Persistencia = Influencia de cada octava
-        // Lacunarity = Frecuencia de cada octava (+ lacunarity -> + caótico)
-        [Range(1, 10)] public int numOctaves;
+		// Octavas del ruido
+		// Capas de ruido con distinta frecuencia que se suman para dar mayor complejidad
+		// Persistencia = Influencia de cada octava
+		// Lacunarity = Frecuencia de cada octava (+ lacunarity -> + caótico)
+		[Range(1, 10)] public int numOctaves;
 
-        [Range(0, 2)] public float persistance;
+		[Range(0, 2)] public float persistance;
 
-        [Range(1, 5)] public float lacunarity;
+		[Range(1, 5)] public float lacunarity;
 
-        // Desplazamiento (x,y) del ruido
-        // Permite obtener distintos resultados con el mismo seed
-        // O desplazar el mapa manteniendo la coherencia de forma natural
-        public float2 offset;
+		// Desplazamiento (x,y) del ruido
+		// Permite obtener distintos resultados con el mismo seed
+		// O desplazar el mapa manteniendo la coherencia de forma natural
+		public float2 offset;
 
-        public uint seed;
+		public uint seed;
 
-        public PerlinNoiseParams(
-            int size = 241,
-            float scale = 100,
-            int numOctaves = 4,
-            float persistance = 0.5f,
-            float lacunarity = 2f,
-            float2 offset = default,
-            uint seed = 1
-        )
-        {
-            this.size = size;
-            this.scale = scale;
-            this.numOctaves = numOctaves;
-            this.persistance = persistance;
-            this.lacunarity = lacunarity;
-            this.offset = offset;
-            this.seed = seed;
-        }
+		public PerlinNoiseParams(
+			int size = 241,
+			float scale = 100,
+			int numOctaves = 4,
+			float persistance = 0.5f,
+			float lacunarity = 2f,
+			float2 offset = default,
+			uint seed = 1
+		)
+		{
+			this.size = size;
+			this.scale = scale;
+			this.numOctaves = numOctaves;
+			this.persistance = persistance;
+			this.lacunarity = lacunarity;
+			this.offset = offset;
+			this.seed = seed;
+		}
 
-        // Numero de puntos por lado del terreno
-        public int SampleSize => size + 1;
+		// Numero de puntos por lado del terreno
+		public int SampleSize => size + 1;
 
-        public static PerlinNoiseParams Default() => new(128, 100, 5);
-    }
+		public static PerlinNoiseParams Default() => new(128, 100, 5);
+	}
 }

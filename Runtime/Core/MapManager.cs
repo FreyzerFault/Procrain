@@ -284,9 +284,10 @@ namespace Procrain.Core
 		{
 			if (lod == -1) lod = terrainSettings.LOD;
 
-			IMeshData meshData = MeshGenerator.BuildMeshData(_heightMap, lod, terrainSettings.HeightMultiplier);
+			IMeshData meshData = MeshGenerator.BuildMeshData(_heightMap, lod, terrainSettings.HeightScale);
 			_meshDataByLoD[lod] = meshData;
 			mesh = meshData.CreateMesh();
+			mesh.hideFlags = HideFlags.HideAndDontSave;
 			OnMeshUpdated?.Invoke(lod, meshData);
 		}
 
@@ -301,7 +302,7 @@ namespace Procrain.Core
 				out Tin tin,
 				_heightMap,
 				errorTolerance,
-				terrainSettings.HeightMultiplier,
+				terrainSettings.HeightScale,
 				maxIterations
 			);
 			return tin;
@@ -468,7 +469,7 @@ namespace Procrain.Core
 				meshData = meshData,
 				heightMap = _heightMapThreadSafe,
 				lod = lod,
-				heightMultiplier = terrainSettings.HeightMultiplier
+				heightScale = terrainSettings.HeightScale
 			}.Schedule();
 
 			yield return new WaitWhile(() => !meshJob.IsCompleted);
@@ -497,15 +498,14 @@ namespace Procrain.Core
 		{
 			var textureSize = 10;
 			Vector3 textureOffset = -Vector3.one * textureSize / 2;
-			Vector3 meshOffset = Vector3.back * 5;
-			var meshScale = new Vector3(0.01f, 0.1f, 0.01f);
+			Vector3 meshOffset = Vector3.back;
+			Quaternion meshRotation = Quaternion.Euler(90, 0, 0);
+			var meshScale = new Vector3(0.04f, 0.04f, 0.04f);
 			if (buildTexture)
 				Gizmos.DrawGUITexture(new Rect(transform.position + textureOffset, Vector3.one * textureSize), texture);
 			if (buildMesh)
-			{
-				Gizmos.DrawMesh(mesh, transform.position + meshOffset, Quaternion.identity, meshScale);
-				Gizmos.DrawWireMesh(mesh, transform.position + meshOffset, Quaternion.identity, meshScale);
-			}
+				// Gizmos.DrawMesh(mesh, transform.position + meshOffset, Quaternion.identity, meshScale);
+				Gizmos.DrawWireMesh(mesh, transform.position + meshOffset, meshRotation, meshScale);
 		}
 
 		#endregion

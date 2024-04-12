@@ -259,6 +259,7 @@ Material:
     - _Ground_Tile: 0.028
     - _HeightLines_Spacing: 0.159
     - _HeightLines_Thickness: 0.062
+    - _Height_Scale: 100
     - _LowDetailBlend: 5
     - _LowDetailDistance: 30.55
     - _Max_Height: 100

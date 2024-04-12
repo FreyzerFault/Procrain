@@ -10,93 +10,93 @@ using DavidUtils.Editor;
 
 namespace Procrain.MapGeneration
 {
-    [ExecuteAlways]
-    [CreateAssetMenu(menuName = "Terrain Params", fileName = "Terrain Params")]
-    public class TerrainSettingsSo : AutoUpdatableSoWithBackup<TerrainSettingsSo>
-    {
-        [SerializeField]
-        private AnimationCurve heightCurve = AnimationCurveUtils.DefaultCurve();
+	[ExecuteAlways]
+	[CreateAssetMenu(menuName = "Terrain Settings", fileName = "Procrain/Terrain Settings")]
+	public class TerrainSettingsSo : AutoUpdatableSoWithBackup<TerrainSettingsSo>
+	{
+		[SerializeField] private AnimationCurve heightCurve = AnimationCurveUtils.DefaultCurve();
+		[SerializeField] private float heightScale = 100;
 
-        [SerializeField]
-        private float heightMultiplier = 100;
-
-        [SerializeField]
 #if UNITY_EDITOR
-        [PowerOfTwo(0, 4, true)]
+		[PowerOfTwo(0, 4, true)]
 #endif
-        private int lod;
+		[SerializeField] private int lod;
 
-        [SerializeField]
-        private PerlinNoiseParams noiseParams = PerlinNoiseParams.Default();
+		[SerializeField] private PerlinNoiseParams noiseParams = PerlinNoiseParams.Default();
 
-        public PerlinNoiseParams NoiseParams
-        {
-            get => noiseParams;
-            set
-            {
-                noiseParams = value;
-                NotifyUpdate();
-            }
-        }
+		#region UPDATABLE PARAMS
 
-        public AnimationCurve HeightCurve
-        {
-            get => heightCurve;
-            set
-            {
-                heightCurve = value;
-                NotifyUpdate();
-            }
-        }
+		public PerlinNoiseParams NoiseParams
+		{
+			get => noiseParams;
+			set
+			{
+				noiseParams = value;
+				NotifyUpdate();
+			}
+		}
 
-        public float HeightMultiplier
-        {
-            get => heightMultiplier;
-            set
-            {
-                heightMultiplier = value;
-                NotifyUpdate();
-            }
-        }
+		public AnimationCurve HeightCurve
+		{
+			get => heightCurve;
+			set
+			{
+				heightCurve = value;
+				NotifyUpdate();
+			}
+		}
 
-        public int LOD
-        {
-            get => lod;
-            set
-            {
-                lod = value;
-                NotifyUpdate();
-            }
-        }
+		public float HeightScale
+		{
+			get => heightScale;
+			set
+			{
+				heightScale = value;
+				NotifyUpdate();
+			}
+		}
 
-        public float2 Offset
-        {
-            get => noiseParams.offset;
-            set
-            {
-                noiseParams.offset = value;
-                NotifyUpdate();
-            }
-        }
+		public int LOD
+		{
+			get => lod;
+			set
+			{
+				lod = value;
+				NotifyUpdate();
+			}
+		}
 
-        public uint Seed
-        {
-            get => noiseParams.seed;
-            set
-            {
-                noiseParams.seed = value;
-                NotifyUpdate();
-            }
-        }
+		public float2 Offset
+		{
+			get => noiseParams.offset;
+			set
+			{
+				noiseParams.offset = value;
+				NotifyUpdate();
+			}
+		}
 
-        protected override void CopyValues(TerrainSettingsSo from, TerrainSettingsSo to)
-        {
-            to.noiseParams = from.noiseParams;
-            to.heightCurve = from.heightCurve;
-            to.heightMultiplier = from.heightMultiplier;
-            to.lod = from.lod;
-        }
+		public uint Seed
+		{
+			get => noiseParams.seed;
+			set
+			{
+				noiseParams.seed = value;
+				NotifyUpdate();
+			}
+		}
 
-        public void ResetSeed() => Seed = (uint)Random.Range(0, int.MaxValue);
-    }
+		public void ResetSeed() => Seed = (uint)Random.Range(0, int.MaxValue);
+
+		#endregion
+
+
+		protected override void CopyValues(TerrainSettingsSo from, TerrainSettingsSo to)
+		{
+			to.noiseParams = from.noiseParams;
+			to.heightCurve = from.heightCurve;
+			to.heightScale = from.heightScale;
+			to.lod = from.lod;
+		}
+	}
 }

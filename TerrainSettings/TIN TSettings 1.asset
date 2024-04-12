@@ -12,18 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcfeeaff4ed61944f9e0f24417334a96, type: 3}
   m_Name: TIN TSettings 1
   m_EditorClassIdentifier: 
-  autoUpdate: 1
   dirty: 1
-  noiseParams:
-    size: 128
-    scale: 50
-    numOctaves: 5
-    persistance: 0.5
-    lacunarity: 2
-    offset:
-      x: 0
-      y: 0
-    seed: 415
   heightCurve:
     serializedVersion: 2
     m_Curve:
@@ -75,5 +64,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  heightMultiplier: 100
+  heightScale: 100
   lod: 0
+  noiseParams: {fileID: 11400000, guid: b724943d15b9b9e4fbd6ec9ada5b86f9, type: 2}
