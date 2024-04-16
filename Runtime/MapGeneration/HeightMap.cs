@@ -100,12 +100,12 @@ namespace Procrain.MapGeneration
         }
     }
 
-    public struct HeightMapThreadSafe : IHeightMap, IDisposable
+    public struct HeightMap_ThreadSafe : IHeightMap, IDisposable
     {
         public NativeArray<float> map;
         public readonly uint seed;
 
-        public HeightMapThreadSafe(int size = 129, uint seed = 0)
+        public HeightMap_ThreadSafe(int size = 129, uint seed = 0)
         {
             Size = size;
             this.seed = seed;

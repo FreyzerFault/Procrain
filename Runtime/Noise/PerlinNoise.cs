@@ -22,14 +22,14 @@ namespace Procrain.Noise
         public static float[] BuildHeightMap(PerlinNoiseParams np, PerlinOctaves octaves)
         {
             // Scale no puede ser negativa
-            if (np.scale <= 0) np.scale = 0.0001f;
+            if (np.Scale <= 0) np.Scale = 0.0001f;
 
             var size = np.SampleSize;
 
             var noiseMap = new float[size * size];
 
             var halfSize = size / 2f;
-            var center = new float2(halfSize, halfSize) + np.offset;
+            var center = new float2(halfSize, halfSize) + np.Offset;
 
             // Recorremos el mapa en 2D
             for (var y = 0; y < size; y++)
@@ -56,15 +56,15 @@ namespace Procrain.Noise
         public static float GetNoiseHeight(float2 point, PerlinNoiseParams np, PerlinOctaves octaves)
         {
             float height = 0;
-            for (var i = 0; i < np.numOctaves; i++)
+            for (var i = 0; i < np.NumOctaves; i++)
             {
                 var offset = octaves.offsets[i];
                 var frecuency = octaves.frecuencies[i];
                 var amplitude = octaves.amplitudes[i];
 
                 var coords = new float2(
-                    (point.x + offset.x) / np.scale * frecuency,
-                    (point.y + offset.y) / np.scale * frecuency
+                    (point.x + offset.x) / np.Scale * frecuency,
+                    (point.y + offset.y) / np.Scale * frecuency
                 );
 
                 height += (Mathf.PerlinNoise(coords.x, coords.y) * 2 - 1) * amplitude;
@@ -95,16 +95,16 @@ namespace Procrain.Noise
 
         public static PerlinOctaves BuildOctaves(PerlinNoiseParams np)
         {
-            var octaves = new PerlinOctaves(np.numOctaves);
+            var octaves = new PerlinOctaves(np.NumOctaves);
 
-            var rand = new Random(np.seed);
+            var rand = new Random(np.Seed);
             var maxOffset = new float2(100000, 100000);
 
-            for (var i = 0; i < np.numOctaves; i++)
+            for (var i = 0; i < np.NumOctaves; i++)
             {
                 octaves.offsets[i] = new float2(rand.NextFloat2(-maxOffset, maxOffset));
-                octaves.frecuencies[i] = Frequency(np.lacunarity, i);
-                octaves.amplitudes[i] = Amplitude(np.persistance, i);
+                octaves.frecuencies[i] = Frequency(np.Lacunarity, i);
+                octaves.amplitudes[i] = Amplitude(np.Persistance, i);
 
                 octaves.maxNoiseValue += octaves.amplitudes[i];
             }
@@ -131,7 +131,7 @@ namespace Procrain.Noise
         public static Vector3[] SampleNoiseInPointsFromFile(PerlinNoiseParams np, string filePath, out AABB aabb)
         {
             // Scale no puede ser negativa
-            if (np.scale <= 0) np.scale = 0.0001f;
+            if (np.Scale <= 0) np.Scale = 0.0001f;
 
             var octaves = BuildOctaves(np);
 
@@ -216,22 +216,22 @@ namespace Procrain.Noise
     }
 
 
-    public static class PerlinNoiseThreadSafe
+    public static class PerlinNoise_ThreadSafe
     {
-        public static void BuildHeightMap(NativeArray<float> map, PerlinNoiseParams np) =>
+        public static void BuildHeightMap(NativeArray<float> map, PerlinNoiseParams_ThreadSafe np) =>
             BuildHeightMap(map, np, BuildOctaves(np));
 
         public static void BuildHeightMap(
-            NativeArray<float> map, PerlinNoiseParams np, PerlinOctavesThreadSafe octaves
+            NativeArray<float> map, PerlinNoiseParams_ThreadSafe np, PerlinOctaves_ThreadSafe octaves
         )
         {
             // Scale no puede ser negativa
             if (np.scale <= 0) np.scale = 0.0001f;
 
-            var size = np.SampleSize;
+            int size = np.SampleSize;
 
-            var halfSize = size / 2f;
-            var center = new float2(halfSize, halfSize) + np.offset;
+            float halfSize = size / 2f;
+            float2 center = new float2(halfSize, halfSize) + np.offset;
 
             // Recorremos el mapa en 2D
             for (var y = 0; y < size; y++)
@@ -239,22 +239,18 @@ namespace Procrain.Noise
             {
                 var coords = new float2(x - center.x, y - center.y);
                 // Almacenamos el Ruido resultante
-                map[x + y * size] = GetNoiseHeight(
-                    coords,
-                    np,
-                    octaves
-                );
+                map[x + y * size] = GetNoiseHeight(coords, np, octaves);
             }
         }
 
-        public static float GetNoiseHeight(float2 point, PerlinNoiseParams np, PerlinOctavesThreadSafe octaves)
+        public static float GetNoiseHeight(float2 point, PerlinNoiseParams_ThreadSafe np, PerlinOctaves_ThreadSafe octaves)
         {
             float height = 0;
             for (var i = 0; i < np.numOctaves; i++)
             {
-                var offset = octaves.offsets[i];
-                var frecuency = octaves.frecuencies[i];
-                var amplitude = octaves.amplitudes[i];
+                float2 offset = octaves.offsets[i];
+                float frecuency = octaves.frecuencies[i];
+                float amplitude = octaves.amplitudes[i];
 
                 var coords = new float2(
                     (point.x + offset.x) / np.scale * frecuency,
@@ -268,9 +264,9 @@ namespace Procrain.Noise
             return Mathf.InverseLerp(-octaves.maxNoiseValue, octaves.maxNoiseValue, height);
         }
 
-        public static PerlinOctavesThreadSafe BuildOctaves(PerlinNoiseParams np)
+        public static PerlinOctaves_ThreadSafe BuildOctaves(PerlinNoiseParams_ThreadSafe np)
         {
-            var octaves = new PerlinOctavesThreadSafe(np.numOctaves);
+            var octaves = new PerlinOctaves_ThreadSafe(np.numOctaves);
 
             var rand = new Random(np.seed);
             var maxOffset = new float2(100000, 100000);
@@ -287,7 +283,7 @@ namespace Procrain.Noise
             return octaves;
         }
 
-        public struct PerlinOctavesThreadSafe
+        public struct PerlinOctaves_ThreadSafe
         {
             private int Count => offsets.Length;
             public NativeArray<float2> offsets;
@@ -295,7 +291,7 @@ namespace Procrain.Noise
             public NativeArray<float> amplitudes;
             public float maxNoiseValue;
 
-            public PerlinOctavesThreadSafe(int numOctaves)
+            public PerlinOctaves_ThreadSafe(int numOctaves)
             {
                 maxNoiseValue = 0;
                 offsets = new NativeArray<float2>(numOctaves, Allocator.Temp);

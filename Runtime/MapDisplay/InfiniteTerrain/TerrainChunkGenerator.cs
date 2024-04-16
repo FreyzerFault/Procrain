@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Procrain.MapGeneration;
+using Procrain.Noise;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -37,6 +38,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
         private TerrainChunk chunkPrefab;
 
         public TerrainSettingsSo terrainSettingsSo;
+        public PerlinNoiseParams noiseParams;
 
         private readonly Dictionary<Vector2, TerrainChunk> chunkDictionary = new();
 
@@ -45,7 +47,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
         private readonly List<TerrainChunk> chunkLastVisibleList = new();
         private Vector2 lastPlayerChunkCoords;
 
-        private int ChunkSize => terrainSettingsSo.NoiseParams.size;
+        private int ChunkSize => noiseParams.Size;
 
         private Vector2 PlayerPos2D => new(player.position.x, player.position.z);
         private TerrainChunk PlayerChunk => chunkDictionary[playerChunkCoords];
@@ -121,17 +123,14 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 
         private TerrainChunk InstantiateChunk(Vector2Int coords)
         {
-            var chunk = Instantiate(chunkPrefab, transform);
+            TerrainChunk chunk = Instantiate(chunkPrefab, transform);
             chunk.ChunkCoord = coords;
             chunk.Gradient = gradient;
             return chunk;
         }
 
         // Resetea la Semilla de forma Aleatoria
-        public void ResetSeed()
-        {
-            terrainSettingsSo.ResetSeed();
-        }
+        public void ResetSeed() => noiseParams.ResetSeed();
 
         // Borra todos los terrenos renderizados
         public void Clear()

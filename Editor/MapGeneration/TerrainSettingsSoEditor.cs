@@ -16,9 +16,6 @@ namespace Procrain.Editor.MapGeneration
             if (terrainParamsSo == null)
                 return;
 
-            if (GUILayout.Button("Reset Seed"))
-                terrainParamsSo.ResetSeed();
-
             if (!terrainParamsSo.dirty)
                 return;
 

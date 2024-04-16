@@ -21,7 +21,7 @@ namespace Procrain.MapDisplay
 		protected int localLoD;
 		protected int LoD
 		{
-			get => useLocalLoD ? localLoD : TerrainSettings.LOD;
+			get => useLocalLoD ? localLoD : MapManager.Instance.TerrainSettings.LOD;
 			set
 			{
 				if (LoD == value)
@@ -34,7 +34,7 @@ namespace Procrain.MapDisplay
 				}
 				else
 				{
-					TerrainSettings.LOD = value;
+					MapManager.Instance.TerrainSettings.LOD = value;
 				}
 			}
 		}

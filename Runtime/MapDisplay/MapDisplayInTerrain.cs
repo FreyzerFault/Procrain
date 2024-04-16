@@ -1,3 +1,4 @@
+using Procrain.Core;
 using Procrain.MapGeneration;
 using Procrain.MapGeneration.Terrain;
 using Unity.Mathematics;
@@ -49,7 +50,7 @@ namespace Procrain.MapDisplay
 
 			terrainData.ApplyToHeightMap(
 				HeightMap,
-				TerrainSettings.HeightScale,
+				MapManager.Instance.TerrainSettings.HeightScale,
 				resolutionAmplifier
 			);
 			TerrainCollider.terrainData = terrainData;
@@ -69,7 +70,7 @@ namespace Procrain.MapDisplay
 		{
 			if (!movement)
 				return;
-			TerrainSettings.Offset += new float2(1, 0);
+			MapManager.Instance.NoiseParams.Offset += new float2(1, 0);
 		}
 
 		#endregion

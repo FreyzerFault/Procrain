@@ -1,6 +1,7 @@
 using Procrain.Core;
 using Procrain.MapGeneration;
 using Procrain.MapGeneration.Mesh;
+using Procrain.Noise;
 using UnityEngine;
 
 namespace Procrain.MapDisplay
@@ -10,7 +11,6 @@ namespace Procrain.MapDisplay
         protected IHeightMap HeightMap => MapManager.Instance.HeightMap;
         protected Texture2D Texture => MapManager.Instance.texture;
         protected IMeshData MeshData => MapManager.Instance.GetMeshData();
-        protected TerrainSettingsSo TerrainSettings => MapManager.Instance.terrainSettings;
 
         protected virtual void Start()
         {

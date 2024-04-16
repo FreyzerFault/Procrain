@@ -1,3 +1,4 @@
+using Procrain.Core;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -28,7 +29,7 @@ namespace Procrain.MapDisplay
         private void Move()
         {
             angle += Time.deltaTime * speed;
-            TerrainSettings.Offset = new float2(
+            MapManager.Instance.NoiseParams.Offset = new float2(
                 Mathf.Cos(angle) * movementRadius,
                 Mathf.Sin(angle) * movementRadius
             );

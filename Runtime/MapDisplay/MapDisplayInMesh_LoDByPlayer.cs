@@ -1,4 +1,5 @@
 using DavidUtils.PlayerControl;
+using Procrain.Core;
 using UnityEngine;
 
 namespace Procrain.MapDisplay
@@ -39,7 +40,7 @@ namespace Procrain.MapDisplay
             var position = transform.position;
             var terrainWorldPos = new Vector2(position.x, position.z);
             return Mathf.FloorToInt(
-                (terrainWorldPos - playerPos2D).magnitude / TerrainSettings.NoiseParams.size
+                (terrainWorldPos - playerPos2D).magnitude / MapManager.Instance.NoiseParams.Size
             );
         }
     }

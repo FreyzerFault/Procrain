@@ -77,11 +77,31 @@ namespace Procrain.Core
 				meshDataThreadSafe.Dispose();
 		}
 
-		#region TERRAIN SETTINGS
+		#region SETTINGS
 
-		public TerrainSettingsSo terrainSettings;
+		[SerializeField] private PerlinNoiseParams noiseParams;
+		[SerializeField] private TerrainSettingsSo terrainSettings;
 		public bool autoUpdate = true;
 
+		public PerlinNoiseParams NoiseParams
+		{
+			get => noiseParams;
+			set
+			{
+				noiseParams = value;
+				noiseParams.NotifyUpdate();
+			}
+		}
+		public TerrainSettingsSo TerrainSettings
+		{
+			get => terrainSettings;
+			set
+			{
+				terrainSettings = value;
+				terrainSettings.NotifyUpdate();
+			}
+		}
+		
 		protected virtual void OnValidate()
 		{
 			if (!autoUpdate) return;
@@ -92,11 +112,16 @@ namespace Procrain.Core
 
 		public void SubscribeToValuesUpdated()
 		{
-			if (terrainSettings == null) return;
-
-			terrainSettings.ValuesUpdated -= OnValuesUpdated;
-
-			if (autoUpdate) terrainSettings.ValuesUpdated += OnValuesUpdated;
+			if (terrainSettings != null)
+			{
+				terrainSettings.ValuesUpdated -= OnValuesUpdated;
+				if (autoUpdate) terrainSettings.ValuesUpdated += OnValuesUpdated;
+			}
+			if (noiseParams != null)
+			{
+				noiseParams.ValuesUpdated -= OnValuesUpdated;
+				if (autoUpdate) noiseParams.ValuesUpdated += OnValuesUpdated;
+			}
 		}
 
 		public void OnValuesUpdated()
@@ -109,7 +134,7 @@ namespace Procrain.Core
 			BuildMap();
 		}
 
-		public virtual void ResetSeed() => terrainSettings.Seed = PerlinNoise.GenerateRandomSeed();
+		public virtual void ResetSeed() => noiseParams.ResetSeed();
 
 		#endregion
 
@@ -154,24 +179,22 @@ namespace Procrain.Core
 
 		public void BuildMapSequential()
 		{
-			DebugTimer.DebugTime(
-				BuildHeightMap_Sequential,
-				$"Time to build HeightMap {MapSampleSize} x {MapSampleSize}"
-			);
+			DebugTimer.DebugTime(BuildHeightMap_Sequential, $"Time to build HeightMap {MapSampleSize} x {MapSampleSize}");
+			
 			if (buildTexture)
 				DebugTimer.DebugTime(BuildTexture2D_Sequential, $"Time to build Texture {MapSize} x {MapSize}");
+			
 			if (buildMesh)
-				DebugTimer.DebugTime(
-					() => BuildMeshData_Sequential(),
-					$"Time to build MeshData {MapSampleSize} x {MapSampleSize}"
-				);
+				DebugTimer.DebugTime(() => BuildMeshData_Sequential(), $"Time to build MeshData {MapSampleSize} x {MapSampleSize}");
 		}
 
 		private IEnumerator BuildMapParallelizedCoroutine()
 		{
 			yield return BuildHeightMap_ParallelizedCoroutine();
+			
 			if (buildTexture)
 				yield return BuildTexture2D_ParallelizedCoroutine();
+			
 			if (buildMesh)
 				yield return BuildMeshData_ParallelizedCoroutine();
 		}
@@ -179,8 +202,8 @@ namespace Procrain.Core
 		#region HEIGHT MAP
 
 		private HeightMap _heightMap;
-		public int MapSampleSize => terrainSettings.NoiseParams.SampleSize;
-		private int MapSize => terrainSettings.NoiseParams.size;
+		public int MapSampleSize => NoiseParams.SampleSize;
+		private int MapSize => NoiseParams.Size;
 
 		public void BuildHeightMap()
 		{
@@ -197,10 +220,7 @@ namespace Procrain.Core
 		private void BuildHeightMap_Sequential()
 		{
 			_heightMap = terrainSettings != null
-				? HeightMapGenerator.CreatePerlinNoiseHeightMap(
-					terrainSettings.NoiseParams,
-					terrainSettings.HeightCurve
-				)
+				? HeightMapGenerator.CreatePerlinNoiseHeightMap(noiseParams, terrainSettings.HeightCurve)
 				: new HeightMap(Terrain);
 			OnMapUpdated?.Invoke(_heightMap);
 		}
@@ -231,7 +251,7 @@ namespace Procrain.Core
 		// Usa una resolucion distinta
 		public void BuildTexture2D_Sequential(Vector2Int resolution)
 		{
-			textureData = TextureGenerator.BuildTextureData(terrainSettings.NoiseParams, heightGradient, resolution);
+			textureData = TextureGenerator.BuildTextureData(noiseParams, heightGradient, resolution);
 			texture = TextureGenerator.BuildTexture2D(textureData, resolution.x, resolution.y);
 			OnTextureUpdated?.Invoke(texture);
 		}
@@ -316,7 +336,7 @@ namespace Procrain.Core
 
 		#region HEIGHT MAP THREADING
 
-		private HeightMapThreadSafe _heightMapThreadSafe;
+		private HeightMap_ThreadSafe _heightMapThreadSafe;
 		public IHeightMap HeightMap => paralelized ? _heightMapThreadSafe : _heightMap;
 
 		private JobHandle _heightMapJobHandle;
@@ -345,11 +365,11 @@ namespace Procrain.Core
 		{
 			float time = Time.time;
 
-			int sampleSize = terrainSettings.NoiseParams.SampleSize;
-			uint seed = terrainSettings.NoiseParams.seed;
+			int sampleSize = noiseParams.SampleSize;
+			uint seed = noiseParams.Seed;
 
 			// Initialize HeightMapThreadSafe
-			_heightMapThreadSafe = new HeightMapThreadSafe(sampleSize, seed);
+			_heightMapThreadSafe = new HeightMap_ThreadSafe(sampleSize, seed);
 
 			// Sample Curve if empty
 			if (_heightCurveThreadSafe.IsEmpty)
@@ -360,9 +380,9 @@ namespace Procrain.Core
 				_heightMapJobHandle.Complete();
 
 			// Wait for JobHandle to END
-			_heightMapJobHandle = new HeightMapGeneratorThreadSafe.PerlinNoiseMapBuilderJob
+			_heightMapJobHandle = new HeightMapGenerator_ThreadSafe.PerlinNoiseMapBuilderJob
 			{
-				noiseParams = terrainSettings.NoiseParams,
+				noiseParams = noiseParams.ToThreadSafe(),
 				heightMap = _heightMapThreadSafe,
 				heightCurve = _heightCurveThreadSafe
 			}.Schedule();
@@ -497,10 +517,10 @@ namespace Procrain.Core
 		private void OnDrawGizmos()
 		{
 			var textureSize = 10;
-			Vector3 textureOffset = -Vector3.one * textureSize / 2;
-			Vector3 meshOffset = Vector3.back;
+			Vector3 textureOffset = - new Vector3(1, 1, 0) * textureSize / 2;
+			Vector3 meshOffset = Vector3.back * 2;
 			Quaternion meshRotation = Quaternion.Euler(90, 0, 0);
-			var meshScale = new Vector3(0.04f, 0.04f, 0.04f);
+			var meshScale = new Vector3(0.01f, 0.04f, 0.01f);
 			if (buildTexture)
 				Gizmos.DrawGUITexture(new Rect(transform.position + textureOffset, Vector3.one * textureSize), texture);
 			if (buildMesh)

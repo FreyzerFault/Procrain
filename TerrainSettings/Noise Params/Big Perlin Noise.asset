@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32196cecc9ab48346bf37755512bc47c, type: 3}
   m_Name: Big Perlin Noise
   m_EditorClassIdentifier: 
+  dirty: 1
   size: 1024
-  scale: 600
+  scale: 400
   numOctaves: 8
   persistance: 0.5
-  lacunarity: 2
+  lacunarity: 1.72
   offset:
     x: 0
     y: 0
-  seed: 3895
+  seed: 753396428

@@ -192,9 +192,9 @@ namespace Procrain.MapGeneration.TIN
 		#region TERRAIN GENERATOR
 
 		public TerrainSettingsSo terrainSettingsSo;
+		public PerlinNoiseParams noiseParams;
 		public Gradient gradient;
 
-		private PerlinNoiseParams NoiseParams => terrainSettingsSo.NoiseParams;
 		private AnimationCurve HeightCurve => terrainSettingsSo.HeightCurve;
 		private float HeightScale => terrainSettingsSo.HeightScale;
 
@@ -209,7 +209,7 @@ namespace Procrain.MapGeneration.TIN
 		// Actualiza el Mapa de Ruido y la Textura asociada
 		public void BuildHeightMap()
 		{
-			heightMap = HeightMapGenerator.CreatePerlinNoiseHeightMap(NoiseParams, HeightCurve);
+			heightMap = HeightMapGenerator.CreatePerlinNoiseHeightMap(noiseParams, HeightCurve);
 			if (withTexture) BuildTexture();
 		}
 
@@ -219,7 +219,7 @@ namespace Procrain.MapGeneration.TIN
 			meshRenderer.enabled = withTexture;
 		}
 
-		public void ResetRandomSeed() => terrainSettingsSo.ResetSeed();
+		public void ResetRandomSeed() => noiseParams.ResetSeed();
 
 		#region TIN
 

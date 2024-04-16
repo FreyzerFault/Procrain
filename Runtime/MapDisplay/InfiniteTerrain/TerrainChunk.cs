@@ -16,11 +16,11 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 		private Vector2Int chunkCoord;
 
 		[SerializeField]
-		private PerlinNoiseParams localNoiseParams = PerlinNoiseParams.Default();
+		private PerlinNoiseParams localNoiseParams;
 
 		private readonly Dictionary<int, IMeshData> _meshDataPerLOD = new();
 		private Bounds _bounds;
-		private int Size => localNoiseParams.size;
+		private int Size => localNoiseParams.Size;
 		private Vector2Int PlayerChunk =>
 			GetChunkCoord(
 				_player?.transform.position ?? GameObject.FindWithTag("Player").transform.position
@@ -74,7 +74,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 		{
 			base.Awake();
 
-			localNoiseParams = TerrainSettings.NoiseParams;
+			localNoiseParams = MapManager.Instance.NoiseParams;
 		}
 
 		private void BuildMeshData(int lod)
@@ -84,11 +84,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 				return;
 
 			// Si no la genera y la guarda
-			meshData = MeshGenerator.BuildMeshData(
-				MapManager.Instance.HeightMap,
-				lod,
-				TerrainSettings.HeightScale
-			);
+			meshData = MeshGenerator.BuildMeshData(MapManager.Instance.HeightMap, lod, MapManager.Instance.TerrainSettings.HeightScale);
 			_meshDataPerLOD.Add(lod, meshData);
 		}
 
@@ -97,7 +93,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 		{
 			chunkCoord = coord;
 			transform.localPosition = WorldPosition3D;
-			localNoiseParams.offset = -new Vector2(WorldPosition2D.x, WorldPosition2D.y);
+			localNoiseParams.Offset = -new Vector2(WorldPosition2D.x, WorldPosition2D.y);
 			BuildHeightMap();
 		}
 
@@ -105,7 +101,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 		{
 			localHeightMap = HeightMapGenerator.CreatePerlinNoiseHeightMap(
 				localNoiseParams,
-				TerrainSettings.HeightCurve
+				MapManager.Instance.TerrainSettings.HeightCurve
 			);
 
 			// Al regenerar el Mapa de Alturas, quedan obsoletas todas las Mallas

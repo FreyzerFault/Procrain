@@ -75,7 +75,7 @@ namespace Procrain.MapGeneration.Mesh
 	{
 		public static void BuildMeshData(
 			MeshData_ThreadSafe meshData,
-			HeightMapThreadSafe map,
+			HeightMap_ThreadSafe map,
 			int lod = 0,
 			float heightScale = 100
 		)
@@ -127,7 +127,7 @@ namespace Procrain.MapGeneration.Mesh
 		[BurstCompile]
 		public struct BuildMeshDataJob : IJob
 		{
-			public HeightMapThreadSafe heightMap;
+			public HeightMap_ThreadSafe heightMap;
 			public MeshData_ThreadSafe meshData;
 			public int lod;
 			public float heightScale;
