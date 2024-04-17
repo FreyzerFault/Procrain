@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO: Aplicar al MapManager para modificar el shader del material usado.
+// TODO: Crear un editor para modificar las regiones de altura y que se apliquen tanto al gradiente del mapa como al shader.
 namespace Procrain.MapDisplay
 {
 	public enum RegionType { Water, Sand, Grass, Rock, Snow }

@@ -176,6 +176,9 @@
         },
         {
             "m_Id": "9c92f7fad1a249d28eb87824e60541d6"
+        },
+        {
+            "m_Id": "7b69aef600e5478bbcfb5d92ebf02a0f"
         }
     ],
     "m_Keywords": [],
@@ -641,6 +644,9 @@
         },
         {
             "m_Id": "f372ec27cd174f2786b81c46ecbacd3c"
+        },
+        {
+            "m_Id": "7d14f83eb45b44d8916448711a68eee5"
         }
     ],
     "m_GroupDatas": [
@@ -1631,6 +1637,20 @@
                     "m_Id": "bc4709069d7d401e9203e3dab058715c"
                 },
                 "m_SlotId": 0
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "7d14f83eb45b44d8916448711a68eee5"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "e7e6799794424f838be86d08148ae221"
+                },
+                "m_SlotId": -623632809
             }
         },
         {
@@ -3869,10 +3889,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -2916.0,
-            "y": -1484.5716552734375,
+            "x": -3031.42822265625,
+            "y": -1481.7142333984375,
             "width": 163.428466796875,
-            "height": 34.28564453125
+            "height": 34.2857666015625
         }
     },
     "m_Slots": [
@@ -4151,8 +4171,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -2894.85693359375,
-            "y": -1556.5714111328125,
+            "x": -3010.285400390625,
+            "y": -1553.7142333984375,
             "width": 142.28564453125,
             "height": 34.2857666015625
         }
@@ -4722,8 +4742,8 @@
     "m_ObjectId": "25054f7cc0b4469dab76de867e36d635",
     "m_Title": "SNOW LAYER",
     "m_Position": {
-        "x": -2941.71435546875,
-        "y": -1691.4287109375
+        "x": -3054.857177734375,
+        "y": -1662.857177734375
     }
 }
 
@@ -6927,9 +6947,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -2878.28564453125,
-            "y": -1590.8572998046875,
-            "width": 126.28564453125,
+            "x": -2993.714111328125,
+            "y": -1587.9998779296875,
+            "width": 126.285888671875,
             "height": 34.28564453125
         }
     },
@@ -9614,6 +9634,29 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.BooleanShaderProperty",
+    "m_ObjectId": "7b69aef600e5478bbcfb5d92ebf02a0f",
+    "m_Guid": {
+        "m_GuidSerialized": "faccef0a-6cb2-4bc8-b41f-290832bbed08"
+    },
+    "m_Name": "Snow Active",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "Snow Active",
+    "m_DefaultReferenceName": "_Snow_Active",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_DismissedVersion": 0,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": true
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Texture2DMaterialSlot",
     "m_ObjectId": "7b88cccc7ca148889a491dcb296a3813",
     "m_Id": 0,
@@ -9657,6 +9700,42 @@
         "m_SerializableColors": []
     },
     "m_SerializedDescriptor": "SurfaceDescription.Occlusion"
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
+    "m_ObjectId": "7d14f83eb45b44d8916448711a68eee5",
+    "m_Group": {
+        "m_Id": "25054f7cc0b4469dab76de867e36d635"
+    },
+    "m_Name": "Property",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": -3009.714111328125,
+            "y": -1447.428466796875,
+            "width": 142.285888671875,
+            "height": 34.28564453125
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "f7b8b96e07ab4203ac5201e234ba032c"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_DismissedVersion": 0,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_Property": {
+        "m_Id": "7b69aef600e5478bbcfb5d92ebf02a0f"
+    }
 }
 
 {
@@ -12047,6 +12126,20 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.BooleanMaterialSlot",
+    "m_ObjectId": "a5de04a45a17444aad52645484c4e1d2",
+    "m_Id": -623632809,
+    "m_DisplayName": "Active",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "_Active",
+    "m_StageCapability": 3,
+    "m_Value": true,
+    "m_DefaultValue": false
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "a5e27acebd5b45608ce472580d159e42",
     "m_Id": 3,
@@ -12242,9 +12335,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -2894.285400390625,
-            "y": -1518.8572998046875,
-            "width": 141.7138671875,
+            "x": -3009.714111328125,
+            "y": -1515.9998779296875,
+            "width": 141.71435546875,
             "height": 34.28564453125
         }
     },
@@ -15242,6 +15335,9 @@
     "m_Name": "SNOW",
     "m_ChildObjectList": [
         {
+            "m_Id": "7b69aef600e5478bbcfb5d92ebf02a0f"
+        },
+        {
             "m_Id": "4e66dd47b78a4491891e35afdf07c241"
         },
         {
@@ -15527,9 +15623,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -2724.0,
-            "y": -1632.0001220703125,
-            "width": 252.000244140625,
+            "x": -2837.142822265625,
+            "y": -1603.4285888671875,
+            "width": 252.0,
             "height": 352.5714111328125
         }
     },
@@ -15545,6 +15641,9 @@
         },
         {
             "m_Id": "d714889f89f04c1db7cef1be01ca764a"
+        },
+        {
+            "m_Id": "a5de04a45a17444aad52645484c4e1d2"
         },
         {
             "m_Id": "e740cb6ec18b4767aa9bc6f473305d23"
@@ -15565,7 +15664,8 @@
         "2ab45b13-14d5-4700-a45b-661d4986d5ab",
         "87c525f0-e5ca-4243-bc48-81ecf9ddc0c8",
         "74694b23-b0b4-477c-acac-7291acbbba69",
-        "831f0481-675b-44e3-9a30-ae0a2fd6dbd0"
+        "831f0481-675b-44e3-9a30-ae0a2fd6dbd0",
+        "d840de52-1b19-43d3-a309-041bbfd2435a"
     ],
     "m_PropertyIds": [
         1212598694,
@@ -15573,7 +15673,8 @@
         -620260821,
         -507030145,
         -874648425,
-        495551855
+        495551855,
+        -623632809
     ],
     "m_Dropdowns": [],
     "m_DropdownSelectedEntries": []
@@ -16494,6 +16595,20 @@
         "x": 159.99978637695313,
         "y": -1674.85693359375
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.BooleanMaterialSlot",
+    "m_ObjectId": "f7b8b96e07ab4203ac5201e234ba032c",
+    "m_Id": 0,
+    "m_DisplayName": "Snow Active",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": false,
+    "m_DefaultValue": false
 }
 
 {
