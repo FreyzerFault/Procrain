@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DavidUtils.Geometry;
 using Unity.Collections;
 using UnityEngine;
 
@@ -8,15 +9,15 @@ namespace Procrain.Geometry
 {
 	public class Tin
 	{
-		private readonly AABB aabb;
+		private readonly AABB2D _aabb2D;
 
 		private readonly float errorTolerance = 0.1f;
 
-        /// Mapa de Alturas. Clave => Punto 2D, Valor => Altura del Punto (2.5D)
-        /// Como Ventaja al Array 2D usado antes, al utilizar la creacion de TIN Incremental,
-        /// podemos borrar los puntos ya añadidos para mejorar la busqueda del Punto de Máximo Error
-        /// Lista de puntos
-        private readonly List<Vertex> heightMap = new();
+		/// Mapa de Alturas. Clave => Punto 2D, Valor => Altura del Punto (2.5D)
+		/// Como Ventaja al Array 2D usado antes, al utilizar la creacion de TIN Incremental,
+		/// podemos borrar los puntos ya añadidos para mejorar la busqueda del Punto de Máximo Error
+		/// Lista de puntos
+		private readonly List<Vertex> heightMap = new();
 
 		private readonly float heightScale = 100;
 		public List<Edge> edges = new();
@@ -49,36 +50,35 @@ namespace Procrain.Geometry
 		}
 
 
-        /// <summary>
-        ///     Creacion del TIN a partir de un Mapa de una Nube de Puntos
-        /// </summary>
-        /// <param name="points">Nube de puntos inicial</param>
-        /// <param name="aabb">Bounding Box 2D</param>
-        /// <param name="errorTolerance">Error Minimo tolerado => Condicion de Añadir un Punto</param>
-        /// <param name="heightScale"></param>
-        /// <param name="maxIterations">Iteraciones maximas permitidas (para una creacion progresiva y debugging)</param>
-        public Tin(
+		/// <summary>
+		///     Creacion del TIN a partir de un Mapa de una Nube de Puntos
+		/// </summary>
+		/// <param name="points">Nube de puntos inicial</param>
+		/// <param name="aabb2D">Bounding Box 2D</param>
+		/// <param name="errorTolerance">Error Minimo tolerado => Condicion de Añadir un Punto</param>
+		/// <param name="heightScale"></param>
+		/// <param name="maxIterations">Iteraciones maximas permitidas (para una creacion progresiva y debugging)</param>
+		public Tin(
 			IEnumerable<Vector3> points, float errorTolerance = 1, float heightScale = 100,
-			int maxIterations = -1, AABB aabb = null
+			int maxIterations = -1, AABB2D aabb2D = null
 		)
 			: this(errorTolerance, heightScale, maxIterations)
 		{
-			this.aabb = new AABB
-				{ min = aabb?.min ?? new Vector2(0, 0), max = aabb?.max ?? new Vector2(size, size) };
+			_aabb2D = new AABB2D(aabb2D?.min ?? new Vector2(0, 0), aabb2D?.max ?? new Vector2(size, size));
 			foreach (Vector3 point in points) heightMap.Add(new Vertex(point.x, point.y * this.heightScale, point.z));
 		}
 
-        /// <summary>
-        ///     Creacion del TIN a partir de un Mapa de Alturas
-        /// </summary>
-        /// <param name="heightMap">Mapa de Alturas</param>
-        /// <param name="size"></param>
-        /// <param name="aabb">Bounding Box 2D</param>
-        /// <param name="errorTolerance">Error Minimo tolerado => Condicion de Añadir un Punto</param>
-        /// <param name="heightScale"></param>
-        /// <param name="maxIterations">Iteraciones maximas permitidas (para una creacion progresiva y debugging)</param>
-        public Tin(
-			NativeArray<float> heightMap, int size, AABB aabb = null, float errorTolerance = 1,
+		/// <summary>
+		///     Creacion del TIN a partir de un Mapa de Alturas
+		/// </summary>
+		/// <param name="heightMap">Mapa de Alturas</param>
+		/// <param name="size"></param>
+		/// <param name="aabb2D">Bounding Box 2D</param>
+		/// <param name="errorTolerance">Error Minimo tolerado => Condicion de Añadir un Punto</param>
+		/// <param name="heightScale"></param>
+		/// <param name="maxIterations">Iteraciones maximas permitidas (para una creacion progresiva y debugging)</param>
+		public Tin(
+			NativeArray<float> heightMap, int size, AABB2D aabb2D = null, float errorTolerance = 1,
 			float heightScale = 100,
 			int maxIterations = -1
 		)
@@ -86,8 +86,7 @@ namespace Procrain.Geometry
 		{
 			this.size = size;
 
-			this.aabb = new AABB
-				{ min = aabb?.min ?? new Vector2(0, 0), max = aabb?.max ?? new Vector2(size, size) };
+			_aabb2D = new AABB2D(aabb2D?.min ?? new Vector2(0, 0), aabb2D?.max ?? new Vector2(size, size));
 
 			// Guardamos el Mapa de Alturas como un conjunto de Vertices potenciales
 			for (var x = 0; x < size; x++)
@@ -98,13 +97,12 @@ namespace Procrain.Geometry
 		public Tin(
 			float[] heightMap, int size, float errorTolerance = 1,
 			float heightScale = 100,
-			int maxIterations = -1, AABB aabb = null
+			int maxIterations = -1, AABB2D aabb2D = null
 		) : this(errorTolerance, heightScale, maxIterations)
 		{
 			this.size = size;
 
-			this.aabb = new AABB
-				{ min = aabb?.min ?? new Vector2(0, 0), max = aabb?.max ?? new Vector2(size, size) };
+			_aabb2D = new AABB2D(aabb2D?.min ?? new Vector2(0, 0), aabb2D?.max ?? new Vector2(size, size));
 
 			// Guardamos el Mapa de Alturas como un conjunto de Vertices potenciales
 			for (var x = 0; x < size; x++)
@@ -120,7 +118,7 @@ namespace Procrain.Geometry
 		{
 			size = heightMap.GetLength(0);
 
-			aabb = new AABB { min = new Vector2(0, 0), max = new Vector2(size, size) };
+			_aabb2D = new AABB2D(new Vector2(0, 0), new Vector2(size, size));
 
 			// Guardamos el Mapa de Alturas como un conjunto de Vertices potenciales
 			for (var x = 0; x < size; x++)
@@ -128,34 +126,34 @@ namespace Procrain.Geometry
 				this.heightMap.Add(new Vertex(x, heightMap[x, y] * heightScale, y));
 		}
 
-        /// <summary>
-        ///     Crea los 2 Primeros Triangulos a partir de una Nube de Puntos irregular. Busca el punto de mayor x y mayor z
-        /// </summary>
-        /// <exception cref="Exception">Deben existir los puntos (0,0), (width-1, 0), (0, height-1) y (width-1, height-1)</exception>
-        public void InitGeometry()
+		/// <summary>
+		///     Crea los 2 Primeros Triangulos a partir de una Nube de Puntos irregular. Busca el punto de mayor x y mayor z
+		/// </summary>
+		/// <exception cref="Exception">Deben existir los puntos (0,0), (width-1, 0), (0, height-1) y (width-1, height-1)</exception>
+		public void InitGeometry()
 		{
 			// Extraemos las esquinas (0,0), (width-1,0), (0,height-1), (width-1, height-1)
 			// Primero sin altura
 
 			Vertex vBotLeft = heightMap.Find(
 				v =>
-					Math.Abs(v.x - aabb.min.x) < GeometryUtils.Epsilon &&
-					Math.Abs(v.z - aabb.min.y) < GeometryUtils.Epsilon
+					Math.Abs(v.x - _aabb2D.min.x) < GeometryUtils.Epsilon &&
+					Math.Abs(v.z - _aabb2D.min.y) < GeometryUtils.Epsilon
 			);
 			Vertex vBotRight = heightMap.Find(
 				v =>
-					Math.Abs(v.x - aabb.max.x) < GeometryUtils.Epsilon &&
-					Math.Abs(v.z - aabb.min.y) < GeometryUtils.Epsilon
+					Math.Abs(v.x - _aabb2D.max.x) < GeometryUtils.Epsilon &&
+					Math.Abs(v.z - _aabb2D.min.y) < GeometryUtils.Epsilon
 			);
 			Vertex vTopLeft = heightMap.Find(
 				v =>
-					Math.Abs(v.x - aabb.min.x) < GeometryUtils.Epsilon &&
-					Math.Abs(v.z - aabb.max.y) < GeometryUtils.Epsilon
+					Math.Abs(v.x - _aabb2D.min.x) < GeometryUtils.Epsilon &&
+					Math.Abs(v.z - _aabb2D.max.y) < GeometryUtils.Epsilon
 			);
 			Vertex vTopRight = heightMap.Find(
 				v =>
-					Math.Abs(v.x - aabb.max.x) < GeometryUtils.Epsilon &&
-					Math.Abs(v.z - aabb.max.y) < GeometryUtils.Epsilon
+					Math.Abs(v.x - _aabb2D.max.x) < GeometryUtils.Epsilon &&
+					Math.Abs(v.z - _aabb2D.max.y) < GeometryUtils.Epsilon
 			);
 
 			if (vBotLeft == null || vBotRight == null || vTopLeft == null || vTopRight == null)
@@ -184,11 +182,11 @@ namespace Procrain.Geometry
 			AddTri(e3, e4, e5);
 		}
 
-        /// <summary>
-        ///     Encapsula la adición inicial de Vértices, Aristas y Triángulos
-        ///     al principio del Algoritmo de Creacion
-        /// </summary>
-        public void InitGeometry(float[,] newHeightMap)
+		/// <summary>
+		///     Encapsula la adición inicial de Vértices, Aristas y Triángulos
+		///     al principio del Algoritmo de Creacion
+		/// </summary>
+		public void InitGeometry(float[,] newHeightMap)
 		{
 			int newWidth = newHeightMap.GetLength(0);
 			int newHeight = newHeightMap.GetLength(1);
@@ -254,11 +252,11 @@ namespace Procrain.Geometry
 		}
 
 
-        /// <summary>
-        ///     Bucle Incremental de Adición de nuevos Vertices que cumplen con la condicion de ser añadidos:
-        ///     Mayor error del tolerado
-        /// </summary>
-        public void AddPointLoop(int maxIterations = -1)
+		/// <summary>
+		///     Bucle Incremental de Adición de nuevos Vertices que cumplen con la condicion de ser añadidos:
+		///     Mayor error del tolerado
+		/// </summary>
+		public void AddPointLoop(int maxIterations = -1)
 		{
 			var iterations = 0;
 
@@ -271,14 +269,14 @@ namespace Procrain.Geometry
 			}
 		}
 
-        /// <summary>
-        ///     Iteracion standalone del bucle principal para ejecutar progresivamente.
-        /// </summary>
-        /// <returns>
-        ///     Devuelve false en caso de haber acabado de añadir puntos por encima del error tolerado.
-        ///     O cuando ocurra algun error
-        /// </returns>
-        public bool AddPointLoopIteration(int maxPointsPerIteration = 5, float minDistanceBetweenPoints = 0)
+		/// <summary>
+		///     Iteracion standalone del bucle principal para ejecutar progresivamente.
+		/// </summary>
+		/// <returns>
+		///     Devuelve false en caso de haber acabado de añadir puntos por encima del error tolerado.
+		///     O cuando ocurra algun error
+		/// </returns>
+		public bool AddPointLoopIteration(int maxPointsPerIteration = 5, float minDistanceBetweenPoints = 0)
 		{
 			var pointsToAdd = new List<Vertex>();
 			var pointTriangles = new List<Triangle>();
@@ -335,20 +333,20 @@ namespace Procrain.Geometry
 			return true;
 		}
 
-        /// <summary>
-        ///     Añade un Punto como Vertice del TIN y actualiza la Topologia.
-        ///     <p>
-        ///         En caso de estar añadiendo varios seguidos en una misma iteracion, debemos comprobar que su triangulo
-        ///         (o eje) no haya sido modificado (eliminado y subdividido) => su error ha cambiado
-        ///     </p>
-        /// </summary>
-        /// <param name="point"></param>
-        /// <param name="tri"></param>
-        /// <param name="edge"></param>
-        /// <param name="deletedTriangles">Triangulos que se van a eliminar al añadir el Punto</param>
-        /// <param name="deletedEdges">Triangulos que se van a eliminar al añadir el Punto</param>
-        /// <returns>Devuelve this para poder llamar otros metodos en cadena</returns>
-        private Tin AddPoint(
+		/// <summary>
+		///     Añade un Punto como Vertice del TIN y actualiza la Topologia.
+		///     <p>
+		///         En caso de estar añadiendo varios seguidos en una misma iteracion, debemos comprobar que su triangulo
+		///         (o eje) no haya sido modificado (eliminado y subdividido) => su error ha cambiado
+		///     </p>
+		/// </summary>
+		/// <param name="point"></param>
+		/// <param name="tri"></param>
+		/// <param name="edge"></param>
+		/// <param name="deletedTriangles">Triangulos que se van a eliminar al añadir el Punto</param>
+		/// <param name="deletedEdges">Triangulos que se van a eliminar al añadir el Punto</param>
+		/// <returns>Devuelve this para poder llamar otros metodos en cadena</returns>
+		private Tin AddPoint(
 			Vertex point, Triangle tri, Edge edge, HashSet<Triangle> deletedTriangles,
 			HashSet<Edge> deletedEdges
 		)
@@ -396,15 +394,15 @@ namespace Procrain.Geometry
 			return this;
 		}
 
-        /// <summary>
-        ///     Añade un Punto dentro de un Triangulo (caso normal).
-        ///     Crea 3 nuevas Aristas, 3 nuevos Triangulos y elimina el Triangulo antiguo
-        /// </summary>
-        /// <param name="point"></param>
-        /// <param name="tri"></param>
-        /// <param name="deletedTriangles">Triangulos que se van a eliminar al añadir el Punto</param>
-        /// <param name="deletedEdges">Triangulos que se van a eliminar al añadir el Punto</param>
-        private void AddPointInTri(
+		/// <summary>
+		///     Añade un Punto dentro de un Triangulo (caso normal).
+		///     Crea 3 nuevas Aristas, 3 nuevos Triangulos y elimina el Triangulo antiguo
+		/// </summary>
+		/// <param name="point"></param>
+		/// <param name="tri"></param>
+		/// <param name="deletedTriangles">Triangulos que se van a eliminar al añadir el Punto</param>
+		/// <param name="deletedEdges">Triangulos que se van a eliminar al añadir el Punto</param>
+		private void AddPointInTri(
 			Vertex point, Triangle tri, HashSet<Triangle> deletedTriangles,
 			HashSet<Edge> deletedEdges
 		)
@@ -437,15 +435,15 @@ namespace Procrain.Geometry
 			LegalizeEdge(tri3.GetEdge(e3.end, e1.end), tri3, point, deletedTriangles, deletedEdges);
 		}
 
-        /// <summary>
-        ///     Añade un Punto dentro de un Eje (caso excepcional).
-        ///     Crea 4 nuevas Aristas, 4 nuevos Triangulos y elimina el Eje antiguo y los 2 Triangulos vecinos
-        /// </summary>
-        /// <param name="point"></param>
-        /// <param name="edge"></param>
-        /// <param name="deletedTriangles">Triangulos que se van a eliminar al añadir el Punto</param>
-        /// <param name="deletedEdges">Triangulos que se van a eliminar al añadir el Punto</param>
-        private void AddPointInEdge(
+		/// <summary>
+		///     Añade un Punto dentro de un Eje (caso excepcional).
+		///     Crea 4 nuevas Aristas, 4 nuevos Triangulos y elimina el Eje antiguo y los 2 Triangulos vecinos
+		/// </summary>
+		/// <param name="point"></param>
+		/// <param name="edge"></param>
+		/// <param name="deletedTriangles">Triangulos que se van a eliminar al añadir el Punto</param>
+		/// <param name="deletedEdges">Triangulos que se van a eliminar al añadir el Punto</param>
+		private void AddPointInEdge(
 			Vertex point, Edge edge, HashSet<Triangle> deletedTriangles,
 			HashSet<Edge> deletedEdges
 		)
@@ -526,13 +524,13 @@ namespace Procrain.Geometry
 			}
 		}
 
-        /// <summary>
-        ///     Añade una Arista
-        /// </summary>
-        /// <param name="v1">Begin</param>
-        /// <param name="v2">End</param>
-        /// <returns>Devuelve el eje</returns>
-        private Edge AddEdge(Vertex v1, Vertex v2)
+		/// <summary>
+		///     Añade una Arista
+		/// </summary>
+		/// <param name="v1">Begin</param>
+		/// <param name="v2">End</param>
+		/// <returns>Devuelve el eje</returns>
+		private Edge AddEdge(Vertex v1, Vertex v2)
 		{
 			var edge = new Edge(v1, v2, null, null, edges.Count);
 			edges.Add(edge);
@@ -540,15 +538,15 @@ namespace Procrain.Geometry
 			return edge;
 		}
 
-        /// <summary>
-        ///     Añade un Triangulo a partir de 3 Aristas.
-        ///     Y además asigna a estas aristas el propio triángulo que se va a añadir.
-        /// </summary>
-        /// <param name="e1">Arista 1</param>
-        /// <param name="e2">Arista 2</param>
-        /// <param name="e3">Arista 3</param>
-        /// <returns>Triangulo creado</returns>
-        private Triangle AddTri(Edge e1, Edge e2, Edge e3)
+		/// <summary>
+		///     Añade un Triangulo a partir de 3 Aristas.
+		///     Y además asigna a estas aristas el propio triángulo que se va a añadir.
+		/// </summary>
+		/// <param name="e1">Arista 1</param>
+		/// <param name="e2">Arista 2</param>
+		/// <param name="e3">Arista 3</param>
+		/// <returns>Triangulo creado</returns>
+		private Triangle AddTri(Edge e1, Edge e2, Edge e3)
 		{
 			// Se crea el Triangulo a base de las Aristas,
 			// los Vertices se añaden de forma que siempre estan ordenados de forma Antihoraria
@@ -564,20 +562,20 @@ namespace Procrain.Geometry
 			return tri;
 		}
 
-        /// <summary>
-        ///     Añade un Triangulo dentro de otro.
-        ///     <para>Comprueba cual de las aristas del Triangulo contenedor es la que permite crear el triangulo con e1 y e2</para>
-        ///     <para>
-        ///         Para ello suponemos que e1 y e2 acaban en la Arista del Tri antiguo y
-        ///         con GetEdge() busca la que coincida con e1.end -> e2.end o al contrario e2.end -> e3.end
-        ///     </para>
-        ///     <para>Ademas tambien legalizamos la Arista antigua conforme al nuevo Triangulo</para>
-        /// </summary>
-        /// <param name="e1">Nuevo Eje 1</param>
-        /// <param name="e2">Nuevo Eje 2</param>
-        /// <param name="oldTri">Triangulo contenedor del nuevo</param>
-        /// <returns></returns>
-        private Triangle AddTri(Edge e1, Edge e2, Triangle oldTri)
+		/// <summary>
+		///     Añade un Triangulo dentro de otro.
+		///     <para>Comprueba cual de las aristas del Triangulo contenedor es la que permite crear el triangulo con e1 y e2</para>
+		///     <para>
+		///         Para ello suponemos que e1 y e2 acaban en la Arista del Tri antiguo y
+		///         con GetEdge() busca la que coincida con e1.end -> e2.end o al contrario e2.end -> e3.end
+		///     </para>
+		///     <para>Ademas tambien legalizamos la Arista antigua conforme al nuevo Triangulo</para>
+		/// </summary>
+		/// <param name="e1">Nuevo Eje 1</param>
+		/// <param name="e2">Nuevo Eje 2</param>
+		/// <param name="oldTri">Triangulo contenedor del nuevo</param>
+		/// <returns></returns>
+		private Triangle AddTri(Edge e1, Edge e2, Triangle oldTri)
 		{
 			Edge oldEdge = oldTri.GetEdge(e1.end, e2.end);
 
@@ -592,16 +590,16 @@ namespace Procrain.Geometry
 			return null;
 		}
 
-        /// <summary>
-        ///     Legaliza una Arista con el metodo de Delaunay (si esta dentro del circulo el vertice opuesto => FLIP)
-        /// </summary>
-        /// <param name="edge">Arista a Legalizar</param>
-        /// <param name="tri">Triangulo que contiene la Arista y el Vertice nuevo</param>
-        /// <param name="newVertex">Vertice Nuevo (opuesto a la arista)</param>
-        /// <param name="deletedTriangles">Lista de Triangulos que se han eliminado al hacer FLIP</param>
-        /// <param name="deletedEdges">Lista de Ejes que se han eliminado al hacer FLIP</param>
-        /// <returns>True si se ha tenido que Legalizar</returns>
-        private bool LegalizeEdge(
+		/// <summary>
+		///     Legaliza una Arista con el metodo de Delaunay (si esta dentro del circulo el vertice opuesto => FLIP)
+		/// </summary>
+		/// <param name="edge">Arista a Legalizar</param>
+		/// <param name="tri">Triangulo que contiene la Arista y el Vertice nuevo</param>
+		/// <param name="newVertex">Vertice Nuevo (opuesto a la arista)</param>
+		/// <param name="deletedTriangles">Lista de Triangulos que se han eliminado al hacer FLIP</param>
+		/// <param name="deletedEdges">Lista de Ejes que se han eliminado al hacer FLIP</param>
+		/// <returns>True si se ha tenido que Legalizar</returns>
+		private bool LegalizeEdge(
 			Edge edge, Triangle tri, Vertex newVertex, HashSet<Triangle> deletedTriangles,
 			HashSet<Edge> deletedEdges
 		)
@@ -676,13 +674,13 @@ namespace Procrain.Geometry
 		}
 
 
-        /// <summary>
-        ///     Busca el Punto de mayor Error
-        /// </summary>
-        /// <param name="pointTriangle">Triangulo al que pertenece el punto elegido</param>
-        /// <param name="pointEdge">Eje al que pertenece el punto elegido</param>
-        /// <returns>Devuelve el Punto de mayor Error, o null si ninguno supera el error minimo tolerado</returns>
-        private Vertex FindMaxErrorPoint(out Triangle pointTriangle, out Edge pointEdge)
+		/// <summary>
+		///     Busca el Punto de mayor Error
+		/// </summary>
+		/// <param name="pointTriangle">Triangulo al que pertenece el punto elegido</param>
+		/// <param name="pointEdge">Eje al que pertenece el punto elegido</param>
+		/// <returns>Devuelve el Punto de mayor Error, o null si ninguno supera el error minimo tolerado</returns>
+		private Vertex FindMaxErrorPoint(out Triangle pointTriangle, out Edge pointEdge)
 		{
 			float maxError = 0;
 			Vertex maxErrorPoint = null;
@@ -710,20 +708,20 @@ namespace Procrain.Geometry
 			return maxErrorPoint;
 		}
 
-        /// <summary>
-        ///     Busca los N Puntos de mayor Error que no sean cercanos.
-        ///     <para>
-        ///         Utiliza colas para un orden FIFO, en el que el primero siempre sera el de menor error
-        ///         y el nuevo siempre tendra un error mayor que los que ya hay dentro, por lo que, conforme
-        ///         se va completando ya esta ordenada
-        ///     </para>
-        /// </summary>
-        /// <param name="pointTriangles">Triangulos al que pertenecen los puntos elegidos</param>
-        /// <param name="pointEdges">Ejes al que pertenecen los puntos elegidos</param>
-        /// <param name="maxPoints">N</param>
-        /// <param name="minDistanceBetweenPoints"></param>
-        /// <returns>Devuelve una lista con los N Puntos de mayor Error</returns>
-        private List<Vertex> FindMaxErrorPoint(
+		/// <summary>
+		///     Busca los N Puntos de mayor Error que no sean cercanos.
+		///     <para>
+		///         Utiliza colas para un orden FIFO, en el que el primero siempre sera el de menor error
+		///         y el nuevo siempre tendra un error mayor que los que ya hay dentro, por lo que, conforme
+		///         se va completando ya esta ordenada
+		///     </para>
+		/// </summary>
+		/// <param name="pointTriangles">Triangulos al que pertenecen los puntos elegidos</param>
+		/// <param name="pointEdges">Ejes al que pertenecen los puntos elegidos</param>
+		/// <param name="maxPoints">N</param>
+		/// <param name="minDistanceBetweenPoints"></param>
+		/// <returns>Devuelve una lista con los N Puntos de mayor Error</returns>
+		private List<Vertex> FindMaxErrorPoint(
 			out List<Triangle> pointTriangles, out List<Edge> pointEdges,
 			int maxPoints = 5, float minDistanceBetweenPoints = 5
 		)
@@ -792,17 +790,17 @@ namespace Procrain.Geometry
 			return pointsOrdered;
 		}
 
-        /// <summary>
-        ///     La heuristica del Error es la diferencia de altura entre el punto del triangulo con el que coincide en 2D
-        ///     y el mismo punto 2D de la muestra
-        ///     Para ello podemos interpolar las alturas de cada vertice
-        ///     Una interpolacion lineal es lo ideal para los triangulos ya que son superficies planas
-        /// </summary>
-        /// <param name="point">Punto con un error</param>
-        /// <param name="triangle">Triangulo al que pertenece</param>
-        /// <param name="edge">Eje al que pertenece en caso contrario</param>
-        /// <returns>Error del Punto</returns>
-        private float GetError(Vertex point, out Triangle triangle, out Edge edge)
+		/// <summary>
+		///     La heuristica del Error es la diferencia de altura entre el punto del triangulo con el que coincide en 2D
+		///     y el mismo punto 2D de la muestra
+		///     Para ello podemos interpolar las alturas de cada vertice
+		///     Una interpolacion lineal es lo ideal para los triangulos ya que son superficies planas
+		/// </summary>
+		/// <param name="point">Punto con un error</param>
+		/// <param name="triangle">Triangulo al que pertenece</param>
+		/// <param name="edge">Eje al que pertenece en caso contrario</param>
+		/// <returns>Error del Punto</returns>
+		private float GetError(Vertex point, out Triangle triangle, out Edge edge)
 		{
 			// Buscamos el Triangulo al que pertenece o el Eje al que es Colinear
 			// Si devuelve false es que no esta en ninguno
@@ -823,14 +821,14 @@ namespace Procrain.Geometry
 		}
 
 
-        /// <summary>
-        ///     Busca el Triangulo al que pertenece un punto usando el Test Point-Triangle
-        /// </summary>
-        /// <param name="point">Punto 2D (la altura no es necesaria)</param>
-        /// <param name="tri">Triangulo al que pertenece</param>
-        /// <param name="collinearEdge">Eje colinear al punto</param>
-        /// <returns>False si no pertenece a nada</returns>
-        public bool GetTriangle(Vector2 point, out Triangle tri, out Edge collinearEdge)
+		/// <summary>
+		///     Busca el Triangulo al que pertenece un punto usando el Test Point-Triangle
+		/// </summary>
+		/// <param name="point">Punto 2D (la altura no es necesaria)</param>
+		/// <param name="tri">Triangulo al que pertenece</param>
+		/// <param name="collinearEdge">Eje colinear al punto</param>
+		/// <returns>False si no pertenece a nada</returns>
+		public bool GetTriangle(Vector2 point, out Triangle tri, out Edge collinearEdge)
 		{
 			tri = null;
 			collinearEdge = null;
@@ -874,26 +872,26 @@ namespace Procrain.Geometry
 		}
 
 
-        /// <summary>
-        ///     Busca los Triangulos que compartan el punto como vertice
-        /// </summary>
-        /// <param name="point">Vertice del Triangulo en 2D</param>
-        /// <returns>Array de Triangulos que comparten el vertice</returns>
-        public Triangle[] GetTrianglesByVertex(Vector2 point) =>
+		/// <summary>
+		///     Busca los Triangulos que compartan el punto como vertice
+		/// </summary>
+		/// <param name="point">Vertice del Triangulo en 2D</param>
+		/// <returns>Array de Triangulos que comparten el vertice</returns>
+		public Triangle[] GetTrianglesByVertex(Vector2 point) =>
 			triangles.Where(tri => tri.v1.v2D == point || tri.v2.v2D == point || tri.v3.v2D == point).ToArray();
 
 
-        /// <summary>
-        ///     Calcula los puntos de interseccion en 2D de una linea A -> B.
-        ///     Los puntos deben estar dentro del AABB del TIN
-        /// </summary>
-        /// <param name="a">Inicio 2D</param>
-        /// <param name="b">Final 2D</param>
-        /// <returns>Array de Puntos 2D</returns>
-        public Vector2[] GetIntersections(Vector2 a, Vector2 b)
+		/// <summary>
+		///     Calcula los puntos de interseccion en 2D de una linea A -> B.
+		///     Los puntos deben estar dentro del AABB del TIN
+		/// </summary>
+		/// <param name="a">Inicio 2D</param>
+		/// <param name="b">Final 2D</param>
+		/// <returns>Array de Puntos 2D</returns>
+		public Vector2[] GetIntersections(Vector2 a, Vector2 b)
 		{
 			// Deben estar dentro del AABB, porque si no habria que calcular 2 intersecciones en el primer y ultimo Triangulo
-			if (!aabb.IsInside(a) || !aabb.IsInside(b))
+			if (!_aabb2D.IsInside(a) || !_aabb2D.IsInside(b))
 				throw new Exception(
 					"Calcular los puntos de interseccion de una linea con extremos fuera del AABB del TIN no esta implementado"
 				);

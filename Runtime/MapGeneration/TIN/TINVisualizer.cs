@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DavidUtils.Geometry;
 using Procrain.Geometry;
 using Procrain.MapGeneration.Mesh;
 using Procrain.MapGeneration.Texture;

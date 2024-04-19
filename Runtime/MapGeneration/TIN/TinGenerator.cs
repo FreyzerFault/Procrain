@@ -1,4 +1,5 @@
 using System;
+using DavidUtils.Geometry;
 using Procrain.Geometry;
 using Procrain.MapGeneration.Mesh;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace Procrain.MapGeneration.TIN
 		///     Genera un TIN a partir de un HeightMap
 		/// </summary>
 		/// <param name="heightMap">Mapa de Alturas</param>
-		/// <param name="aabb">Bounding Box</param>
+		/// <param name="aabb2D">Bounding Box</param>
 		/// <param name="heigthScale">[0,1] -> [0, heightScale]</param>
 		/// <param name="errorTolerance">Error Maximo Tolerado por el Tin</param>
 		/// <param name="maxIterations">Limite de iteraciones maximas del Tin</param>
@@ -21,7 +22,7 @@ namespace Procrain.MapGeneration.TIN
 			float heigthScale = 1,
 			float errorTolerance = 1,
 			int maxIterations = 10,
-			AABB aabb = null
+			AABB2D aabb2D = null
 		)
 		{
 			// Creacion del Tin (Estructura topologica interna)
@@ -31,7 +32,7 @@ namespace Procrain.MapGeneration.TIN
 				errorTolerance,
 				heigthScale,
 				maxIterations,
-				aabb
+				aabb2D
 			);
 			tin.InitGeometry(heightMap.map, heightMap.Size);
 			tin.AddPointLoop();
@@ -43,14 +44,14 @@ namespace Procrain.MapGeneration.TIN
 		/// <summary>
 		///     Genera un TIN a partir de unos puntos iniciales (las esquinas formadas por el AABB)
 		/// </summary>
-		/// <param name="aabb">Bounding Box</param>
+		/// <param name="aabb2D">Bounding Box</param>
 		/// <param name="errorTolerance">Error Maximo Tolerado por el Tin</param>
 		/// <param name="heightScale"></param>
 		/// <param name="maxIterations">Limite de iteraciones maximas del Tin</param>
 		/// <param name="points">Puntos extras pregenerados</param>
 		/// <returns>Datos de una Malla que va a usar Unity</returns>
 		private static Tin BuildTin(
-			AABB aabb,
+			AABB2D aabb2D,
 			float errorTolerance = 1,
 			float heightScale = 100,
 			int maxIterations = 10,
@@ -63,7 +64,7 @@ namespace Procrain.MapGeneration.TIN
 				errorTolerance,
 				heightScale,
 				maxIterations,
-				aabb
+				aabb2D
 			);
 			tin.InitGeometry();
 			tin.AddPointLoop();
