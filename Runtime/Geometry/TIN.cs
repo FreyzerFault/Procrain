@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DavidUtils.ExtensionMethods;
 using DavidUtils.Geometry;
 using Unity.Collections;
 using UnityEngine;
@@ -17,26 +18,26 @@ namespace Procrain.Geometry
 		/// Como Ventaja al Array 2D usado antes, al utilizar la creacion de TIN Incremental,
 		/// podemos borrar los puntos ya añadidos para mejorar la busqueda del Punto de Máximo Error
 		/// Lista de puntos
-		private readonly List<Vertex> heightMap = new();
+		private readonly List<Vector3> heightMap = new();
 
 		private readonly float heightScale = 100;
 		public List<Edge> edges = new();
 
-		public List<Vertex> lastVertexAdded;
+		public List<Vector3> lastVertexAdded;
 		public List<float> lastVertexError;
-		public float size;
+		public int size;
 
 		public List<Triangle> triangles = new();
-		public List<Vertex> vertices = new();
+		public List<Vector3> vertices = new();
 
 
 		public Tin()
 		{
-			lastVertexAdded = new List<Vertex>();
+			lastVertexAdded = new List<Vector3>();
 			lastVertexError = new List<float>();
 		}
 
-		public Tin(List<Triangle> triangles, List<Edge> edges, List<Vertex> vertices)
+		public Tin(List<Triangle> triangles, List<Edge> edges, List<Vector3> vertices)
 		{
 			this.triangles = triangles;
 			this.edges = edges;
@@ -65,7 +66,7 @@ namespace Procrain.Geometry
 			: this(errorTolerance, heightScale, maxIterations)
 		{
 			_aabb2D = new AABB2D(aabb2D?.min ?? new Vector2(0, 0), aabb2D?.max ?? new Vector2(size, size));
-			foreach (Vector3 point in points) heightMap.Add(new Vertex(point.x, point.y * this.heightScale, point.z));
+			foreach (Vector3 point in points) heightMap.Add(new Vector3(point.x, point.y * this.heightScale, point.z));
 		}
 
 		/// <summary>
@@ -91,7 +92,7 @@ namespace Procrain.Geometry
 			// Guardamos el Mapa de Alturas como un conjunto de Vertices potenciales
 			for (var x = 0; x < size; x++)
 			for (var y = 0; y < size; y++)
-				this.heightMap.Add(new Vertex(x, heightMap[x + y * size] * heightScale, y));
+				this.heightMap.Add(new Vector3(x, heightMap[x + y * size] * heightScale, y));
 		}
 
 		public Tin(
@@ -107,7 +108,7 @@ namespace Procrain.Geometry
 			// Guardamos el Mapa de Alturas como un conjunto de Vertices potenciales
 			for (var x = 0; x < size; x++)
 			for (var y = 0; y < size; y++)
-				this.heightMap.Add(new Vertex(x, heightMap[x + y * size] * heightScale, y));
+				this.heightMap.Add(new Vector3(x, heightMap[x + y * size] * heightScale, y));
 		}
 
 		// Usa un Array 2D de Mapa de Alturas
@@ -123,7 +124,7 @@ namespace Procrain.Geometry
 			// Guardamos el Mapa de Alturas como un conjunto de Vertices potenciales
 			for (var x = 0; x < size; x++)
 			for (var y = 0; y < size; y++)
-				this.heightMap.Add(new Vertex(x, heightMap[x, y] * heightScale, y));
+				this.heightMap.Add(new Vector3(x, heightMap[x, y] * heightScale, y));
 		}
 
 		/// <summary>
@@ -133,36 +134,16 @@ namespace Procrain.Geometry
 		public void InitGeometry()
 		{
 			// Extraemos las esquinas (0,0), (width-1,0), (0,height-1), (width-1, height-1)
-			// Primero sin altura
-
-			Vertex vBotLeft = heightMap.Find(
-				v =>
-					Math.Abs(v.x - _aabb2D.min.x) < GeometryUtils.Epsilon &&
-					Math.Abs(v.z - _aabb2D.min.y) < GeometryUtils.Epsilon
-			);
-			Vertex vBotRight = heightMap.Find(
-				v =>
-					Math.Abs(v.x - _aabb2D.max.x) < GeometryUtils.Epsilon &&
-					Math.Abs(v.z - _aabb2D.min.y) < GeometryUtils.Epsilon
-			);
-			Vertex vTopLeft = heightMap.Find(
-				v =>
-					Math.Abs(v.x - _aabb2D.min.x) < GeometryUtils.Epsilon &&
-					Math.Abs(v.z - _aabb2D.max.y) < GeometryUtils.Epsilon
-			);
-			Vertex vTopRight = heightMap.Find(
-				v =>
-					Math.Abs(v.x - _aabb2D.max.x) < GeometryUtils.Epsilon &&
-					Math.Abs(v.z - _aabb2D.max.y) < GeometryUtils.Epsilon
-			);
-
-			if (vBotLeft == null || vBotRight == null || vTopLeft == null || vTopRight == null)
-				throw new Exception("No se han encontrado todas las esquinas del TIN");
-
-			vBotLeft.index = 0;
-			vBotRight.index = 1;
-			vTopLeft.index = 2;
-			vTopRight.index = 3;
+			// Presupongo que SIZE es la anchura del mapa y que Width == Height
+			if (heightMap.Count != size * size)
+				throw new Exception($"Estoy buscando las esquinas del Mapa de Alturas\n" +
+				                    $"y resulta que 'size' no indica la anchura. En teoría debería ser 'size * size'.\n" +
+				                    $"size: {size} - size * size: {size * size} heightMap.Count: {heightMap.Count}");
+			
+			Vector3 vBotLeft = heightMap[0];
+			Vector3 vBotRight = heightMap[size - 1];
+			Vector3 vTopLeft = heightMap[size * (size - 1)];
+			Vector3 vTopRight = heightMap[size * size - 1];
 
 			// Al principio añadimos las 4 esquinas:
 			vertices.Add(vBotLeft);
@@ -188,19 +169,14 @@ namespace Procrain.Geometry
 		/// </summary>
 		public void InitGeometry(float[,] newHeightMap)
 		{
-			int newWidth = newHeightMap.GetLength(0);
-			int newHeight = newHeightMap.GetLength(1);
+			int newW = newHeightMap.GetLength(0);
+			int newH = newHeightMap.GetLength(1);
 
 			// Extraemos las esquinas (0,0), (width-1,0), (0,height-1), (width-1, height-1)
-			var vBotLeft = new Vertex(0, newHeightMap[0, 0] * heightScale, 0, 0);
-			var vBotRight = new Vertex(newWidth - 1, newHeightMap[newWidth - 1, 0] * heightScale, 0, 1);
-			var vTopLeft = new Vertex(0, newHeightMap[0, newHeight - 1] * heightScale, newHeight - 1, 2);
-			var vTopRight = new Vertex(
-				newWidth - 1,
-				newHeightMap[newWidth - 1, newHeight - 1] * heightScale,
-				newHeight - 1,
-				3
-			);
+			var vBotLeft = new Vector3(0, newHeightMap[0, 0] * heightScale, 0);
+			var vBotRight = new Vector3(newW - 1, newHeightMap[newW - 1, 0] * heightScale, 0);
+			var vTopLeft = new Vector3(0, newHeightMap[0, newH - 1] * heightScale, newH - 1);
+			var vTopRight = new Vector3(newW - 1, newHeightMap[newW - 1, newH - 1] * heightScale, newH - 1);
 
 			InitCorners(vBotLeft, vBotRight, vTopLeft, vTopRight);
 		}
@@ -210,10 +186,10 @@ namespace Procrain.Geometry
 			int lastX = newSize - 1;
 			int lastY = newSize * (newSize - 1);
 			// Extraemos las esquinas (0,0), (width-1,0), (0,height-1), (width-1, height-1)
-			var vBotLeft = new Vertex(0, newHeightMap[0] * heightScale, 0, 0);
-			var vBotRight = new Vertex(newSize - 1, newHeightMap[lastX] * heightScale, 0, 1);
-			var vTopLeft = new Vertex(0, newHeightMap[lastY] * heightScale, newSize - 1, 2);
-			var vTopRight = new Vertex(newSize - 1, newHeightMap[lastX + lastY] * heightScale, newSize - 1, 3);
+			var vBotLeft = new Vector3(0, newHeightMap[0] * heightScale, 0);
+			var vBotRight = new Vector3(newSize - 1, newHeightMap[lastX] * heightScale, 0);
+			var vTopLeft = new Vector3(0, newHeightMap[lastY] * heightScale, newSize - 1);
+			var vTopRight = new Vector3(newSize - 1, newHeightMap[lastX + lastY] * heightScale, newSize - 1);
 
 			InitCorners(vBotLeft, vBotRight, vTopLeft, vTopRight);
 		}
@@ -223,15 +199,15 @@ namespace Procrain.Geometry
 			int lastX = newSize - 1;
 			int lastY = newSize * (newSize - 1);
 			// Extraemos las esquinas (0,0), (width-1,0), (0,height-1), (width-1, height-1)
-			var vBotLeft = new Vertex(0, newHeightMap[0] * heightScale, 0, 0);
-			var vBotRight = new Vertex(newSize - 1, newHeightMap[lastX] * heightScale, 0, 1);
-			var vTopLeft = new Vertex(0, newHeightMap[lastY] * heightScale, newSize - 1, 2);
-			var vTopRight = new Vertex(newSize - 1, newHeightMap[lastX + lastY] * heightScale, newSize - 1, 3);
+			var vBotLeft = new Vector3(0, newHeightMap[0] * heightScale, 0);
+			var vBotRight = new Vector3(newSize - 1, newHeightMap[lastX] * heightScale, 0);
+			var vTopLeft = new Vector3(0, newHeightMap[lastY] * heightScale, newSize - 1);
+			var vTopRight = new Vector3(newSize - 1, newHeightMap[lastX + lastY] * heightScale, newSize - 1);
 
 			InitCorners(vBotLeft, vBotRight, vTopLeft, vTopRight);
 		}
 
-		private void InitCorners(Vertex vBotLeft, Vertex vBotRight, Vertex vTopLeft, Vertex vTopRight)
+		private void InitCorners(Vector3 vBotLeft, Vector3 vBotRight, Vector3 vTopLeft, Vector3 vTopRight)
 		{
 			// Al principio añadimos las 4 esquinas:
 			vertices.Add(vBotLeft);
@@ -278,56 +254,54 @@ namespace Procrain.Geometry
 		/// </returns>
 		public bool AddPointLoopIteration(int maxPointsPerIteration = 5, float minDistanceBetweenPoints = 0)
 		{
-			var pointsToAdd = new List<Vertex>();
+			var pointsToAdd = new List<Vector3>();
 			var pointTriangles = new List<Triangle>();
 			var pointEdges = new List<Edge>();
-
-			Vertex point = null;
+			
+			Vector3 point = Vector3.one;
 			Triangle tri = null;
 			Edge edge = null;
 
-			// Busca el Punto de Maximo Error, y si ninguno supera la Tolerancia devuelve NULL
+			// Busca el Punto de Maximo Error si supera la toleracia
 			try
 			{
 				if (maxPointsPerIteration == 1)
-					point = FindMaxErrorPoint(out tri, out edge);
+				{
+					if (FindMaxErrorPoint(out point, out tri, out edge))
+					{
+						pointsToAdd.Add(point);
+						pointTriangles.Add(tri);
+						pointEdges.Add(edge);
+					}
+				}
 				else
+				{
 					pointsToAdd = FindMaxErrorPoint(
 						out pointTriangles,
 						out pointEdges,
 						maxPointsPerIteration,
 						minDistanceBetweenPoints
 					);
+				}
 			}
 			catch (Exception e)
 			{
 				Debug.LogError(e.Message + "\n" + e.StackTrace);
 				return false;
 			}
-
-			// No encuentra un Punto o Puntos => Se cumple la condicion de parada
-			if (maxPointsPerIteration == 1 && point == null) return false;
-			if (maxPointsPerIteration > 1 && pointsToAdd.Count == 0) return false;
+			
+			// No encuentra un Punto => Se cumple la condicion de parada
+			if (pointsToAdd.Count > 0) return false;
 
 			var deletedTriangles = new HashSet<Triangle>();
 			var deletedEdges = new HashSet<Edge>();
 
 			// Lo añade a la Malla actualizando la Topologia
 			// y se le pasa la Informacion sobre la posicion del punto calculada en el Calculo del Error (Triangulo o Eje)
-			if (maxPointsPerIteration == 1)
+			for (var i = 0; i < pointsToAdd.Count; i++)
 			{
-				AddPoint(point, tri, edge, deletedTriangles, deletedEdges);
-				// Y lo elimina del Mapa de Alturas
-				heightMap.Remove(point);
-			}
-			else if (maxPointsPerIteration > 1)
-			{
-				// En caso de ser varios puntos a la vez, cada uno va con su Triangulo (o Eje) perteneciente
-				for (var i = 0; i < pointsToAdd.Count; i++)
-				{
-					AddPoint(pointsToAdd[i], pointTriangles[i], pointEdges[i], deletedTriangles, deletedEdges);
-					heightMap.Remove(pointsToAdd[i]);
-				}
+				AddPoint(pointsToAdd[i], pointTriangles[i], pointEdges[i], deletedTriangles, deletedEdges);
+				heightMap.Remove(pointsToAdd[i]);
 			}
 
 			return true;
@@ -346,17 +320,14 @@ namespace Procrain.Geometry
 		/// <param name="deletedTriangles">Triangulos que se van a eliminar al añadir el Punto</param>
 		/// <param name="deletedEdges">Triangulos que se van a eliminar al añadir el Punto</param>
 		/// <returns>Devuelve this para poder llamar otros metodos en cadena</returns>
-		private Tin AddPoint(
-			Vertex point, Triangle tri, Edge edge, HashSet<Triangle> deletedTriangles,
-			HashSet<Edge> deletedEdges
-		)
+		private Tin AddPoint(Vector3 point, Triangle tri, Edge edge, HashSet<Triangle> deletedTriangles, HashSet<Edge> deletedEdges)
 		{
 			deletedTriangles ??= new HashSet<Triangle>();
 			deletedEdges ??= new HashSet<Edge>();
 
 			if (tri == null && edge == null)
 				// Si no se ha precalculado lo calculamos
-				if (!GetTriangle(point.v2D, out tri, out edge))
+				if (!GetTriangle(point.ToVector2xz(), out tri, out edge))
 				{
 					// Si aun no se consigue nada es que o esta fuera o ya se añadio
 					heightMap.Remove(point);
@@ -403,7 +374,7 @@ namespace Procrain.Geometry
 		/// <param name="deletedTriangles">Triangulos que se van a eliminar al añadir el Punto</param>
 		/// <param name="deletedEdges">Triangulos que se van a eliminar al añadir el Punto</param>
 		private void AddPointInTri(
-			Vertex point, Triangle tri, HashSet<Triangle> deletedTriangles,
+			Vector3 point, Triangle tri, HashSet<Triangle> deletedTriangles,
 			HashSet<Edge> deletedEdges
 		)
 		{
@@ -411,7 +382,6 @@ namespace Procrain.Geometry
 			deletedEdges ??= new HashSet<Edge>();
 
 			// Añade el nuevo Vertice
-			point.index = vertices.Count;
 			vertices.Add(point);
 
 			// Creamos las nuevas Aristas uniendo el Punto nuevo con los Vertices del Triangulo
@@ -443,16 +413,12 @@ namespace Procrain.Geometry
 		/// <param name="edge"></param>
 		/// <param name="deletedTriangles">Triangulos que se van a eliminar al añadir el Punto</param>
 		/// <param name="deletedEdges">Triangulos que se van a eliminar al añadir el Punto</param>
-		private void AddPointInEdge(
-			Vertex point, Edge edge, HashSet<Triangle> deletedTriangles,
-			HashSet<Edge> deletedEdges
-		)
+		private void AddPointInEdge(Vector3 point, Edge edge, HashSet<Triangle> deletedTriangles, HashSet<Edge> deletedEdges)
 		{
 			deletedTriangles ??= new HashSet<Triangle>();
 			deletedEdges ??= new HashSet<Edge>();
 
 			// Añade el nuevo Vertice
-			point.index = vertices.Count;
 			vertices.Add(point);
 
 			// Creamos 2 nuevas Aristas uniendo el Punto nuevo con los Vertices opuestos de los Triangulos Vecinos
@@ -462,8 +428,16 @@ namespace Procrain.Geometry
 			Edge e2 = null;
 
 			// Hay que tener en cuenta que puede ser Eje Frontera
-			if (edge.tIzq != null) e1 = AddEdge(point, edge.tIzq.GetOppositeVertex(edge));
-			if (edge.tDer != null) e2 = AddEdge(point, edge.tDer.GetOppositeVertex(edge));
+			if (edge.LeftTri != null)
+			{
+				edge.LeftTri.GetOppositeVertex(out Vector3 opposite, edge);
+				e1 = AddEdge(point, opposite);
+			}
+			if (edge.RightTri != null)
+			{
+				edge.RightTri.GetOppositeVertex(out Vector3 opposite, edge);
+				e2 = AddEdge(point, opposite);
+			}
 
 			if (e1 == null && e2 == null)
 				throw new Exception(
@@ -484,27 +458,27 @@ namespace Procrain.Geometry
 			Triangle tri4 = null;
 			if (e1 != null)
 			{
-				tri1 = AddTri(e1, e3, edge.tIzq);
-				tri2 = AddTri(e1, e4, edge.tIzq);
+				tri1 = AddTri(e1, e3, edge.LeftTri);
+				tri2 = AddTri(e1, e4, edge.LeftTri);
 			}
 
 			if (e2 != null)
 			{
-				tri3 = AddTri(e2, e3, edge.tDer);
-				tri4 = AddTri(e2, e4, edge.tDer);
+				tri3 = AddTri(e2, e3, edge.RightTri);
+				tri4 = AddTri(e2, e4, edge.RightTri);
 			}
 
 			// Elimina los Triangulos Antiguos y el Eje
-			if (edge.tIzq != null)
+			if (edge.LeftTri != null)
 			{
-				deletedTriangles.Add(edge.tIzq);
-				triangles.Remove(edge.tIzq);
+				deletedTriangles.Add(edge.LeftTri);
+				triangles.Remove(edge.LeftTri);
 			}
 
-			if (edge.tDer != null)
+			if (edge.RightTri != null)
 			{
-				deletedTriangles.Add(edge.tDer);
-				triangles.Remove(edge.tDer);
+				deletedTriangles.Add(edge.RightTri);
+				triangles.Remove(edge.RightTri);
 			}
 
 			deletedEdges.Add(edge);
@@ -530,7 +504,7 @@ namespace Procrain.Geometry
 		/// <param name="v1">Begin</param>
 		/// <param name="v2">End</param>
 		/// <returns>Devuelve el eje</returns>
-		private Edge AddEdge(Vertex v1, Vertex v2)
+		private Edge AddEdge(Vector3 v1, Vector3 v2)
 		{
 			var edge = new Edge(v1, v2, null, null, edges.Count);
 			edges.Add(edge);
@@ -600,7 +574,7 @@ namespace Procrain.Geometry
 		/// <param name="deletedEdges">Lista de Ejes que se han eliminado al hacer FLIP</param>
 		/// <returns>True si se ha tenido que Legalizar</returns>
 		private bool LegalizeEdge(
-			Edge edge, Triangle tri, Vertex newVertex, HashSet<Triangle> deletedTriangles,
+			Edge edge, Triangle tri, Vector3 newVertex, HashSet<Triangle> deletedTriangles,
 			HashSet<Edge> deletedEdges
 		)
 		{
@@ -611,84 +585,74 @@ namespace Procrain.Geometry
 			if (edge.IsFrontier) return false;
 
 			// Buscamos el vecino del eje contrario a Tri
-			Triangle neighbour = edge.tIzq == tri ? edge.tDer : edge.tIzq;
+			Triangle neighbour = edge.LeftTri == tri ? edge.RightTri : edge.LeftTri;
 
 			// Si no tiene es que el Eje es FRONTERA, no hace falta hacer FLIP
 			if (neighbour == null) return false;
 
-			Vertex oppositeVertex = neighbour.GetOppositeVertex(edge);
+			neighbour.GetOppositeVertex(out Vector3 oppositeVertex, edge);
 
 			// Comprobamos si vertice de el vertice del Vecino opuesto al Eje
 			// esta dentro del Circulo formado por el vertice de Tri opuesto al Eje (el nuevo) y los demas vertices del Eje
-			if (GeometryUtils.IsInsideCircle(
-				    oppositeVertex.v2D,
-				    newVertex.v2D,
-				    edge.begin.v2D,
-				    edge.end.v2D
-			    ))
-			{
-				// FLIP:
+			Vector2 p = oppositeVertex.ToVector2xz();
+			Vector2 a = newVertex.ToVector2xz();
+			Vector2 b = edge.begin.ToVector2xz();
+			Vector2 c = edge.end.ToVector2xz();
+			if (!GeometryUtils.PointInCirle(p, a, b, c)) return false;
+			
+			// FLIP:
 
-				// Creamos el nuevo Eje
-				Edge newEdge = AddEdge(newVertex, oppositeVertex);
+			// Creamos el nuevo Eje
+			Edge newEdge = AddEdge(newVertex, oppositeVertex);
 
-				// Y cogemos los ejes externos de cada triangulo
-				Edge triE1 = tri.GetEdge(newVertex, edge.begin);
-				Edge triE2 = tri.GetEdge(newVertex, edge.end);
-				Edge neighE1 = neighbour.GetEdge(oppositeVertex, edge.begin);
-				Edge neighE2 = neighbour.GetEdge(oppositeVertex, edge.end);
+			// Y cogemos los ejes externos de cada triangulo
+			Edge triE1 = tri.GetEdge(newVertex, edge.begin);
+			Edge triE2 = tri.GetEdge(newVertex, edge.end);
+			Edge neighE1 = neighbour.GetEdge(oppositeVertex, edge.begin);
+			Edge neighE2 = neighbour.GetEdge(oppositeVertex, edge.end);
 
-				// Creo los Triangulos nuevos a partir de los ejes antiguos y el nuevo
-				// Los Ejes antiguos seran (nuevo -> oldEdge.begin) y (opposite -> oldEdge.begin)
-				// Y lo mismo para el oldEdge.end
-				Triangle tri1 = AddTri(
-					newEdge,
-					triE1,
-					neighE1
-				);
-				Triangle tri2 = AddTri(
-					newEdge,
-					triE2,
-					neighE2
-				);
+			// Creo los Triangulos nuevos a partir de los ejes antiguos y el nuevo
+			// Los Ejes antiguos seran (nuevo -> oldEdge.begin) y (opposite -> oldEdge.begin)
+			// Y lo mismo para el oldEdge.end
+			Triangle tri1 = AddTri(newEdge, triE1, neighE1);
+			Triangle tri2 = AddTri(newEdge, triE2, neighE2);
 
 
-				// Eliminamos los Triangulos y la Arista antiguos, pero antes los guardamos
-				deletedTriangles.Add(tri);
-				deletedTriangles.Add(neighbour);
-				triangles.Remove(tri);
-				triangles.Remove(neighbour);
+			// Eliminamos los Triangulos y la Arista antiguos, pero antes los guardamos
+			deletedTriangles.Add(tri);
+			deletedTriangles.Add(neighbour);
+			triangles.Remove(tri);
+			triangles.Remove(neighbour);
 
-				deletedEdges.Add(edge);
-				edges.Remove(edge);
+			deletedEdges.Add(edge);
+			edges.Remove(edge);
 
-				// Como cambia la topologia, tenemos que volverlo a comprobar para los ejes nuevos, de forma recursiva
-				// Estos vertices son los del triangulo vecino que aun se mantienen, con cada triangulo nuevo 
-				LegalizeEdge(neighE1, tri1, newVertex, deletedTriangles, deletedEdges);
-				LegalizeEdge(neighE2, tri2, newVertex, deletedTriangles, deletedEdges);
+			// Como cambia la topologia, tenemos que volverlo a comprobar para los ejes nuevos, de forma recursiva
+			// Estos vertices son los del triangulo vecino que aun se mantienen, con cada triangulo nuevo 
+			LegalizeEdge(neighE1, tri1, newVertex, deletedTriangles, deletedEdges);
+			LegalizeEdge(neighE2, tri2, newVertex, deletedTriangles, deletedEdges);
 
-				return true;
-			}
-
-			return false;
+			return true;
 		}
 
 
 		/// <summary>
 		///     Busca el Punto de mayor Error
 		/// </summary>
+		/// <param name="maxErrorPoint">Punto encontrado de mayor Error</param>
 		/// <param name="pointTriangle">Triangulo al que pertenece el punto elegido</param>
 		/// <param name="pointEdge">Eje al que pertenece el punto elegido</param>
-		/// <returns>Devuelve el Punto de mayor Error, o null si ninguno supera el error minimo tolerado</returns>
-		private Vertex FindMaxErrorPoint(out Triangle pointTriangle, out Edge pointEdge)
+		/// <returns>Devuelve true si lo encuentra. Si no lo ha encontrado significa que o no quedan por añadir
+		/// o ninguno de los restantes supera el error minimo de tolerancia.</returns>
+		private bool FindMaxErrorPoint(out Vector3 maxErrorPoint, out Triangle pointTriangle, out Edge pointEdge)
 		{
 			float maxError = 0;
-			Vertex maxErrorPoint = null;
+			maxErrorPoint = Vector3.zero;
 			pointTriangle = null;
 			pointEdge = null;
 
 			// Recorremos TODOS los puntos para buscar el de maximo error
-			foreach (Vertex point in heightMap)
+			foreach (Vector3 point in heightMap)
 			{
 				float error = GetError(point, out Triangle tri, out Edge edge);
 
@@ -700,12 +664,16 @@ namespace Procrain.Geometry
 				maxErrorPoint = point;
 			}
 
+			// Si no ha encontrado ningun punto que supere el error minimo, no estara inicializado ni el triangulo ni el eje
+			if (pointTriangle == null) return false;
+
+			// Guardamos el historial del punto y su error
 			lastVertexAdded.Clear();
 			lastVertexError.Clear();
 			lastVertexAdded.Add(maxErrorPoint);
 			lastVertexError.Add(maxError);
 
-			return maxErrorPoint;
+			return true;
 		}
 
 		/// <summary>
@@ -721,7 +689,7 @@ namespace Procrain.Geometry
 		/// <param name="maxPoints">N</param>
 		/// <param name="minDistanceBetweenPoints"></param>
 		/// <returns>Devuelve una lista con los N Puntos de mayor Error</returns>
-		private List<Vertex> FindMaxErrorPoint(
+		private List<Vector3> FindMaxErrorPoint(
 			out List<Triangle> pointTriangles, out List<Edge> pointEdges,
 			int maxPoints = 5, float minDistanceBetweenPoints = 5
 		)
@@ -731,12 +699,11 @@ namespace Procrain.Geometry
 			var triangleQueue = new Queue<Triangle>();
 			var edgeQueue = new Queue<Edge>();
 
-			var pointQueue = new Queue<Vertex>();
+			var pointQueue = new Queue<Vector3>();
 
 			// Recorremos TODOS los puntos para buscar el de maximo error 
-			for (var i = 0; i < heightMap.Count; i++)
+			foreach (Vector3 point in heightMap)
 			{
-				Vertex point = heightMap[i];
 				float error = GetError(point, out Triangle pointTri, out Edge pointEdge);
 
 				// Si es mayor al tolerado y mayor al maximo de la cola (el ultimo) lo añadimos
@@ -744,14 +711,11 @@ namespace Procrain.Geometry
 				    (maxErrorQueue.Count != 0 && !(error > maxErrorQueue.Last())))
 					continue;
 
-				// Con la condicion de estar mas alejado de la minDistanceBetweenPoints de los otros puntos añadidos
-				bool atSafeDistance = pointQueue.Select(
-						vertex =>
-							Mathf.Abs((vertex.v2D - point.v2D).magnitude)
-					)
-					.All(
-						distance => !(distance < minDistanceBetweenPoints)
-					);
+				// Con la condicion de estar mas alejado de la minDistanceBetweenPoints de los otros puntos ya añadidos
+				Vector3 point1 = point;
+				bool atSafeDistance = pointQueue
+					.Select(vertex => Vector2.Distance(vertex.ToVector2xz(), point1.ToVector2xz()))
+					.All(distance => distance >= minDistanceBetweenPoints);
 
 				if (!atSafeDistance) continue;
 
@@ -773,21 +737,21 @@ namespace Procrain.Geometry
 			// Devolvemos la lista de Puntos candidatos,
 			// pero al formarse en una cola, estan ordenados de menor a mayor error
 			// Hay que invertir el orden
-			List<Vertex> pointsOrdered = pointQueue.ToList();
-			pointsOrdered.Reverse();
+			List<Vector3> pointsSorted = pointQueue.ToList();
+			pointsSorted.Reverse();
 
 			pointTriangles = triangleQueue.ToList();
 			pointEdges = edgeQueue.ToList();
 			pointTriangles.Reverse();
 			pointEdges.Reverse();
 
-			// Lo guardamos para debugear
+			// Guardamos los puntos y sus errores para debugear
 			lastVertexAdded.Clear();
-			lastVertexAdded = pointQueue.ToList();
 			lastVertexError.Clear();
+			lastVertexAdded = pointQueue.ToList();
 			lastVertexError = maxErrorQueue.ToList();
 
-			return pointsOrdered;
+			return pointsSorted;
 		}
 
 		/// <summary>
@@ -800,11 +764,11 @@ namespace Procrain.Geometry
 		/// <param name="triangle">Triangulo al que pertenece</param>
 		/// <param name="edge">Eje al que pertenece en caso contrario</param>
 		/// <returns>Error del Punto</returns>
-		private float GetError(Vertex point, out Triangle triangle, out Edge edge)
+		private float GetError(Vector3 point, out Triangle triangle, out Edge edge)
 		{
 			// Buscamos el Triangulo al que pertenece o el Eje al que es Colinear
 			// Si devuelve false es que no esta en ninguno
-			if (!GetTriangle(point.v2D, out triangle, out edge))
+			if (!GetTriangle(point.ToVector2xz(), out triangle, out edge))
 			{
 				heightMap.Remove(point);
 				return 0;
@@ -812,10 +776,10 @@ namespace Procrain.Geometry
 
 			// 2 casos:
 			// Pertenece a un Triangulo
-			if (triangle != null) return Mathf.Abs(triangle.GetHeightInterpolation(point.v2D) - point.y);
+			if (triangle != null) return Mathf.Abs(triangle.GetHeightInterpolation(point.ToVector2xz()) - point.y);
 
 			// Pertenece a un Eje
-			if (edge != null) return Mathf.Abs(edge.GetHeightInterpolation(point.v2D) - point.y);
+			if (edge != null) return Mathf.Abs(edge.GetHeightInterpolation(point.ToVector2xz()) - point.y);
 
 			return 0;
 		}
@@ -878,7 +842,7 @@ namespace Procrain.Geometry
 		/// <param name="point">Vertice del Triangulo en 2D</param>
 		/// <returns>Array de Triangulos que comparten el vertice</returns>
 		public Triangle[] GetTrianglesByVertex(Vector2 point) =>
-			triangles.Where(tri => tri.v1.v2D == point || tri.v2.v2D == point || tri.v3.v2D == point).ToArray();
+			triangles.Where(tri => tri.Vertices2D.Any(vertex => vertex == point)).ToArray();
 
 
 		/// <summary>
@@ -903,11 +867,11 @@ namespace Procrain.Geometry
 				{
 					// Segun la posicion de B relativa al eje colinear de A podemos saber el primer triangulo 
 					Edge.PointEdgePosition pos =
-						Edge.GetPointEdgePosition(b, collinearEdge.begin.v2D, collinearEdge.end.v2D);
+						Edge.GetPointEdgePosition(b, collinearEdge.begin.ToVector2xz(), collinearEdge.end.ToVector2xz());
 					if (pos == Edge.PointEdgePosition.LEFT)
-						nextTriangle = collinearEdge.tIzq;
+						nextTriangle = collinearEdge.LeftTri;
 					else if (pos == Edge.PointEdgePosition.RIGHT)
-						nextTriangle = collinearEdge.tDer;
+						nextTriangle = collinearEdge.RightTri;
 					else
 						// Es colinear a la misma arista que a => NO HAY INTERSECCIONES
 						return new Vector2[] { };
@@ -933,7 +897,7 @@ namespace Procrain.Geometry
 		{
 			// Dibuja las aristas
 			Gizmos.color = Color.magenta;
-			foreach (Edge e in edges) Gizmos.DrawLine(e.begin.v3D, e.end.v3D);
+			foreach (Edge e in edges) Gizmos.DrawLine(e.begin, e.end);
 		}
 	}
 }

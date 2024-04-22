@@ -77,28 +77,22 @@ namespace Procrain.MapGeneration.TIN
 		///     Generacion de la Malla a partir de un Tin
 		/// </summary>
 		/// <param name="tin"></param>
-		/// <param name="heightCurve">Curva de Altura para ajustar la altura</param>
-		/// <param name="gradient">Color segun la Altura (por si no se usa Textura, aplicado al vertice)</param>
 		/// <returns>Datos de una Malla que va a usar en Unity</returns>
 		public static MeshDataDynamic TinToMesh(Tin tin)
 		{
-			// var gradCopy = gradient != null ? gradient.GetGradientCopy() : GradientUtils.BuildGradientDefault();
-
 			// Creacion de la malla (Datos basicos que necesita Unity)
 			var data = new MeshDataDynamic();
 
-			// Vertices
-			foreach (Vertex vertex in tin.vertices)
+			for (var i = 0; i < tin.triangles.Count; i++)
 			{
-				Vector3 point = vertex.v3D;
-				data.AddVertex(point);
-				data.AddUV(vertex.x / tin.size, vertex.z / tin.size);
-				// data.AddColor(gradCopy.Evaluate(vertex.y));
+				for (var v = 0; v < 3; v++)
+				{
+					Vector3 vertex = tin.triangles[i].Vertices[v];
+					data.AddVertex(vertex);
+					data.AddUV(vertex.x / tin.size, vertex.z / tin.size);
+					data.AddTriIndex(i * 3 + v);
+				}
 			}
-
-			// Indices
-			foreach (Triangle tri in tin.triangles) data.AddTriangle(tri.v1.index, tri.v3.index, tri.v2.index);
-
 			return data;
 		}
 

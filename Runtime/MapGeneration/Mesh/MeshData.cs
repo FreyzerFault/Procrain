@@ -143,24 +143,17 @@ namespace Procrain.MapGeneration.Mesh
 
         public void AddColor(float r, float g, float b) => colors.Add(new Color(r, g, b));
 
+        public void AddTriIndex(int index)
+        {
+            if (index >= vertices.Count)
+                throw new Exception($"Index {index} out of Bounds!!! (Num Vertices: {vertices.Count}).");
+            
+            triangles.Add(index);
+        }
+
         public void AddTriangle(int a, int b, int c)
         {
-            if (a >= vertices.Count || b >= vertices.Count || c >= vertices.Count)
-                throw new Exception(
-                    "Triangle out of Bounds!!! "
-                        + vertices.Count
-                        + " Vertices. Triangle("
-                        + a
-                        + ", "
-                        + b
-                        + ", "
-                        + c
-                        + ")"
-                );
-
-            triangles.Add(a);
-            triangles.Add(b);
-            triangles.Add(c);
+            AddTriIndex(a); AddTriIndex(b); AddTriIndex(c);
         }
     }
 

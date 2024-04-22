@@ -393,11 +393,11 @@ namespace Procrain.MapGeneration.TIN
 
 			if (tin is not { lastVertexAdded: not null } || tin.lastVertexAdded.Count == 0) return;
 
-			foreach (Vertex t in tin.lastVertexAdded)
+			foreach (Vector3 t in tin.lastVertexAdded)
 				lastArrows.Add(
 					Instantiate(
 						arrowPrefab,
-						t.v3D + Vector3.up * 10,
+						t + Vector3.up * 10,
 						Quaternion.identity
 					)
 				);
@@ -408,7 +408,7 @@ namespace Procrain.MapGeneration.TIN
 			if (tin?.lastVertexAdded == null || tin.lastVertexAdded.Count == 0) return;
 
 			Gizmos.color = Color.red;
-			foreach (Vertex t in tin.lastVertexAdded) Gizmos.DrawSphere(t.v3D, 1);
+			foreach (Vector3 t in tin.lastVertexAdded) Gizmos.DrawSphere(t, 1);
 		}
 
 		#endregion
