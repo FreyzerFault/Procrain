@@ -15,6 +15,7 @@ using Procrain.Noise;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Procrain.Core
 {

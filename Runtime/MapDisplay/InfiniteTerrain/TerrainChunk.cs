@@ -23,7 +23,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 		private int Size => localNoiseParams.Size;
 		private Vector2Int PlayerChunk =>
 			GetChunkCoord(
-				_player?.transform.position ?? GameObject.FindWithTag("Player").transform.position
+				player?.transform.position ?? GameObject.FindWithTag("Player").transform.position
 			);
 
 		private float Extent => Size / 2f;

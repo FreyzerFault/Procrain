@@ -8,7 +8,7 @@ namespace Procrain.MapDisplay
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class MapDisplayInMesh_LoDByPlayer : MapDisplayInMesh
     {
-        protected Player _player;
+        protected Player player;
 
         protected override void Awake()
         {
@@ -16,21 +16,21 @@ namespace Procrain.MapDisplay
 
             // Usa un LoD local ignorando el LoD global del MapManager
             useLocalLoD = true;
-            _player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
             // Solo actualiza el LoD cuando el Player se mueve
-            _player.OnPlayerMove += OnPlayerMove;
+            player.OnPlayerMove += OnPlayerMove;
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            _player.OnPlayerMove -= OnPlayerMove;
+            player.OnPlayerMove -= OnPlayerMove;
         }
 
         private void OnPlayerMove(Vector2 moveInput)
         {
-            localLoD = CalculateLoDByPlayerPos(_player.transform.position);
+            localLoD = CalculateLoDByPlayerPos(player.transform.position);
             OnLocalLoDUpdate(localLoD);
         }
 
