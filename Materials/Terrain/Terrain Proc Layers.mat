@@ -454,7 +454,7 @@ Material:
     - _1_2_Blend_Dist: 0.084
     - _1_2_Height: 0.21
     - _2_3_Blend_Dist: 0.073
-    - _2_3_Height: 0.318
+    - _2_3_Height: 0.304
     - _3_4_Blend_Dist: 0.072
     - _3_4_Height: 0.413
     - _AddPrecomputedVelocity: 0
@@ -541,9 +541,10 @@ Material:
     - _Show_Height_Lines: 0
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
+    - _Snow_Active: 1
     - _Snow_Blend: 3.24
     - _Snow_Blend_Dist: 0.218
-    - _Snow_Height: 0.415
+    - _Snow_Height: 0.533
     - _Snow_Max_Steep: 0.52
     - _Snow_Tile: 23.1
     - _SpecularHighlights: 1
@@ -563,7 +564,7 @@ Material:
     - _Sub_Layer_1_Tile: 1
     - _Sub_Layer_2_Density: 0.263
     - _Sub_Layer_2_Tile: 0.281
-    - _Sub_Layer_3_Density: 0.177
+    - _Sub_Layer_3_Density: 0.326
     - _Sub_Layer_3_Tile: 0.177
     - _Sub_Layer_4_Density: 0.266
     - _Sub_Layer_4_Tile: 0.266

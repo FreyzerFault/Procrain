@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcfeeaff4ed61944f9e0f24417334a96, type: 3}
   m_Name: Default TSettings
   m_EditorClassIdentifier: 
-  dirty: 1
+  dirty: 0
   heightCurve:
     serializedVersion: 2
     m_Curve:
@@ -35,8 +35,8 @@ MonoBehaviour:
       inWeight: 1
       outWeight: 0.78680056
     - serializedVersion: 3
-      time: 0.26045495
-      value: 0.23712265
+      time: 0.2687481
+      value: 0.24553025
       inSlope: 0.13975736
       outSlope: 0.13975736
       tangentMode: 0
@@ -44,26 +44,25 @@ MonoBehaviour:
       inWeight: 0.7280725
       outWeight: 0.49610195
     - serializedVersion: 3
-      time: 0.5957478
-      value: 0.3486275
-      inSlope: 0.608287
-      outSlope: 0.608287
+      time: 0.5667236
+      value: 0.32342166
+      inSlope: 0.48992434
+      outSlope: 0.48992434
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.33762455
+      outWeight: 0.4506848
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0.074427724
-      outSlope: 0.074427724
+      inSlope: 2.0714862
+      outSlope: 2.0714862
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.49238524
+      inWeight: 0.43068895
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   heightScale: 100
   lod: 0
-  noiseParams: {fileID: 11400000, guid: b724943d15b9b9e4fbd6ec9ada5b86f9, type: 2}

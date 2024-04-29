@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using DavidUtils;
+using DavidUtils.PlayerControl;
 using Procrain.MapGeneration;
 using Procrain.Noise;
 using UnityEngine;
@@ -13,136 +15,132 @@ using UnityEngine.Serialization;
 // no genera el Chunk hasta que el jugador se acerca a menos de la distancia de renderizado
 namespace Procrain.MapDisplay.InfiniteTerrain
 {
-    [ExecuteAlways]
-    public class TerrainChunkGenerator : MonoBehaviour
-    {
-        // TEXTURAS
-        public Gradient gradient = new();
+	[ExecuteAlways]
+	public class TerrainChunkGenerator : MonoBehaviour
+	{
+		// TEXTURAS
+		public Gradient gradient = new();
 
-        // Generación Dinámica de cada Chunk según la distancia al Jugador
-        // Distancia de Renderizado
-        [FormerlySerializedAs("renderDist")]
-        [Range(1, 12)]
-        public int maxRenderDist = 4;
+		// Generación Dinámica de cada Chunk según la distancia al Jugador
+		// Distancia de Renderizado
+		[FormerlySerializedAs("renderDist")]
+		[Range(1, 12)]
+		public int maxRenderDist = 4;
 
-        // PLAYER
-        public Transform player;
+		// PLAYER
+		public Player player => GameManager.FindPlayer();
 
-        [SerializeField]
-        private Vector2Int playerChunkCoords;
+		[SerializeField]
+		private Vector2Int playerChunkCoords;
 
-        public bool autoUpdate = true;
+		public bool autoUpdate = true;
 
-        // Almacen de chunks generados indexados por su ChunkCoord [X,Y]
-        [SerializeField]
-        private TerrainChunk chunkPrefab;
+		// Almacen de chunks generados indexados por su ChunkCoord [X,Y]
+		[SerializeField]
+		private TerrainChunk chunkPrefab;
 
-        public TerrainSettingsSo terrainSettingsSo;
-        public PerlinNoiseParams noiseParams;
+		public TerrainSettingsSo terrainSettingsSo;
+		public PerlinNoiseParams noiseParams;
 
-        private readonly Dictionary<Vector2, TerrainChunk> chunkDictionary = new();
+		private readonly Dictionary<Vector2, TerrainChunk> chunkDictionary = new();
 
-        // Cache de Chunks visibles en el ultimo update
-        // Comprueba siempre si salieron del rango de vision para esconderlos
-        private readonly List<TerrainChunk> chunkLastVisibleList = new();
-        private Vector2 lastPlayerChunkCoords;
+		// Cache de Chunks visibles en el ultimo update
+		// Comprueba siempre si salieron del rango de vision para esconderlos
+		private readonly List<TerrainChunk> chunkLastVisibleList = new();
+		private Vector2 lastPlayerChunkCoords;
 
-        private int ChunkSize => noiseParams.Size;
+		private int ChunkSize => noiseParams.Size;
 
-        private Vector2 PlayerPos2D => new(player.position.x, player.position.z);
-        private TerrainChunk PlayerChunk => chunkDictionary[playerChunkCoords];
+		private Vector2 PlayerPos2D => new(player.Position.x, player.Position.z);
+		private TerrainChunk PlayerChunk => chunkDictionary[playerChunkCoords];
 
-        // Longitud del Borde de los chunks, que sera el tama�o de mi matriz de Chunks Renderizados
-        private int VisibilityChunkBorderLength => maxRenderDist * 2 + 1;
+		// Longitud del Borde de los chunks, que sera el tama�o de mi matriz de Chunks Renderizados
+		private int VisibilityChunkBorderLength => maxRenderDist * 2 + 1;
 
-        private void Start()
-        {
-            player = GameObject.FindWithTag("Player").transform;
+		private void Start()
+		{
+			if (autoUpdate)
+				terrainSettingsSo.ValuesUpdated += OnValuesUpdated;
+		}
 
-            // RegenerateTerrain();
+		public void Update()
+		{
+			playerChunkCoords = TerrainChunk.GetChunkCoord(PlayerPos2D, ChunkSize);
 
-            if (autoUpdate)
-                terrainSettingsSo.ValuesUpdated += OnValuesUpdated;
-        }
+			// Solo si el viewer cambia de chunk se actualizan los chunks
+			if (lastPlayerChunkCoords != playerChunkCoords)
+				UpdateVisibleChunks();
 
-        public void Update()
-        {
-            playerChunkCoords = TerrainChunk.GetChunkCoord(PlayerPos2D, ChunkSize);
+			// Ultimo chunk del jugador para comprobar si ha cambiado de chunk
+			lastPlayerChunkCoords = playerChunkCoords;
+		}
 
-            // Solo si el viewer cambia de chunk se actualizan los chunks
-            if (lastPlayerChunkCoords != playerChunkCoords)
-                UpdateVisibleChunks();
+		private void OnDestroy() => terrainSettingsSo.ValuesUpdated -= OnValuesUpdated;
 
-            // Ultimo chunk del jugador para comprobar si ha cambiado de chunk
-            lastPlayerChunkCoords = playerChunkCoords;
-        }
+		private void OnValidate()
+		{
+			if (!autoUpdate)
+				return;
+			terrainSettingsSo.ValuesUpdated -= OnValuesUpdated;
+			terrainSettingsSo.ValuesUpdated += OnValuesUpdated;
+		}
 
-        private void OnDestroy() => terrainSettingsSo.ValuesUpdated -= OnValuesUpdated;
+		public void RegenerateTerrain()
+		{
+			Clear();
+			playerChunkCoords = TerrainChunk.GetChunkCoord(PlayerPos2D, ChunkSize);
+			UpdateVisibleChunks();
+		}
 
-        private void OnValidate()
-        {
-            if (!autoUpdate)
-                return;
-            terrainSettingsSo.ValuesUpdated -= OnValuesUpdated;
-            terrainSettingsSo.ValuesUpdated += OnValuesUpdated;
-        }
+		public void OnValuesUpdated() => RegenerateTerrain();
 
-        public void RegenerateTerrain()
-        {
-            Clear();
-            playerChunkCoords = TerrainChunk.GetChunkCoord(PlayerPos2D, ChunkSize);
-            UpdateVisibleChunks();
-        }
+		public void UpdateVisibleChunks()
+		{
+			foreach (TerrainChunk chunk in chunkLastVisibleList)
+				chunk.Visible = false;
 
-        public void OnValuesUpdated() => RegenerateTerrain();
+			// Recorremos toda la malla alrededor del jugador que entra dentro de la distancia de renderizado
+			for (int yOffset = -maxRenderDist; yOffset <= maxRenderDist; yOffset++)
+			for (int xOffset = -maxRenderDist; xOffset <= maxRenderDist; xOffset++)
+			{
+				// Se generan los chunks relativos a la distancia con el Viewer
+				Vector2Int chunkCoords = new Vector2Int(xOffset, yOffset) + playerChunkCoords;
 
-        public void UpdateVisibleChunks()
-        {
-            foreach (var chunk in chunkLastVisibleList)
-                chunk.Visible = false;
+				// Si no existe el chunk se genera y se añade
+				if (!chunkDictionary.TryGetValue(chunkCoords, out TerrainChunk chunk))
+					chunkDictionary.Add(chunkCoords, chunk = InstantiateChunk(chunkCoords));
 
-            // Recorremos toda la malla alrededor del jugador que entra dentro de la distancia de renderizado
-            for (var yOffset = -maxRenderDist; yOffset <= maxRenderDist; yOffset++)
-            for (var xOffset = -maxRenderDist; xOffset <= maxRenderDist; xOffset++)
-            {
-                // Se generan los chunks relativos a la distancia con el Viewer
-                var chunkCoords = new Vector2Int(xOffset, yOffset) + playerChunkCoords;
+				// Actualizamos el chunk segun la posicion del Jugador
+				chunk.UpdateVisibility(maxRenderDist);
 
-                // Si no existe el chunk se genera y se añade
-                if (!chunkDictionary.TryGetValue(chunkCoords, out var chunk))
-                    chunkDictionary.Add(chunkCoords, chunk = InstantiateChunk(chunkCoords));
+				// Y si es visible recordarlo para hacerlo invisible cuando se escape del rango de renderizado
+				if (chunk.Visible)
+					chunkLastVisibleList.Add(chunk);
+			}
+		}
 
-                // Actualizamos el chunk segun la posicion del Jugador
-                chunk.UpdateVisibility(maxRenderDist);
+		private TerrainChunk InstantiateChunk(Vector2Int coords)
+		{
+			TerrainChunk chunk = Instantiate(chunkPrefab, transform);
+			chunk.ChunkCoord = coords;
+			chunk.Gradient = gradient;
+			return chunk;
+		}
 
-                // Y si es visible recordarlo para hacerlo invisible cuando se escape del rango de renderizado
-                if (chunk.Visible)
-                    chunkLastVisibleList.Add(chunk);
-            }
-        }
+		// Resetea la Semilla de forma Aleatoria
+		public void ResetSeed() => noiseParams.ResetSeed();
 
-        private TerrainChunk InstantiateChunk(Vector2Int coords)
-        {
-            TerrainChunk chunk = Instantiate(chunkPrefab, transform);
-            chunk.ChunkCoord = coords;
-            chunk.Gradient = gradient;
-            return chunk;
-        }
+		// Borra todos los terrenos renderizados
+		public void Clear()
+		{
+			foreach (TerrainChunk chunk in GetComponentsInChildren<TerrainChunk>(true))
+				if (Application.isEditor)
+					DestroyImmediate(chunk.gameObject);
+				else
+					Destroy(chunk.gameObject);
 
-        // Resetea la Semilla de forma Aleatoria
-        public void ResetSeed() => noiseParams.ResetSeed();
-
-        // Borra todos los terrenos renderizados
-        public void Clear()
-        {
-            foreach (var chunk in GetComponentsInChildren<TerrainChunk>(true))
-                if (Application.isEditor)
-                    DestroyImmediate(chunk.gameObject);
-                else
-                    Destroy(chunk.gameObject);
-
-            chunkDictionary.Clear();
-            chunkLastVisibleList.Clear();
-        }
-    }
+			chunkDictionary.Clear();
+			chunkLastVisibleList.Clear();
+		}
+	}
 }
