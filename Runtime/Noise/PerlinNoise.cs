@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using DavidUtils.ExtensionMethods;
 using DavidUtils.Geometry;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -126,9 +127,9 @@ namespace Procrain.Noise
 		/// </summary>
 		/// <param name="np">Parametros del Ruido</param>
 		/// <param name="filePath">Nombre del Archivo con la Nube de Puntos</param>
-		/// <param name="aabb2D"></param>
+		/// <param name="bounds"></param>
 		/// <returns>Nube de Puntos con Alturas segun el Ruido de Perlin</returns>
-		public static Vector3[] SampleNoiseInPointsFromFile(PerlinNoiseParams np, string filePath, out AABB2D aabb2D)
+		public static Vector3[] SampleNoiseInPointsFromFile(PerlinNoiseParams np, string filePath, out Bounds2D bounds)
 		{
 			// Scale no puede ser negativa
 			if (np.Scale <= 0) np.Scale = 0.0001f;
@@ -143,7 +144,7 @@ namespace Procrain.Noise
 			string[] lines = File.ReadAllLines(filePath);
 
 			// Puntos del AABB para crear puntos en las esquinas
-			aabb2D = new AABB2D(Vector2.positiveInfinity, Vector2.negativeInfinity);
+			bounds = new Bounds2D(Vector2.positiveInfinity, Vector2.negativeInfinity);
 
 			foreach (string line in lines)
 			{
@@ -172,14 +173,14 @@ namespace Procrain.Noise
 					);
 
 				// Pillamos el maximo y el minimo con cada punto para el AABB
-				aabb2D.max.x = Mathf.Max(aabb2D.max.x, mapCoords.x);
-				aabb2D.max.y = Mathf.Max(aabb2D.max.y, mapCoords.y);
-				aabb2D.min.x = Mathf.Min(aabb2D.min.x, mapCoords.x);
-				aabb2D.min.y = Mathf.Min(aabb2D.min.y, mapCoords.y);
+				bounds.max.x = Mathf.Max(bounds.max.x, mapCoords.x);
+				bounds.max.y = Mathf.Max(bounds.max.y, mapCoords.y);
+				bounds.min.x = Mathf.Min(bounds.min.x, mapCoords.x);
+				bounds.min.y = Mathf.Min(bounds.min.y, mapCoords.y);
 			}
 
 			// Añadimos las ESQUINAS
-			Vector3[] corners = GetCorners(aabb2D, np, octaves);
+			Vector3[] corners = GetWorldCorners(bounds, np, octaves);
 			foreach (Vector3 corner in corners) points[index++] = corner;
 
 			return points;
@@ -190,27 +191,18 @@ namespace Procrain.Noise
 		///     Genera las esquinas de un espacio bidimensional definido por un AABB (maxpoint, minpoint)
 		///     con la altura correspondiente en el Ruido de Perlin
 		/// </summary>
-		/// <param name="aabb2D"></param>
+		/// <param name="bounds"></param>
 		/// <param name="np">Parametros del Ruido</param>
 		/// <param name="octaveOffsets">Offsets de cada octavo</param>
 		/// <param name="maxNoiseValue">Valor maximo de ruido posible</param>
 		/// <returns>Array con las Esquinas {BOT LEFT, BOT RIGHT, TOP LEFT, TOP RIGHT}</returns>
-		private static Vector3[] GetCorners(AABB2D aabb2D, PerlinNoiseParams np, PerlinOctaves octaves)
+		private static Vector3[] GetWorldCorners(Bounds2D bounds, PerlinNoiseParams np, PerlinOctaves octaves) => new[]
 		{
-			var corners = new Vector3[4];
-
-			corners[0] = new Vector3(aabb2D.min.x, 0, aabb2D.min.y); // BOT LEFT
-			corners[1] = new Vector3(aabb2D.max.x, 0, aabb2D.min.y); // BOT RIGHT
-			corners[2] = new Vector3(aabb2D.min.x, 0, aabb2D.max.y); // TOP LEFT
-			corners[3] = new Vector3(aabb2D.max.x, 0, aabb2D.max.y); // TOP RIGHT
-
-			corners[0].y = GetNoiseHeight(new Vector2(corners[0].x, corners[0].z), np, octaves);
-			corners[1].y = GetNoiseHeight(new Vector2(corners[1].x, corners[1].z), np, octaves);
-			corners[2].y = GetNoiseHeight(new Vector2(corners[2].x, corners[2].z), np, octaves);
-			corners[3].y = GetNoiseHeight(new Vector2(corners[3].x, corners[3].z), np, octaves);
-
-			return corners;
-		}
+			bounds.BL.ToVector3xz().WithY(GetNoiseHeight(bounds.BL, np, octaves)),
+			bounds.BR.ToVector3xz().WithY(GetNoiseHeight(bounds.BR, np, octaves)),
+			bounds.TL.ToVector3xz().WithY(GetNoiseHeight(bounds.TL, np, octaves)),
+			bounds.TR.ToVector3xz().WithY(GetNoiseHeight(bounds.TR, np, octaves))
+		};
 
 		#endregion
 	}

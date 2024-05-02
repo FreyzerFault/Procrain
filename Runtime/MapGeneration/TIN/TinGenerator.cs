@@ -12,28 +12,18 @@ namespace Procrain.MapGeneration.TIN
 		///     Genera un TIN a partir de un HeightMap
 		/// </summary>
 		/// <param name="heightMap">Mapa de Alturas</param>
-		/// <param name="aabb2D">Bounding Box</param>
+		/// <param name="bounds">Bounding Box</param>
 		/// <param name="heigthScale">[0,1] -> [0, heightScale]</param>
 		/// <param name="errorTolerance">Error Maximo Tolerado por el Tin</param>
 		/// <param name="maxIterations">Limite de iteraciones maximas del Tin</param>
 		/// <returns>Datos de una Malla que va a usar Unity</returns>
 		private static Tin BuildTin(
-			HeightMap heightMap,
-			float heigthScale = 1,
-			float errorTolerance = 1,
-			int maxIterations = 10,
-			AABB2D aabb2D = null
+			HeightMap heightMap, float heigthScale = 1, float errorTolerance = 1,
+			int maxIterations = 10, Bounds2D? bounds = null
 		)
 		{
 			// Creacion del Tin (Estructura topologica interna)
-			var tin = new Tin(
-				heightMap.map,
-				heightMap.Size,
-				errorTolerance,
-				heigthScale,
-				maxIterations,
-				aabb2D
-			);
+			var tin = new Tin(heightMap.map, heightMap.Size, errorTolerance, heigthScale, maxIterations, bounds);
 			tin.InitGeometry(heightMap.map, heightMap.Size);
 			tin.AddPointLoop();
 
@@ -44,28 +34,19 @@ namespace Procrain.MapGeneration.TIN
 		/// <summary>
 		///     Genera un TIN a partir de unos puntos iniciales (las esquinas formadas por el AABB)
 		/// </summary>
-		/// <param name="aabb2D">Bounding Box</param>
+		/// <param name="bounds">Bounding Box</param>
 		/// <param name="errorTolerance">Error Maximo Tolerado por el Tin</param>
 		/// <param name="heightScale"></param>
 		/// <param name="maxIterations">Limite de iteraciones maximas del Tin</param>
 		/// <param name="points">Puntos extras pregenerados</param>
 		/// <returns>Datos de una Malla que va a usar Unity</returns>
 		private static Tin BuildTin(
-			AABB2D aabb2D,
-			float errorTolerance = 1,
-			float heightScale = 100,
-			int maxIterations = 10,
-			Vector3[] points = null
+			Bounds2D bounds, float errorTolerance = 1, float heightScale = 100,
+			int maxIterations = 10, Vector3[] points = null
 		)
 		{
 			// Creacion del Tin (Estructura topologica interna)
-			var tin = new Tin(
-				points ?? Array.Empty<Vector3>(),
-				errorTolerance,
-				heightScale,
-				maxIterations,
-				aabb2D
-			);
+			var tin = new Tin(points ?? Array.Empty<Vector3>(), errorTolerance, heightScale, maxIterations, bounds);
 			tin.InitGeometry();
 			tin.AddPointLoop();
 
@@ -84,15 +65,14 @@ namespace Procrain.MapGeneration.TIN
 			var data = new MeshDataDynamic();
 
 			for (var i = 0; i < tin.triangles.Count; i++)
+			for (var v = 0; v < 3; v++)
 			{
-				for (var v = 0; v < 3; v++)
-				{
-					Vector3 vertex = tin.triangles[i].Vertices[v];
-					data.AddVertex(vertex);
-					data.AddUV(vertex.x / tin.size, vertex.z / tin.size);
-					data.AddTriIndex(i * 3 + v);
-				}
+				Vector3 vertex = tin.triangles[i].Vertices[v];
+				data.AddVertex(vertex);
+				data.AddUV(vertex.x / tin.size, vertex.z / tin.size);
+				data.AddTriIndex(i * 3 + v);
 			}
+
 			return data;
 		}
 
