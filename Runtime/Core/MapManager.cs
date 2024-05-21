@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DavidUtils;
 using DavidUtils.DebugUtils;
-using DavidUtils.ExtensionMethods;
-using DavidUtils.PlayerControl;
+using DavidUtils.TerrainExtensions;
 using DavidUtils.ThreadingUtils;
 using Procrain.Geometry;
 using Procrain.MapGeneration;
@@ -15,7 +14,7 @@ using Procrain.Noise;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
-using UnityEngine.Serialization;
+using Player = DavidUtils.PlayerControl.Player;
 
 namespace Procrain.Core
 {
@@ -40,9 +39,9 @@ namespace Procrain.Core
 
 		#region PLAYER
 
-		[SerializeField] public Player player;
-		public Vector2 PlayerNormalizedPosition => Terrain.GetNormalizedPosition(player.Position);
-		private float PlayerRotationAngle => player.Rotation.eulerAngles.y;
+		public static Player Player => Player.Instance;
+		public Vector2 PlayerNormalizedPosition => Terrain.GetNormalizedPosition(Player.Position);
+		private float PlayerRotationAngle => Player.Rotation.eulerAngles.y;
 		public Quaternion PlayerRotationForUI => Quaternion.AngleAxis(90 + PlayerRotationAngle, Vector3.back);
 
 		#endregion
@@ -51,7 +50,6 @@ namespace Procrain.Core
 		{
 			base.Awake();
 
-			player = FindObjectOfType<Player>(true);
 			water = GameObject.FindGameObjectWithTag("Water");
 
 			BuildMap();
@@ -102,7 +100,7 @@ namespace Procrain.Core
 				terrainSettings.NotifyUpdate();
 			}
 		}
-		
+
 		protected virtual void OnValidate()
 		{
 			if (!autoUpdate) return;
@@ -118,6 +116,7 @@ namespace Procrain.Core
 				terrainSettings.ValuesUpdated -= OnValuesUpdated;
 				if (autoUpdate) terrainSettings.ValuesUpdated += OnValuesUpdated;
 			}
+
 			if (noiseParams != null)
 			{
 				noiseParams.ValuesUpdated -= OnValuesUpdated;
@@ -180,22 +179,28 @@ namespace Procrain.Core
 
 		public void BuildMapSequential()
 		{
-			DebugTimer.DebugTime(BuildHeightMap_Sequential, $"Time to build HeightMap {MapSampleSize} x {MapSampleSize}");
-			
+			DebugTimer.DebugTime(
+				BuildHeightMap_Sequential,
+				$"Time to build HeightMap {MapSampleSize} x {MapSampleSize}"
+			);
+
 			if (buildTexture)
 				DebugTimer.DebugTime(BuildTexture2D_Sequential, $"Time to build Texture {MapSize} x {MapSize}");
-			
+
 			if (buildMesh)
-				DebugTimer.DebugTime(() => BuildMeshData_Sequential(), $"Time to build MeshData {MapSampleSize} x {MapSampleSize}");
+				DebugTimer.DebugTime(
+					() => BuildMeshData_Sequential(),
+					$"Time to build MeshData {MapSampleSize} x {MapSampleSize}"
+				);
 		}
 
 		private IEnumerator BuildMapParallelizedCoroutine()
 		{
 			yield return BuildHeightMap_ParallelizedCoroutine();
-			
+
 			if (buildTexture)
 				yield return BuildTexture2D_ParallelizedCoroutine();
-			
+
 			if (buildMesh)
 				yield return BuildMeshData_ParallelizedCoroutine();
 		}
@@ -518,7 +523,7 @@ namespace Procrain.Core
 		private void OnDrawGizmos()
 		{
 			var textureSize = 10;
-			Vector3 textureOffset = - new Vector3(1, 1, 0) * textureSize / 2;
+			Vector3 textureOffset = -new Vector3(1, 1, 0) * textureSize / 2;
 			Vector3 meshOffset = Vector3.back * 2;
 			Quaternion meshRotation = Quaternion.Euler(90, 0, 0);
 			var meshScale = new Vector3(0.01f, 0.04f, 0.01f);

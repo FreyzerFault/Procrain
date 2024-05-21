@@ -23,7 +23,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 		private int Size => localNoiseParams.Size;
 		private Vector2Int PlayerChunk =>
 			GetChunkCoord(
-				player?.transform.position ?? GameObject.FindWithTag("Player").transform.position
+				Player?.transform.position ?? GameObject.FindWithTag("Player").transform.position
 			);
 
 		private float Extent => Size / 2f;
@@ -84,7 +84,11 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 				return;
 
 			// Si no la genera y la guarda
-			meshData = MeshGenerator.BuildMeshData(MapManager.Instance.HeightMap, lod, MapManager.Instance.TerrainSettings.HeightScale);
+			meshData = MeshGenerator.BuildMeshData(
+				MapManager.Instance.HeightMap,
+				lod,
+				MapManager.Instance.TerrainSettings.HeightScale
+			);
 			_meshDataPerLOD.Add(lod, meshData);
 		}
 
@@ -120,12 +124,12 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 		private Texture2D BuildTextureData() =>
 			TextureGenerator.BuildTexture2D(localHeightMap, MapManager.Instance.heightGradient);
 
-        /// <summary>
-        ///     Actualiza la Visibilidad del Chunk (si debe ser renderizado o no).
-        ///     Y actualiza tambien el LOD
-        /// </summary>
-        /// <param name="maxRenderDist">Distancia Maxima de Renderizado de Chunks</param>
-        public void UpdateVisibility(int maxRenderDist)
+		/// <summary>
+		///     Actualiza la Visibilidad del Chunk (si debe ser renderizado o no).
+		///     Y actualiza tambien el LOD
+		/// </summary>
+		/// <param name="maxRenderDist">Distancia Maxima de Renderizado de Chunks</param>
+		public void UpdateVisibility(int maxRenderDist)
 		{
 			// La distancia del jugador al chunk
 			int chunkDistance = Mathf.FloorToInt(Vector2Int.Distance(ChunkCoord, PlayerChunk));

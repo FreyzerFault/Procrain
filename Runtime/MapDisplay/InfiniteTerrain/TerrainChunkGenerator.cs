@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DavidUtils;
 using DavidUtils.PlayerControl;
 using Procrain.MapGeneration;
 using Procrain.Noise;
@@ -28,7 +27,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 		public int maxRenderDist = 4;
 
 		// PLAYER
-		public Player player => GameManager.FindPlayer();
+		public Player player => Player.Instance;
 
 		[SerializeField]
 		private Vector2Int playerChunkCoords;
