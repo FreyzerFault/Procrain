@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using DavidUtils.ExtensionMethods;
 using DavidUtils.Geometry;
+using DavidUtils.Geometry.Bounding_Box;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
