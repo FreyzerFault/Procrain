@@ -11,7 +11,7 @@ namespace Procrain.Geometry
 {
 	public class Tin
 	{
-		private readonly Bounds2D _bounds;
+		private readonly AABB_2D _aabb;
 
 		private readonly float errorTolerance = 0.1f;
 
@@ -62,11 +62,11 @@ namespace Procrain.Geometry
 		/// <param name="maxIterations">Iteraciones maximas permitidas (para una creacion progresiva y debugging)</param>
 		public Tin(
 			IEnumerable<Vector3> points, float errorTolerance = 1, float heightScale = 100,
-			int maxIterations = -1, Bounds2D? bounds = null
+			int maxIterations = -1, AABB_2D? bounds = null
 		)
 			: this(errorTolerance, heightScale, maxIterations)
 		{
-			_bounds = bounds ?? new Bounds2D(Vector2.zero, Vector2.one * size);
+			_aabb = bounds ?? new AABB_2D(Vector2.zero, Vector2.one * size);
 			foreach (Vector3 point in points) heightMap.Add(new Vector3(point.x, point.y * this.heightScale, point.z));
 		}
 
@@ -80,7 +80,7 @@ namespace Procrain.Geometry
 		/// <param name="heightScale"></param>
 		/// <param name="maxIterations">Iteraciones maximas permitidas (para una creacion progresiva y debugging)</param>
 		public Tin(
-			NativeArray<float> heightMap, int size, Bounds2D? bounds = null, float errorTolerance = 1,
+			NativeArray<float> heightMap, int size, AABB_2D? bounds = null, float errorTolerance = 1,
 			float heightScale = 100,
 			int maxIterations = -1
 		)
@@ -88,7 +88,7 @@ namespace Procrain.Geometry
 		{
 			this.size = size;
 
-			_bounds = bounds ?? new Bounds2D(Vector2.zero, Vector2.one * size);
+			_aabb = bounds ?? new AABB_2D(Vector2.zero, Vector2.one * size);
 
 			// Guardamos el Mapa de Alturas como un conjunto de Vertices potenciales
 			for (var x = 0; x < size; x++)
@@ -99,12 +99,12 @@ namespace Procrain.Geometry
 		public Tin(
 			float[] heightMap, int size, float errorTolerance = 1,
 			float heightScale = 100,
-			int maxIterations = -1, Bounds2D? bounds = null
+			int maxIterations = -1, AABB_2D? bounds = null
 		) : this(errorTolerance, heightScale, maxIterations)
 		{
 			this.size = size;
 
-			_bounds = bounds ?? new Bounds2D(Vector2.zero, Vector2.one * size);
+			_aabb = bounds ?? new AABB_2D(Vector2.zero, Vector2.one * size);
 
 			// Guardamos el Mapa de Alturas como un conjunto de Vertices potenciales
 			for (var x = 0; x < size; x++)
@@ -120,7 +120,7 @@ namespace Procrain.Geometry
 		{
 			size = heightMap.GetLength(0);
 
-			_bounds = new Bounds2D(Vector2.zero, Vector2.one * size);
+			_aabb = new AABB_2D(Vector2.zero, Vector2.one * size);
 
 			// Guardamos el Mapa de Alturas como un conjunto de Vertices potenciales
 			for (var x = 0; x < size; x++)
@@ -865,7 +865,7 @@ namespace Procrain.Geometry
 		public Vector2[] GetIntersections(Vector2 a, Vector2 b)
 		{
 			// Deben estar dentro del AABB, porque si no habria que calcular 2 intersecciones en el primer y ultimo Triangulo
-			if (!_bounds.Contains(a) || !_bounds.Contains(b))
+			if (!_aabb.Contains(a) || !_aabb.Contains(b))
 				throw new Exception(
 					"Calcular los puntos de interseccion de una linea con extremos fuera del AABB del TIN no esta implementado"
 				);

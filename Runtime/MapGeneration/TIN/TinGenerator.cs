@@ -1,5 +1,4 @@
 using System;
-using DavidUtils.Geometry;
 using DavidUtils.Geometry.Bounding_Box;
 using Procrain.Geometry;
 using Procrain.MapGeneration.Mesh;
@@ -20,7 +19,7 @@ namespace Procrain.MapGeneration.TIN
 		/// <returns>Datos de una Malla que va a usar Unity</returns>
 		private static Tin BuildTin(
 			HeightMap heightMap, float heigthScale = 1, float errorTolerance = 1,
-			int maxIterations = 10, Bounds2D? bounds = null
+			int maxIterations = 10, AABB_2D? bounds = null
 		)
 		{
 			// Creacion del Tin (Estructura topologica interna)
@@ -35,19 +34,19 @@ namespace Procrain.MapGeneration.TIN
 		/// <summary>
 		///     Genera un TIN a partir de unos puntos iniciales (las esquinas formadas por el AABB)
 		/// </summary>
-		/// <param name="bounds">Bounding Box</param>
+		/// <param name="aabb">Bounding Box</param>
 		/// <param name="errorTolerance">Error Maximo Tolerado por el Tin</param>
 		/// <param name="heightScale"></param>
 		/// <param name="maxIterations">Limite de iteraciones maximas del Tin</param>
 		/// <param name="points">Puntos extras pregenerados</param>
 		/// <returns>Datos de una Malla que va a usar Unity</returns>
 		private static Tin BuildTin(
-			Bounds2D bounds, float errorTolerance = 1, float heightScale = 100,
+			AABB_2D aabb, float errorTolerance = 1, float heightScale = 100,
 			int maxIterations = 10, Vector3[] points = null
 		)
 		{
 			// Creacion del Tin (Estructura topologica interna)
-			var tin = new Tin(points ?? Array.Empty<Vector3>(), errorTolerance, heightScale, maxIterations, bounds);
+			var tin = new Tin(points ?? Array.Empty<Vector3>(), errorTolerance, heightScale, maxIterations, aabb);
 			tin.InitGeometry();
 			tin.AddPointLoop();
 
