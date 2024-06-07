@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace DavidUtils.Geometry
+namespace Procrain.Geometry
 {
 	[Serializable]
 	public class Vertex
@@ -36,8 +36,8 @@ namespace DavidUtils.Geometry
 		public string ToString(bool withCoords) =>
 			ToString() + (withCoords ? "v" + "(" + x + ", " + z + ") H = " + y : "");
 
-        /// Se identifica por su coordenada 2D en el plano X,Z.
-        /// No puede haber mas de 1 punto con distinta altura
-        public override int GetHashCode() => v2D.GetHashCode();
+		/// Se identifica por su coordenada 2D en el plano X,Z.
+		/// No puede haber mas de 1 punto con distinta altura
+		public override int GetHashCode() => v2D.GetHashCode();
 	}
 }

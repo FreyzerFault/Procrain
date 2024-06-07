@@ -1,9 +1,9 @@
-using DavidUtils.ScriptableObjectsUtils;
+using DavidUtils.DevTools.CustomAttributes;
+using DavidUtils.DevTools.ScriptableObjects;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 #if UNITY_EDITOR
-using DavidUtils.Editor;
 #endif
 
 namespace Procrain.Noise
@@ -17,10 +17,10 @@ namespace Procrain.Noise
 		public float lacunarity;
 		public float2 offset;
 		public uint seed;
-		
+
 		public int SampleSize => size + 1;
 	}
-	
+
 	// Clase en la que se almacenan los parametros usados en el ruido
 	[CreateAssetMenu(menuName = "Procrain/Perlin Noise Params", fileName = "Perlin Noise Params")]
 	public class PerlinNoiseParams : AutoUpdatableSoWithBackup<PerlinNoiseParams>
@@ -56,9 +56,9 @@ namespace Procrain.Noise
 
 		// Numero de puntos por lado del terreno
 		public int SampleSize => size + 1;
-		
+
 		// Convert to a struct that can be used in Jobs System
-		public PerlinNoiseParams_ThreadSafe ToThreadSafe() => new PerlinNoiseParams_ThreadSafe
+		public PerlinNoiseParams_ThreadSafe ToThreadSafe() => new()
 		{
 			size = size,
 			scale = scale,
@@ -68,8 +68,8 @@ namespace Procrain.Noise
 			offset = offset,
 			seed = seed
 		};
-		
-		
+
+
 		public int Size
 		{
 			get => size;
@@ -79,7 +79,7 @@ namespace Procrain.Noise
 				NotifyUpdate();
 			}
 		}
-		
+
 		public float Scale
 		{
 			get => scale;
@@ -99,7 +99,7 @@ namespace Procrain.Noise
 				NotifyUpdate();
 			}
 		}
-		
+
 		public float2 Offset
 		{
 			get => offset;
@@ -109,7 +109,7 @@ namespace Procrain.Noise
 				NotifyUpdate();
 			}
 		}
-		
+
 		public int NumOctaves
 		{
 			get => numOctaves;
@@ -119,7 +119,7 @@ namespace Procrain.Noise
 				NotifyUpdate();
 			}
 		}
-		
+
 		public float Persistance
 		{
 			get => persistance;
@@ -129,7 +129,7 @@ namespace Procrain.Noise
 				NotifyUpdate();
 			}
 		}
-		
+
 		public float Lacunarity
 		{
 			get => lacunarity;
@@ -139,14 +139,14 @@ namespace Procrain.Noise
 				NotifyUpdate();
 			}
 		}
-		
+
 		public void ResetSeed() => Seed = (uint)Random.Range(0, int.MaxValue);
-		
-		
+
+
 		protected override void CopyValues(PerlinNoiseParams from, PerlinNoiseParams to)
 		{
 			to.size = from.size;
-			to.scale= from.scale;
+			to.scale = from.scale;
 			to.offset = from.offset;
 			to.seed = from.seed;
 			to.numOctaves = from.numOctaves;

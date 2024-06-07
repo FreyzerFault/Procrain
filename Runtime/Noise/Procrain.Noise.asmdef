@@ -1,23 +1,23 @@
 {
-  "name": "Procrain.Noise",
-  "rootNamespace": "Procrain",
-  "references": [
-    "GUID:8e56582fd59963847b3cb4d5600b8406",
-    "GUID:d95f62dca18902045bd3f2c6a5898a9d",
-    "GUID:7e1058974e6f90f4fa0edf5d8fc9f38b",
-    "GUID:d8b63aba1907145bea998dd612889d6b",
-    "GUID:7f7b2cf5ee3a5414cbb09596b1fee914",
-    "GUID:a7adaf89cbc238348aa7047394acc30d",
-    "GUID:7b6812e73df700c46a17d07883bb2d35",
-    "GUID:6013b65da9e979c438e8f1694431bb0b"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "Procrain.Noise",
+    "rootNamespace": "Procrain",
+    "references": [
+        "GUID:8e56582fd59963847b3cb4d5600b8406",
+        "GUID:d95f62dca18902045bd3f2c6a5898a9d",
+        "GUID:7e1058974e6f90f4fa0edf5d8fc9f38b",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:7f7b2cf5ee3a5414cbb09596b1fee914",
+        "GUID:a7adaf89cbc238348aa7047394acc30d",
+        "GUID:6013b65da9e979c438e8f1694431bb0b",
+        "GUID:19e954fc4bd167841829ed4a1c787597"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

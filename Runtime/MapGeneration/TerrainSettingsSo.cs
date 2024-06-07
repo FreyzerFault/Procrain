@@ -1,8 +1,8 @@
 using DavidUtils;
-using DavidUtils.ScriptableObjectsUtils;
+using DavidUtils.DevTools.CustomAttributes;
+using DavidUtils.DevTools.ScriptableObjects;
 using UnityEngine;
 #if UNITY_EDITOR
-using DavidUtils.Editor;
 #endif
 
 namespace Procrain.MapGeneration
@@ -21,7 +21,6 @@ namespace Procrain.MapGeneration
 
 
 		#region UPDATABLE PARAMS
-
 
 		public AnimationCurve HeightCurve
 		{
