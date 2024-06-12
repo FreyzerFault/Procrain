@@ -113,6 +113,54 @@ Material:
         m_Texture: {fileID: 2800000, guid: ce114364ba4f5754cad9b0c28cc90164, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Layer_1_Albedo:
+        m_Texture: {fileID: 2800000, guid: ae01dcda5c7dcec4eb03b82c92b650ac, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Layer_1_Mask:
+        m_Texture: {fileID: 2800000, guid: deed7ba5ece6cce45b240a165cba5fe6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Layer_1_Normal_Map:
+        m_Texture: {fileID: 2800000, guid: 4f0aff8e3cb3ffb4485aea18fea25f14, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Layer_2_Albedo:
+        m_Texture: {fileID: 2800000, guid: 7b39161f78f35f5489ecacfd55114ff3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Layer_2_Mask:
+        m_Texture: {fileID: 2800000, guid: 9c9d7a0778c1aff45a35ec73a110082a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Layer_2_Normal_Map:
+        m_Texture: {fileID: 2800000, guid: f73e6652dc27bfb4c95b6eb27909a273, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Layer_3_Albedo:
+        m_Texture: {fileID: 2800000, guid: 029d1c955380c4d4ca18331bcaf3a2f3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Layer_3_Mask:
+        m_Texture: {fileID: 2800000, guid: f505556d4527f6a4b8f2a463374f4eb9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Layer_3_Normal_Map:
+        m_Texture: {fileID: 2800000, guid: 65c12136c0464aa4e8712ca840d897d1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Layer_4_Albedo:
+        m_Texture: {fileID: 2800000, guid: 202b1a079bad225449ad433cb447977b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Layer_4_Mask:
+        m_Texture: {fileID: 2800000, guid: 6678bc04b26b9aa48a0d8f64120209e3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Layer_4_Normal_Map:
+        m_Texture: {fileID: 2800000, guid: f700b64d46115d44699eec48c1385494, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -185,12 +233,16 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Snow_Albedo:
+        m_Texture: {fileID: 2800000, guid: 4826a1aecb2777643bdd9225a3a763b6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Snow_Mask:
-        m_Texture: {fileID: 2800000, guid: 1a4d9960438e8f242a5155b27813efe9, type: 3}
+        m_Texture: {fileID: 2800000, guid: dbf0f1aaf6e97864e817e8de8c42ec5c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Snow_Normal_Map:
-        m_Texture: {fileID: 2800000, guid: 52f2b70b42682a145b20ea5f04fd6af1, type: 3}
+        m_Texture: {fileID: 2800000, guid: 6548468ec06ea124ea323bdcdeceec2a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Snow_Texture:
@@ -198,6 +250,54 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_1_Albedo:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_1_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_1_Normal_Map:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_2_Albedo:
+        m_Texture: {fileID: 2800000, guid: 15ddb58262642d54082b829c911a530f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_2_Mask:
+        m_Texture: {fileID: 2800000, guid: 078f44e56893b5e4ca6483aa6c448270, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_2_Normal_Map:
+        m_Texture: {fileID: 2800000, guid: d62f965ac030188499fd17de34e284c6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_3_Albedo:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_3_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_3_Normal_Map:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_4_Albedo:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_4_Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_4_Normal_Map:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -231,6 +331,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _1_2_Blend_Dist: 0.109
+    - _1_2_Height: 0.303
+    - _2_3_Blend_Dist: 0.099
+    - _2_3_Height: 0.339
+    - _3_4_Blend_Dist: 0.209
+    - _3_4_Height: 0.69
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
@@ -259,7 +365,12 @@ Material:
     - _Ground_Tile: 0.1
     - _HeightLines_Spacing: 0.5
     - _HeightLines_Thickness: 0.1
-    - _Height_Scale: 100
+    - _Height_Scale: 24.5
+    - _Layer_1_Tile: 0.259
+    - _Layer_2_Tile: 0.513
+    - _Layer_3_Tile: 0.478
+    - _Layer_4_Roughness_Intensity: 0.5
+    - _Layer_4_Tile: 0.399
     - _LowDetailBlend: 5
     - _LowDetailDistance: 30.55
     - _Max_Height: 20
@@ -273,6 +384,7 @@ Material:
     - _Rock_Blend: 0.989
     - _Rock_Roughness_Intensity: 0.63
     - _Rock_Tile: 0.1
+    - _Roughness: 0.552
     - _SandToGrassBlend: 0.1
     - _Sand_Blend: 0
     - _Sand_Height: 0.5
@@ -280,13 +392,23 @@ Material:
     - _Show_Height_Lines: 0
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
-    - _Snow_Blend: 0.01
-    - _Snow_Height: 0.8
-    - _Snow_Max_Steep: 0.52
-    - _Snow_Tile: 0.1
+    - _Snow_Active: 1
+    - _Snow_Blend: 1.72
+    - _Snow_Blend_Dist: 0.291
+    - _Snow_Height: 0.79
+    - _Snow_Max_Steep: 0.412
+    - _Snow_Tile: 46.4
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
+    - _Sub_Layer_1_Density: 0
+    - _Sub_Layer_1_Tile: 1
+    - _Sub_Layer_2_Density: 0.453
+    - _Sub_Layer_2_Tile: 0.3
+    - _Sub_Layer_3_Density: 0
+    - _Sub_Layer_3_Tile: 1
+    - _Sub_Layer_4_Density: 0
+    - _Sub_Layer_4_Tile: 1
     - _Surface: 0
     - _TERRAINCOMPATIBLE: 1
     - _Use_Masks: 1
@@ -300,5 +422,6 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Height_Lines_Color: {r: 0, g: 0.972549, b: 1, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_BuildTextureStacks: []
