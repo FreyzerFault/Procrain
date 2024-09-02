@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using DavidUtils;
 using DavidUtils.DevTools.Testing;
 using DavidUtils.ExtensionMethods;
-using DavidUtils.ThreadingUtils;
+using DavidUtils.Threading;
 using Procrain.Geometry;
 using Procrain.MapGeneration;
 using Procrain.MapGeneration.Mesh;
@@ -14,7 +14,7 @@ using Procrain.Noise;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
-using Player = DavidUtils.PlayerControl.Player;
+using Player = DavidUtils.Player.Player;
 
 namespace Procrain.Core
 {

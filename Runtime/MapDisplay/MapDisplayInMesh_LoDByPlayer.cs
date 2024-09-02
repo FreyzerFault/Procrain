@@ -1,4 +1,4 @@
-using DavidUtils.PlayerControl;
+using DavidUtils.Player;
 using Procrain.Core;
 using UnityEngine;
 

@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using DavidUtils.ThreadingUtils;
+using DavidUtils.Threading;
 using Unity.Collections;
 using UnityEngine;
 

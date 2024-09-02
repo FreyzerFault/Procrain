@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using DavidUtils.PlayerControl;
+using DavidUtils.Player;
 using Procrain.MapGeneration;
 using Procrain.Noise;
 using UnityEngine;

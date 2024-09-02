@@ -1,4 +1,4 @@
-using DavidUtils.ThreadingUtils;
+using DavidUtils.Threading;
 using Procrain.Noise;
 using Unity.Burst;
 using Unity.Jobs;
