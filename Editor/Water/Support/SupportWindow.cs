@@ -3,6 +3,7 @@
 // https://alexander-ameye.gitbook.io/stylized-water/
 //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━	
 
+#if UNIVERSAL_RENDERER
 using System;
 using System.Linq;
 using System.Reflection;
@@ -686,3 +687,4 @@ namespace Procrain.Editor.Water.Support
         }
     }
 }
+#endif
