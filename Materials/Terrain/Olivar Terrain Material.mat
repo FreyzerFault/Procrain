@@ -36,16 +36,40 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - _Layer_3_Albedo:
+        m_Texture: {fileID: 2800000, guid: 3c90061fa1fc5e645b033f9db67346c8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Layer_3_Mask:
+        m_Texture: {fileID: 2800000, guid: d3c8eb71da0d7c1489bc2c8e6bc1449d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Layer_3_Normal_Map:
+        m_Texture: {fileID: 2800000, guid: b21ce53cf865f6e479df7876fe80228a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_3_Albedo:
+        m_Texture: {fileID: 2800000, guid: 10fd0c74923486e43a00cd54eedf2c86, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_3_Mask:
+        m_Texture: {fileID: 2800000, guid: a900f4a256f892040b32057883b3007a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Sub_Layer_3_Normal_Map:
+        m_Texture: {fileID: 2800000, guid: c1f3c680409812e4b835bc7144482bf6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _1_2_Height: 0.2
-    - _2_3_Blend_Dist: 0.014
+    - _2_3_Blend_Dist: 0.028
     - _2_3_Height: 0.266
     - _HeightLines_Spacing: 0.2
     - _Show_Height_Lines: 0
     - _Snow_Active: 0
-    - _Sub_Layer_3_Density: 0.202
+    - _Sub_Layer_3_Density: 0.162
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1
