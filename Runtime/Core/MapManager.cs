@@ -527,7 +527,7 @@ namespace Procrain.Core
 			Vector3 meshOffset = Vector3.back * 2;
 			Quaternion meshRotation = Quaternion.Euler(90, 0, 0);
 			var meshScale = new Vector3(0.01f, 0.04f, 0.01f);
-			if (buildTexture)
+			if (buildTexture && texture != null)
 				Gizmos.DrawGUITexture(new Rect(transform.position + textureOffset, Vector3.one * textureSize), texture);
 			if (buildMesh)
 				// Gizmos.DrawMesh(mesh, transform.position + meshOffset, Quaternion.identity, meshScale);
