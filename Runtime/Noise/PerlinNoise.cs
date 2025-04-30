@@ -198,10 +198,10 @@ namespace Procrain.Noise
 		/// <returns>Array con las Esquinas {BOT LEFT, BOT RIGHT, TOP LEFT, TOP RIGHT}</returns>
 		private static Vector3[] GetWorldCorners(AABB_2D aabb, PerlinNoiseParams np, PerlinOctaves octaves) => new[]
 		{
-			aabb.BL.ToV3xz().WithY(GetNoiseHeight(aabb.BL, np, octaves)),
-			aabb.BR.ToV3xz().WithY(GetNoiseHeight(aabb.BR, np, octaves)),
-			aabb.TL.ToV3xz().WithY(GetNoiseHeight(aabb.TL, np, octaves)),
-			aabb.TR.ToV3xz().WithY(GetNoiseHeight(aabb.TR, np, octaves))
+			aabb.BL.ToV3XZ().WithY(GetNoiseHeight(aabb.BL, np, octaves)),
+			aabb.BR.ToV3XZ().WithY(GetNoiseHeight(aabb.BR, np, octaves)),
+			aabb.TL.ToV3XZ().WithY(GetNoiseHeight(aabb.TL, np, octaves)),
+			aabb.TR.ToV3XZ().WithY(GetNoiseHeight(aabb.TR, np, octaves))
 		};
 
 		#endregion

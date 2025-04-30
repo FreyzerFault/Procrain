@@ -332,7 +332,7 @@ namespace Procrain.Geometry
 
 			if (tri == null && edge == null)
 				// Si no se ha precalculado lo calculamos
-				if (!GetTriangle(point.ToV2xz(), out tri, out edge))
+				if (!GetTriangle(point.ToV2XZ(), out tri, out edge))
 				{
 					// Si aun no se consigue nada es que o esta fuera o ya se añadio
 					heightMap.Remove(point);
@@ -602,10 +602,10 @@ namespace Procrain.Geometry
 
 			// Comprobamos si vertice de el vertice del Vecino opuesto al Eje
 			// esta dentro del Circulo formado por el vertice de Tri opuesto al Eje (el nuevo) y los demas vertices del Eje
-			Vector2 p = oppositeVertex.ToV2xz();
-			Vector2 a = newVertex.ToV2xz();
-			Vector2 b = edge.begin.ToV2xz();
-			Vector2 c = edge.end.ToV2xz();
+			Vector2 p = oppositeVertex.ToV2XZ();
+			Vector2 a = newVertex.ToV2XZ();
+			Vector2 b = edge.begin.ToV2XZ();
+			Vector2 c = edge.end.ToV2XZ();
 			if (!GeometryUtils.PointInCirle(p, a, b, c)) return false;
 
 			// FLIP:
@@ -724,7 +724,7 @@ namespace Procrain.Geometry
 				// Con la condicion de estar mas alejado de la minDistanceBetweenPoints de los otros puntos ya añadidos
 				Vector3 point1 = point;
 				bool atSafeDistance = pointQueue
-					.Select(vertex => Vector2.Distance(vertex.ToV2xz(), point1.ToV2xz()))
+					.Select(vertex => Vector2.Distance(vertex.ToV2XZ(), point1.ToV2XZ()))
 					.All(distance => distance >= minDistanceBetweenPoints);
 
 				if (!atSafeDistance) continue;
@@ -778,7 +778,7 @@ namespace Procrain.Geometry
 		{
 			// Buscamos el Triangulo al que pertenece o el Eje al que es Colinear
 			// Si devuelve false es que no esta en ninguno
-			if (!GetTriangle(point.ToV2xz(), out triangle, out edge))
+			if (!GetTriangle(point.ToV2XZ(), out triangle, out edge))
 			{
 				heightMap.Remove(point);
 				return 0;
@@ -786,10 +786,10 @@ namespace Procrain.Geometry
 
 			// 2 casos:
 			// Pertenece a un Triangulo
-			if (triangle != null) return Mathf.Abs(triangle.GetHeightInterpolation(point.ToV2xz()) - point.y);
+			if (triangle != null) return Mathf.Abs(triangle.GetHeightInterpolation(point.ToV2XZ()) - point.y);
 
 			// Pertenece a un Eje
-			if (edge != null) return Mathf.Abs(edge.GetHeightInterpolation(point.ToV2xz()) - point.y);
+			if (edge != null) return Mathf.Abs(edge.GetHeightInterpolation(point.ToV2XZ()) - point.y);
 
 			return 0;
 		}
@@ -879,8 +879,8 @@ namespace Procrain.Geometry
 					Edge.PointEdgePosition pos =
 						Edge.GetPointEdgePosition(
 							b,
-							collinearEdge.begin.ToV2xz(),
-							collinearEdge.end.ToV2xz()
+							collinearEdge.begin.ToV2XZ(),
+							collinearEdge.end.ToV2XZ()
 						);
 					switch (pos)
 					{

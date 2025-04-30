@@ -26,9 +26,9 @@ namespace Procrain.Geometry
 		public Vector3 v2;
 		public Vector3 v3;
 
-		public Vector2 V1XZ => v1.ToV2xz();
-		public Vector2 V2XZ => v2.ToV2xz();
-		public Vector2 V3XZ => v3.ToV2xz();
+		public Vector2 V1XZ => v1.ToV2XZ();
+		public Vector2 V2XZ => v2.ToV2XZ();
+		public Vector2 V3XZ => v3.ToV2XZ();
 
 		public Vector3[] Vertices => new[] { v1, v2, v3 };
 		public Vector2[] Vertices2D => new[] { V1XZ, V2XZ, V3XZ };

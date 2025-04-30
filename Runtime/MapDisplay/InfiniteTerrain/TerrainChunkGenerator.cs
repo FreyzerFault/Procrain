@@ -59,7 +59,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 		private void Start()
 		{
 			if (autoUpdate)
-				terrainSettingsSo.ValuesUpdated += OnValuesUpdated;
+				terrainSettingsSo.valuesUpdated += OnValuesUpdated;
 		}
 
 		public void Update()
@@ -74,14 +74,14 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 			lastPlayerChunkCoords = playerChunkCoords;
 		}
 
-		private void OnDestroy() => terrainSettingsSo.ValuesUpdated -= OnValuesUpdated;
+		private void OnDestroy() => terrainSettingsSo.valuesUpdated -= OnValuesUpdated;
 
 		private void OnValidate()
 		{
 			if (!autoUpdate)
 				return;
-			terrainSettingsSo.ValuesUpdated -= OnValuesUpdated;
-			terrainSettingsSo.ValuesUpdated += OnValuesUpdated;
+			terrainSettingsSo.valuesUpdated -= OnValuesUpdated;
+			terrainSettingsSo.valuesUpdated += OnValuesUpdated;
 		}
 
 		public void RegenerateTerrain()

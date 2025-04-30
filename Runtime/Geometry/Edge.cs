@@ -69,7 +69,7 @@ namespace Procrain.Geometry
         }
 
         public static PointEdgePosition GetPointEdgePosition(Vector3 p, Vector3 begin, Vector3 end) =>
-            GetPointEdgePosition(p.ToV2xz(), begin.ToV2xz(), end.ToV2xz());
+            GetPointEdgePosition(p.ToV2XZ(), begin.ToV2XZ(), end.ToV2XZ());
 
         /// <summary>
         ///     Interpolacion de la altura en un punto 2D en la Arista.
@@ -101,15 +101,15 @@ namespace Procrain.Geometry
         public bool GetIntersectionPoint(Vector2 a, Vector2 b, out Vector2? intersectionPoint)
         {
             intersectionPoint = null;
-            PointEdgePosition posA = GetPointEdgePosition(a, begin.ToV2xz(), end.ToV2xz());
-            PointEdgePosition posB = GetPointEdgePosition(b, begin.ToV2xz(), end.ToV2xz());
+            PointEdgePosition posA = GetPointEdgePosition(a, begin.ToV2XZ(), end.ToV2XZ());
+            PointEdgePosition posB = GetPointEdgePosition(b, begin.ToV2XZ(), end.ToV2XZ());
 
             // Solo hay interseccion si los dos puntos estan en lados opuestos de la arista
             if ((posA == PointEdgePosition.RIGHT && posB == PointEdgePosition.LEFT) ||
                 (posA == PointEdgePosition.LEFT && posB == PointEdgePosition.RIGHT))
             {
-                Vector2 c = begin.ToV2xz();
-                Vector2 d = end.ToV2xz();
+                Vector2 c = begin.ToV2XZ();
+                Vector2 d = end.ToV2XZ();
 
                 Vector2 ab = b - a;
                 Vector2 cd = d - c;

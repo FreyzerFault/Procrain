@@ -66,7 +66,7 @@ namespace Procrain.Core
 
 			// UNSUSCRIBE
 			if (terrainSettings == null) return;
-			terrainSettings.ValuesUpdated -= OnValuesUpdated;
+			terrainSettings.valuesUpdated -= OnValuesUpdated;
 
 			_heightMapThreadSafe.Dispose();
 			_heightCurveThreadSafe.Dispose();
@@ -113,14 +113,14 @@ namespace Procrain.Core
 		{
 			if (terrainSettings != null)
 			{
-				terrainSettings.ValuesUpdated -= OnValuesUpdated;
-				if (autoUpdate) terrainSettings.ValuesUpdated += OnValuesUpdated;
+				terrainSettings.valuesUpdated -= OnValuesUpdated;
+				if (autoUpdate) terrainSettings.valuesUpdated += OnValuesUpdated;
 			}
 
 			if (noiseParams != null)
 			{
-				noiseParams.ValuesUpdated -= OnValuesUpdated;
-				if (autoUpdate) noiseParams.ValuesUpdated += OnValuesUpdated;
+				noiseParams.valuesUpdated -= OnValuesUpdated;
+				if (autoUpdate) noiseParams.valuesUpdated += OnValuesUpdated;
 			}
 		}
 
