@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using DavidUtils.Player;
-using Procrain.MapGeneration;
-using Procrain.Noise;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Procrain.MapGeneration;
+using Procrain.Noise;
+using Procrain.Utils;
 
 // Generador de Terreno Adaptativo a la posición del Jugador
 //
@@ -14,8 +14,12 @@ using UnityEngine.Serialization;
 // no genera el Chunk hasta que el jugador se acerca a menos de la distancia de renderizado
 namespace Procrain.MapDisplay.InfiniteTerrain
 {
+	// TODO: Compatibilizar MapManager y TerrainChunkGenerator.
+	// MapManager se debe encargar de toda la pesca del Mapa de Alturas
+	// y el TerrainChunkGenerator solo de la division en Chunks
+	// Ya los propios Chunks se encargan de pedir el Mapa de Alturas al MapManager y construir su malla.
 	[ExecuteAlways]
-	public class TerrainChunkGenerator : MonoBehaviour
+	public class TerrainChunkGenerator : Singleton<TerrainChunkGenerator>
 	{
 		// TEXTURAS
 		public Gradient gradient = new();
@@ -27,7 +31,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 		public int maxRenderDist = 4;
 
 		// PLAYER
-		public Player player => Player.Instance;
+		public IPlayer Player => IPlayer.Player;
 
 		[SerializeField]
 		private Vector2Int playerChunkCoords;
@@ -50,7 +54,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 
 		private int ChunkSize => noiseParams.Size;
 
-		private Vector2 PlayerPos2D => new(player.Position.x, player.Position.z);
+		private Vector2 PlayerPos2D => new(Player.Position.x, Player.Position.z);
 		private TerrainChunk PlayerChunk => chunkDictionary[playerChunkCoords];
 
 		// Longitud del Borde de los chunks, que sera el tama�o de mi matriz de Chunks Renderizados

@@ -3,11 +3,11 @@
     "rootNamespace": "Procrain",
     "references": [
         "GUID:b41b7865b149c7d4b9c749c4446a484a",
-        "GUID:19e954fc4bd167841829ed4a1c787597",
         "GUID:62bb8079c7bec1b4695edd7c435ad5e1",
         "GUID:8e56582fd59963847b3cb4d5600b8406",
         "GUID:a6245a649dbd77945a7c456417a40bdb",
-        "GUID:e2da289279c1b95469360a140ad6c5ef"
+        "GUID:d4a91758e3126cd48a4d2f78688bc680",
+        "GUID:dcaa067449e2d6447937dca610032439"
     ],
     "includePlatforms": [
         "Editor"

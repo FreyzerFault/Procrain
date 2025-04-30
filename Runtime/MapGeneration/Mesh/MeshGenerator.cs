@@ -1,9 +1,9 @@
 using System;
-using Procrain.Noise;
 using Unity.Burst;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using Procrain.Noise;
 
 namespace Procrain.MapGeneration.Mesh
 {

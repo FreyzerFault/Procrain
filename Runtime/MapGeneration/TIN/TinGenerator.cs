@@ -1,8 +1,7 @@
 using System;
-using DavidUtils.Geometry.Bounding_Box;
+using UnityEngine;
 using Procrain.Geometry;
 using Procrain.MapGeneration.Mesh;
-using UnityEngine;
 
 namespace Procrain.MapGeneration.TIN
 {

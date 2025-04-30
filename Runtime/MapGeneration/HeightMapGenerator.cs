@@ -1,5 +1,5 @@
-using DavidUtils.Threading;
 using Procrain.Noise;
+using Procrain.Utils;
 using Unity.Burst;
 using Unity.Jobs;
 using UnityEngine;

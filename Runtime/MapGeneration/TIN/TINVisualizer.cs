@@ -3,15 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DavidUtils.Geometry;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using Procrain.Geometry;
 using Procrain.MapGeneration.Mesh;
 using Procrain.MapGeneration.Texture;
 using Procrain.Noise;
 using Procrain.UI.Minimap;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 
 namespace Procrain.MapGeneration.TIN
 {

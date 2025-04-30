@@ -1,8 +1,8 @@
 ﻿using System;
-using DavidUtils.ExtensionMethods;
-using DavidUtils.Geometry;
 using JetBrains.Annotations;
+using Procrain.Utils;
 using UnityEngine;
+using VE = Procrain.Utils.VectorExtensions;
 
 namespace Procrain.Geometry
 {
@@ -92,7 +92,7 @@ namespace Procrain.Geometry
 		{
 			// Hay que ordenarlos en orden ANTIHORARIO
 			// (si alguno esta a la Derecha de la arista opuesta se hace un Swap de la opuesta):
-			if (GeometryUtils.IsRight(v1, v2, v3)) (v3, v2) = (v2, v3); // SWAP v2 <-> v3
+			if (v3.IsRight(v1, v2)) (v3, v2) = (v2, v3); // SWAP v2 <-> v3
 		}
 
 		/// <summary>
@@ -216,7 +216,7 @@ namespace Procrain.Geometry
 
 			// Si no, puede ser colinear con un eje, o estar en el vertice
 			// Por si acaso comprobamos primero que no sea un vertice
-			if (GeometryUtils.Equals(p, V1XZ) || GeometryUtils.Equals(p, V2XZ) || GeometryUtils.Equals(p, V3XZ))
+			if (VE.Equals(p, V1XZ) || VE.Equals(p, V2XZ) || VE.Equals(p, V3XZ))
 				return PointTriPosition.VERTEX;
 
 			return PointTriPosition.COLINEAR;
@@ -253,28 +253,28 @@ namespace Procrain.Geometry
 			//Debug.Log("W1: " + w1 + " W2: " + w2 + " Suma: " + suma);
 
 			Vector2 expectedPoint = a + w1 * (b - a) + w2 * (c - a);
-			if (!GeometryUtils.Equals(expectedPoint, p))
+			if (!VE.Equals(expectedPoint, p))
 				throw new Exception("La ecuacion Baricentrica esta mal: " + expectedPoint + " != " + p);
 
 			// w1 y w2 POSITIVOS y suma MENOR a 1 => DENTRO
-			if (w1 > GeometryUtils.Epsilon && w2 > GeometryUtils.Epsilon && suma < 1 - GeometryUtils.Epsilon)
+			if (w1 > VE.Epsilon && w2 > VE.Epsilon && suma < 1 - VE.Epsilon)
 				//Debug.Log("POINT IN!!! W1 = " + w1 + " > 0; y W2 = " + w2 + " > 0;" + " y w1 + w2 = " + suma + " < 1");
 				return PointTriPosition.IN;
 
 			// w1 o w2 NEGATIVO o suma MAYOR a 1 => FUERA
-			if (w1 < -GeometryUtils.Epsilon || w2 < -GeometryUtils.Epsilon || suma > 1 + GeometryUtils.Epsilon)
+			if (w1 < -VE.Epsilon || w2 < -VE.Epsilon || suma > 1 + VE.Epsilon)
 				return PointTriPosition.OUT;
 
 			// w2 == 0
-			if (w2 < GeometryUtils.Epsilon)
+			if (w2 < VE.Epsilon)
 				// w1 == 1
-				if (GeometryUtils.Equals(w1, 1))
+				if (VE.Equals(w1, 1))
 					// VERTEX B
 				{
 					return PointTriPosition.VERTEX;
 				}
 				// w1 == 0
-				else if (w1 < GeometryUtils.Epsilon)
+				else if (w1 < VE.Epsilon)
 					// VERTEX A
 				{
 					return PointTriPosition.VERTEX;
@@ -287,9 +287,9 @@ namespace Procrain.Geometry
 				}
 
 			// w1 == 0
-			if (w1 < GeometryUtils.Epsilon)
+			if (w1 < VE.Epsilon)
 				// w2 == 1
-				if (GeometryUtils.Equals(w2, 1))
+				if (VE.Equals(w2, 1))
 					// VERTEX C
 				{
 					return PointTriPosition.VERTEX;
@@ -302,7 +302,7 @@ namespace Procrain.Geometry
 				}
 
 			// SUMA == 1 => COLINEAR B->C
-			if (GeometryUtils.Equals(suma, 1))
+			if (VE.Equals(suma, 1))
 			{
 				colinearEdge = GetEdge(v2, v3);
 				return PointTriPosition.COLINEAR;

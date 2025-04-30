@@ -1,4 +1,4 @@
-using DavidUtils.Editor.DevTools.ScriptableObjects;
+using Procrain.Editor.Utils;
 using Procrain.Noise;
 using UnityEditor;
 using UnityEngine;

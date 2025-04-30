@@ -1,5 +1,6 @@
-using DavidUtils.Player;
+using System;
 using Procrain.Core;
+using Procrain.Utils;
 using UnityEngine;
 
 namespace Procrain.MapDisplay
@@ -8,28 +9,32 @@ namespace Procrain.MapDisplay
 	[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 	public class MapDisplayInMesh_LoDByPlayer : MapDisplayInMesh
 	{
-		protected static Player Player => Player.Instance;
-
 		protected override void Awake()
 		{
 			base.Awake();
+			
+			if (MapManager.Instance.Player == null)
+				throw new Exception(
+					"El Player no tiene un componente con la interface IPlayer." +
+					" No se puede calcular el LOD por la posicion del Player."
+				);
 
 			// Usa un LoD local ignorando el LoD global del MapManager
 			useLocalLoD = true;
 
 			// Solo actualiza el LoD cuando el Player se mueve
-			Player.OnPlayerMove += OnPlayerMove;
+			MapManager.Instance.Player.OnPlayerMove += OnPlayerMove;
 		}
 
 		protected override void OnDestroy()
 		{
 			base.OnDestroy();
-			Player.OnPlayerMove -= OnPlayerMove;
+			MapManager.Instance.Player.OnPlayerMove -= OnPlayerMove;
 		}
 
 		private void OnPlayerMove(Vector2 moveInput)
 		{
-			localLoD = CalculateLoDByPlayerPos(Player.transform.position);
+			localLoD = CalculateLoDByPlayerPos(MapManager.Instance.Player.Position);
 			OnLocalLoDUpdate(localLoD);
 		}
 

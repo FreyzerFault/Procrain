@@ -1,6 +1,4 @@
-using DavidUtils;
-using DavidUtils.DevTools.CustomAttributes;
-using DavidUtils.DevTools.ScriptableObjects;
+using Procrain.Utils;
 using UnityEngine;
 #if UNITY_EDITOR
 #endif
@@ -11,7 +9,7 @@ namespace Procrain.MapGeneration
 	[CreateAssetMenu(menuName = "Terrain Settings", fileName = "Procrain/Terrain Settings")]
 	public class TerrainSettingsSo : AutoUpdatableSoWithBackup<TerrainSettingsSo>
 	{
-		[SerializeField] private AnimationCurve heightCurve = AnimationCurveUtils.DefaultCurve();
+		[SerializeField] private AnimationCurve heightCurve = DefaultCurve;
 		[SerializeField] private float heightScale = 100;
 
 #if UNITY_EDITOR
@@ -60,5 +58,8 @@ namespace Procrain.MapGeneration
 			to.heightScale = from.heightScale;
 			to.lod = from.lod;
 		}
+		
+		
+		public static AnimationCurve DefaultCurve => new(new Keyframe(0, 0), new Keyframe(1, 1));
 	}
 }

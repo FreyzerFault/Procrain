@@ -1,6 +1,6 @@
+using UnityEngine;
 using Procrain.MapGeneration.Mesh;
 using Procrain.MapGeneration.Texture;
-using UnityEngine;
 
 namespace Procrain.MapGeneration.Terrain
 {

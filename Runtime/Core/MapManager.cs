@@ -1,20 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using DavidUtils;
-using DavidUtils.DevTools.Testing;
-using DavidUtils.ExtensionMethods;
-using DavidUtils.Threading;
 using Procrain.Geometry;
 using Procrain.MapGeneration;
 using Procrain.MapGeneration.Mesh;
 using Procrain.MapGeneration.Texture;
 using Procrain.MapGeneration.TIN;
 using Procrain.Noise;
+using Procrain.Utils;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
-using Player = DavidUtils.Player.Player;
+using GradientThreadSafe = Procrain.Utils.GradientThreadSafe;
+using SampledAnimationCurve = Procrain.Utils.SampledAnimationCurve;
 
 namespace Procrain.Core
 {
@@ -38,8 +36,10 @@ namespace Procrain.Core
 		#endregion
 
 		#region PLAYER
+		
+		private IPlayer _player;
+		public IPlayer Player => _player ??= IPlayer.Player;
 
-		public static Player Player => Player.Instance;
 		public Vector2 PlayerNormalizedPosition => Terrain.GetNormalizedPosition(Player.Position);
 		private float PlayerRotationAngle => Player.Rotation.eulerAngles.y;
 		public Quaternion PlayerRotationForUI => Quaternion.AngleAxis(90 + PlayerRotationAngle, Vector3.back);

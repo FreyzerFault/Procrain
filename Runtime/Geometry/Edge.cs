@@ -1,6 +1,5 @@
 ﻿using System;
-using DavidUtils.ExtensionMethods;
-using DavidUtils.Geometry;
+using Procrain.Utils;
 using UnityEngine;
 
 namespace Procrain.Geometry
@@ -39,7 +38,7 @@ namespace Procrain.Geometry
         public void AssignTriangle(Triangle tri)
         {
             if (!tri.GetOppositeVertex(out Vector3 opposite, this)) return;
-            tris = GeometryUtils.IsRight(opposite, begin, end)
+            tris = opposite.IsRight(begin, end)
                 ? new Tuple<Triangle, Triangle>(tris.Item1, tri)
                 : new Tuple<Triangle, Triangle>(tri, tris.Item2);
         }
@@ -56,7 +55,7 @@ namespace Procrain.Geometry
         /// <returns>RIGHT / LEFT / COLINEAR</returns>
         public static PointEdgePosition GetPointEdgePosition(Vector2 p, Vector2 begin, Vector2 end)
         {
-            float area = GeometryUtils.TriArea2(begin, end, p);
+            float area = VectorExtensions.TriArea2(begin, end, p);
 
             // EPSILON Grande en este caso, porque las veces que cae un punto en un triangulo
             // puede estar muy cerca de una arista y el resultado puede ser un Triangulo muy estirado

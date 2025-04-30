@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace Procrain.MapDisplay.InfiniteTerrain
 {
+	[ExecuteAlways]
 	public class TerrainChunk : MapDisplayInMesh_LoDByPlayer
 	{
 		private IHeightMap localHeightMap;
@@ -23,7 +24,7 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 		private int Size => localNoiseParams.Size;
 		private Vector2Int PlayerChunk =>
 			GetChunkCoord(
-				Player?.transform.position ?? GameObject.FindWithTag("Player").transform.position
+				MapManager.Instance.Player?.Position ?? GameObject.FindWithTag("Player").transform.position
 			);
 
 		private float Extent => Size / 2f;

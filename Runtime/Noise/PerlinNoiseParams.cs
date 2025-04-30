@@ -1,7 +1,6 @@
-using DavidUtils.DevTools.CustomAttributes;
-using DavidUtils.DevTools.ScriptableObjects;
 using Unity.Mathematics;
 using UnityEngine;
+using Procrain.Utils;
 using Random = UnityEngine.Random;
 #if UNITY_EDITOR
 #endif

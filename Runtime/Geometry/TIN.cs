@@ -1,14 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DavidUtils.ExtensionMethods;
-using DavidUtils.Geometry;
-using DavidUtils.Geometry.Bounding_Box;
 using Unity.Collections;
 using UnityEngine;
+using Procrain.Utils;
+using VE = Procrain.Utils.VectorExtensions;
 
 namespace Procrain.Geometry
 {
+	[Serializable]
+	public struct AABB_2D
+	{
+		public enum Side { Left, Right, Top, Bottom }
+
+		public Vector2 min;
+		public Vector2 max;
+		public Vector2 Center => (min + max) / 2;
+
+		public float Width => max.x - min.x;
+		public float Height => max.y - min.y;
+		public Vector2 Extent => Size / 2;
+		public Vector2 Size
+		{
+			get => new(Width, Height);
+			set
+			{
+				Vector2 halfSize = value / 2;
+				Vector2 center = Center;
+				min = center - halfSize;
+				max = center + halfSize;
+			}
+		}
+
+		public Vector2 BL => min;
+		public Vector2 BR => new(max.x, min.y);
+		public Vector2 TL => new(min.x, max.y);
+		public Vector2 TR => max;
+		public Vector2[] Corners => new[] { BL, BR, TR, TL }; // CCW
+
+		public bool IsNormalized => min == Vector2.zero && max == Vector2.one;
+
+		public static AABB_2D NormalizedAABB => new(Vector2.zero, Vector2.one);
+
+		public AABB_2D(Vector2 min, Vector2 max)
+		{
+			this.min = min;
+			this.max = max;
+		}
+
+		public AABB_2D(IEnumerable<Vector2> pointsInsideBound)
+		{
+			IEnumerable<Vector2> pointsEnumerable = pointsInsideBound as Vector2[] ?? pointsInsideBound.ToArray();
+			min = pointsEnumerable.MinPosition();
+			max = pointsEnumerable.MaxPosition();
+		}
+
+		public AABB_2D(Bounds bounds3D, bool isXZplane = true)
+			: this(
+				isXZplane ? bounds3D.min.ToV2XZ() : bounds3D.min.ToV2XY(),
+				isXZplane ? bounds3D.max.ToV2XZ() : bounds3D.max.ToV2XY()
+			)
+		{
+		}
+
+		#region TEST INSIDE
+
+		public readonly bool Contains(Vector2 p) => p.x >= min.x && p.x <= max.x && p.y >= min.y && p.y <= max.y;
+		public bool OutOfBounds(Vector2 p) => !Contains(p);
+
+		#endregion
+	}
+	
 	public class Tin
 	{
 		private readonly AABB_2D _aabb;
@@ -606,7 +668,7 @@ namespace Procrain.Geometry
 			Vector2 a = newVertex.ToV2XZ();
 			Vector2 b = edge.begin.ToV2XZ();
 			Vector2 c = edge.end.ToV2XZ();
-			if (!GeometryUtils.PointInCirle(p, a, b, c)) return false;
+			if (!VE.PointInCirle(p, a, b, c)) return false;
 
 			// FLIP:
 

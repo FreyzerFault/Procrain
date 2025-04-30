@@ -1,7 +1,6 @@
 using Procrain.Core;
 using Procrain.MapGeneration;
 using Procrain.MapGeneration.Mesh;
-using Procrain.Noise;
 using UnityEngine;
 
 namespace Procrain.MapDisplay

@@ -1,4 +1,4 @@
-using DavidUtils.Editor.DevTools.ScriptableObjects;
+using Procrain.Editor.Utils;
 using Procrain.MapGeneration;
 using UnityEditor;
 using UnityEngine;
