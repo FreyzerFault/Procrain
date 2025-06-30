@@ -1,36 +1,49 @@
 ﻿using System;
 using Procrain.Utils;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Procrain.Geometry
 {
-    public class Edge
+    [Serializable]
+    public struct Edge: IEquatable<Edge>
     {
-        public enum PointEdgePosition { RIGHT, LEFT, COLINEAR }
+        public enum PointEdgePosition { Right, Left, Colinear }
 
+        public readonly int index;
+        
         // Begin -> End
-        public Vector3 begin;
-        public Vector3 end;
-        private int index;
+        public Vertex begin;
+        public Vertex end;
+        
+        public float3 Begin_XYZ => begin.xyz;
+        public float3 End_XYZ => end.xyz;
+        
+        public float2 Begin_XZ => begin.xz;
+        public float2 End_XZ => end.xz;
 
         // [Left, Right] (CCW, CW)
-        public Tuple<Triangle, Triangle> tris;
-        public Triangle LeftTri => tris.Item1;
-        public Triangle RightTri => tris.Item2;
-
-        public Edge(Vector3 begin, Vector3 end, Triangle tIzq = null, Triangle tDer = null, int index = -1)
+        public Triangle leftTri;
+        public Triangle rightTri;
+        public Tuple<Triangle, Triangle> Tris => new(leftTri, rightTri);
+        
+        public static Edge InvalidEdge => new Edge(Vertex.InvalidVertex, Vertex.InvalidVertex); 
+        public bool IsInvalid => begin.IsInvalid || end.IsInvalid;
+        
+        public Edge(Vertex begin, Vertex end, Triangle tIzq = null, Triangle tDer = null, int index = -1)
         {
             this.index = index;
 
             this.begin = begin;
             this.end = end;
-            tris = new Tuple<Triangle, Triangle>(tIzq, tDer);
+            
+            Tris = new Tuple<Triangle, Triangle>(tIzq, tDer);
         }
 
         /// <summary>
         ///     El Eje es Frontera siempre que le falte asignarle un Triangulo a la Izquierda o Derecha
         /// </summary>
-        public bool IsFrontier => tris.Item1 == null || tris.Item2 == null;
+        public bool IsFrontier => Tris.Item1 == null || Tris.Item2 == null;
 
         /// <summary>
         ///     Asigna un Triangulo segun su posicion como Izquierdo o Derecho
@@ -38,12 +51,12 @@ namespace Procrain.Geometry
         public void AssignTriangle(Triangle tri)
         {
             if (!tri.GetOppositeVertex(out Vector3 opposite, this)) return;
-            tris = opposite.IsRight(begin, end)
-                ? new Tuple<Triangle, Triangle>(tris.Item1, tri)
-                : new Tuple<Triangle, Triangle>(tri, tris.Item2);
+            Tris = opposite.IsRight(begin, end)
+                ? new Tuple<Triangle, Triangle>(Tris.Item1, tri)
+                : new Tuple<Triangle, Triangle>(tri, Tris.Item2);
         }
 
-        public Triangle OppositeTri(Triangle tri) => tri == LeftTri ? RightTri : LeftTri;
+        public readonly Triangle OppositeTri(Triangle tri) => tri.Equals(leftTri) ? rightTri : leftTri;
 
         /// <summary>
         ///     NEGATIVA => DERECHA; POSITIVA => IZQUIERDA; ~0 => COLINEAR
@@ -55,16 +68,16 @@ namespace Procrain.Geometry
         /// <returns>RIGHT / LEFT / COLINEAR</returns>
         public static PointEdgePosition GetPointEdgePosition(Vector2 p, Vector2 begin, Vector2 end)
         {
-            float area = VectorExtensions.TriArea2(begin, end, p);
+            float area = MathVectorExtensions.TriArea2(begin, end, p);
 
             // EPSILON Grande en este caso, porque las veces que cae un punto en un triangulo
             // puede estar muy cerca de una arista y el resultado puede ser un Triangulo muy estirado
 
             return area > 0.1f
-                ? PointEdgePosition.LEFT
+                ? PointEdgePosition.Left
                 : area < -0.1f
-                    ? PointEdgePosition.RIGHT
-                    : PointEdgePosition.COLINEAR;
+                    ? PointEdgePosition.Right
+                    : PointEdgePosition.Colinear;
         }
 
         public static PointEdgePosition GetPointEdgePosition(Vector3 p, Vector3 begin, Vector3 end) =>
@@ -97,15 +110,15 @@ namespace Procrain.Geometry
         /// <param name="intersectionPoint"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool GetIntersectionPoint(Vector2 a, Vector2 b, out Vector2? intersectionPoint)
+        public readonly bool GetIntersectionPoint(Vector2 a, Vector2 b, out Vector2? intersectionPoint)
         {
             intersectionPoint = null;
             PointEdgePosition posA = GetPointEdgePosition(a, begin.ToV2XZ(), end.ToV2XZ());
             PointEdgePosition posB = GetPointEdgePosition(b, begin.ToV2XZ(), end.ToV2XZ());
 
             // Solo hay interseccion si los dos puntos estan en lados opuestos de la arista
-            if ((posA == PointEdgePosition.RIGHT && posB == PointEdgePosition.LEFT) ||
-                (posA == PointEdgePosition.LEFT && posB == PointEdgePosition.RIGHT))
+            if ((posA == PointEdgePosition.Right && posB == PointEdgePosition.Left) ||
+                (posA == PointEdgePosition.Left && posB == PointEdgePosition.Right))
             {
                 Vector2 c = begin.ToV2XZ();
                 Vector2 d = end.ToV2XZ();
@@ -134,6 +147,8 @@ namespace Procrain.Geometry
         }
 
         public override string ToString() => "e" + index + " {" + begin + " -> " + end + "}";
+
+        public bool Equals(Edge other) => begin.Equals(other.begin) && begin.Equals(other.end);
 
         /// <summary>
         ///     No puede haber mas de un Eje con los mismos vertices

@@ -1,3 +1,4 @@
+using Procrain.Geometry;
 using UnityEngine;
 
 namespace Procrain.MapGeneration.Terrain
@@ -24,6 +25,7 @@ namespace Procrain.MapGeneration.Terrain
 			terrainData.size = new Vector3(terrainSize, heightScale, terrainSize);
 			terrainData.SetHeights(0, 0, HeightMap.FlipCoordsXY(heightMap.ToArray2D()));
 		}
+		
 		// public static TerrainData ApplyToTerrainData(
 		//     TerrainData terrainData,
 		//     IHeightMap heightMap,

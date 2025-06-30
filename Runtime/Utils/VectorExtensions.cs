@@ -70,16 +70,16 @@ namespace Procrain.Utils
         
         // MAX / MIN from a collection of points => Can build AABB
         public static Vector2 MinPosition(this IEnumerable<Vector2> points) =>
-            points.Aggregate(Vector2.positiveInfinity, Vector2.Min);
+            points.Aggregate(Vector2.one * Mathf.Infinity, Vector2.Min);
 
         public static Vector2 MaxPosition(this IEnumerable<Vector2> points) =>
-            points.Aggregate(Vector2.negativeInfinity, Vector2.Max);
+            points.Aggregate(Vector2.one * Mathf.NegativeInfinity, Vector2.Max);
 
         public static Vector3 MinPosition(this IEnumerable<Vector3> points) =>
-            points.Aggregate(Vector3.positiveInfinity, Vector3.Min);
+            points.Aggregate(Vector3.one * Mathf.Infinity, Vector3.Min);
 
         public static Vector3 MaxPosition(this IEnumerable<Vector3> points) =>
-            points.Aggregate(Vector3.negativeInfinity, Vector3.Max);
+            points.Aggregate(Vector3.one * Mathf.NegativeInfinity, Vector3.Max);
 
         #endregion
         
@@ -207,8 +207,9 @@ namespace Procrain.Utils
         /// </returns>
         public static Vector2 CircleCenter(Vector2 a, Vector2 b, Vector2 c)
         {
-            Vector2 abMediatriz = Vector2.Perpendicular(b - a).normalized;
-            Vector2 bcMediatriz = Vector2.Perpendicular(b - c).normalized;
+            
+            Vector2 abMediatriz = (b - a).Perpendicular().normalized;
+            Vector2 bcMediatriz = (b - c).Perpendicular().normalized;
 
             Vector2 abMedio = a + (b - a) / 2;
             Vector2 bcMedio = b + (c - b) / 2;
@@ -221,6 +222,13 @@ namespace Procrain.Utils
             // Punto Medio
             return  (a + b + c) / 3;
         }
+
+        #endregion
+
+
+        #region TRANSFORMATIONS
+
+        public static Vector2 Perpendicular(this Vector2 vector) => new(-vector.y, vector.x);
 
         #endregion
     }

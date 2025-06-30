@@ -1,36 +1,31 @@
 using System.Collections.Generic;
 using Procrain.Core;
+using Procrain.Geometry;
+using Procrain.Geometry.Mesh;
 using Procrain.MapGeneration;
-using Procrain.MapGeneration.Mesh;
 using Procrain.MapGeneration.Texture;
+using Procrain.MapParameters;
 using Procrain.Noise;
 using UnityEngine;
 
 namespace Procrain.MapDisplay.InfiniteTerrain
 {
 	[ExecuteAlways]
-	public class TerrainChunk : MapDisplayInMesh_LoDByPlayer
+	public class TerrainChunk : MapDisplayInMesh_LoDGroup
 	{
-		private IHeightMap localHeightMap;
+		private IHeightMap _localHeightMap;
+		[SerializeField] private bool prebuildHeightMap = true;
 
-		[SerializeField]
-		private Vector2Int chunkCoord;
+		[SerializeField] private Vector2Int chunkCoord;
+		[SerializeField] private PerlinNoiseParams localNoiseParams;
 
-		[SerializeField]
-		private PerlinNoiseParams localNoiseParams;
-
-		private readonly Dictionary<int, IMeshData> _meshDataPerLOD = new();
-		private Bounds _bounds;
 		private int Size => localNoiseParams.Size;
-		private Vector2Int PlayerChunk =>
-			GetChunkCoord(
-				MapManager.Instance.Player?.Position ?? GameObject.FindWithTag("Player").transform.position
-			);
-
+		private Vector3 CenterPos => new(transform.position.x + Extent, 0, transform.position.z + Extent);
 		private float Extent => Size / 2f;
 
-		private Vector3 CenterPos =>
-			new(transform.position.x + Extent, 0, transform.position.z + Extent);
+		private Vector2Int PlayerChunk => MapManager.Instance.Player != null
+			? GetChunkCoord(MapManager.Instance.Player.Position)
+			: Vector2Int.zero;
 
 		public bool Visible
 		{
@@ -41,29 +36,15 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 		public Vector2Int ChunkCoord
 		{
 			get => chunkCoord;
-			set => MoveToCoord(value);
-		}
-
-		public Gradient Gradient
-		{
-			get => MapManager.Instance.heightGradient;
-			set
+			set 
 			{
-				MapManager.Instance.heightGradient = value;
-				ApplyGradient(value);
-			}
-		}
-
-		// =================================================================================================== //
-		// Parametros que dependen del Chunk:
-
-		private int LodByDistToPlayer
-		{
-			get
-			{
-				// Si no es potencia de 2, redondea al siguiente
-				int dist = Mathf.FloorToInt(Vector2Int.Distance(PlayerChunk, chunkCoord));
-				return dist == 0 ? 0 : Mathf.ClosestPowerOfTwo(dist);
+				chunkCoord = value;
+				transform.localPosition = WorldPosition3D;
+				localNoiseParams.Offset = -new Vector2(WorldPosition2D.x, WorldPosition2D.y);
+				lodGroup.RecalculateBounds();
+				
+				if (prebuildHeightMap)
+					BuildLocalHeightMap();
 			}
 		}
 
@@ -75,85 +56,11 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 		{
 			base.Awake();
 
-			localNoiseParams = MapManager.Instance.NoiseParams;
+			localNoiseParams = MapManager.NoiseParams;
 		}
 
-		private void BuildMeshData(int lod)
-		{
-			// Actualiza la Malla al LOD actual si ya fue generada
-			if (_meshDataPerLOD.TryGetValue(lod, out IMeshData meshData))
-				return;
-
-			// Si no la genera y la guarda
-			meshData = MeshGenerator.BuildMeshData(
-				MapManager.Instance.HeightMap,
-				lod,
-				MapManager.Instance.TerrainSettings.HeightScale
-			);
-			_meshDataPerLOD.Add(lod, meshData);
-		}
-
-		// Cuando se posiciona en su coordenada se construye el Mapa
-		public void MoveToCoord(Vector2Int coord)
-		{
-			chunkCoord = coord;
-			transform.localPosition = WorldPosition3D;
-			localNoiseParams.Offset = -new Vector2(WorldPosition2D.x, WorldPosition2D.y);
-			BuildHeightMap();
-		}
-
-		private void BuildHeightMap()
-		{
-			localHeightMap = HeightMapGenerator.CreatePerlinNoiseHeightMap(
-				localNoiseParams,
-				MapManager.Instance.TerrainSettings.HeightCurve
-			);
-
-			// Al regenerar el Mapa de Alturas, quedan obsoletas todas las Mallas
-			_meshDataPerLOD.Clear();
-		}
-
-		private void ApplyGradient(Gradient newGradient)
-		{
-			if (textureMode != TextureMode.SetTexture)
-				return;
-
-			Texture2D texture = BuildTextureData();
-			ApplyTexture(texture);
-		}
-
-		private Texture2D BuildTextureData() =>
-			TextureGenerator.BuildTexture2D(localHeightMap, MapManager.Instance.heightGradient);
-
-		/// <summary>
-		///     Actualiza la Visibilidad del Chunk (si debe ser renderizado o no).
-		///     Y actualiza tambien el LOD
-		/// </summary>
-		/// <param name="maxRenderDist">Distancia Maxima de Renderizado de Chunks</param>
-		public void UpdateVisibility(int maxRenderDist)
-		{
-			// La distancia del jugador al chunk
-			int chunkDistance = Mathf.FloorToInt(Vector2Int.Distance(ChunkCoord, PlayerChunk));
-
-			// Sera visible si la distancia al player viewer es menor a la permitida
-			Visible = chunkDistance <= maxRenderDist;
-
-			// Si no está visible no hace falta actualizar el LOD
-			if (!Visible)
-				return;
-
-			LoD = LodByDistToPlayer;
-		}
-
-		protected override void OnLocalLoDUpdate(int newLod)
-		{
-			if (newLod == LoD)
-				return;
-			if (!_meshDataPerLOD.TryGetValue(newLod, out IMeshData meshData))
-				BuildMeshData(newLod);
-
-			ApplyMeshData(newLod, meshData);
-		}
+		
+		#region COORDS
 
 		// Transformaciones de Espacio de Mundo al Espacio del Chunk:
 		public Vector2Int GetChunkCoord(Vector2 pos) => GetChunkCoord(pos, Size);
@@ -170,5 +77,111 @@ namespace Procrain.MapDisplay.InfiniteTerrain
 
 		public static Vector2Int GetChunkCoord(Vector3 pos, int chunkSize) =>
 			GetChunkCoord(new Vector2(pos.x, pos.z), chunkSize);
+
+		#endregion
+
+
+		#region VISIBILITY
+
+		/// <summary>
+		///     Actualiza la Visibilidad del Chunk segun la distancia al Player.
+		/// </summary>
+		/// <param name="maxRenderDist">Distancia Maxima al Player a la que deja de ser Visible</param>
+		public void UpdateVisibility(int maxRenderDist)
+		{
+			// La distancia del jugador al chunk
+			int playerChunkDistance = Mathf.FloorToInt(Vector2Int.Distance(ChunkCoord, PlayerChunk));
+
+			// Sera visible si la distancia al player viewer es menor a la permitida
+			Visible = playerChunkDistance <= maxRenderDist;
+
+			// Si no está visible no hace falta actualizar el LOD
+			if (!Visible) return;
+		}
+		
+		#endregion
+		
+		
+		private void BuildLocalHeightMap()
+		{
+			_localHeightMap = HeightMapGenerator.CreatePerlinNoiseHeightMap(
+				localNoiseParams,
+				MapManager.Instance.HeightCurve
+			);
+
+			// Al regenerar el Mapa de Alturas, quedan obsoletas todas las Mallas
+			_meshDataPerLOD.Clear();
+		}
+
+		public override void RebuildMap()
+		{
+			if (prebuildHeightMap)
+				RebuildHeightMap();
+			
+			if (textureMode  == TextureMode.SetTexture)
+				RebuildTexture();
+			
+			RebuildMeshData();
+			
+			DisplayMap();
+		}
+
+		// public override void DisplayMap()
+		// {
+		// 	if (textureMode == TextureMode.SetTexture)
+		// 		ApplyTexture(_localTexture);
+		// 	
+		// 	ApplyAllMeshes();
+		// }
+
+
+		#region MESH
+
+		private readonly Dictionary<int, IMeshData> _meshDataPerLOD = new();
+
+		protected override IMeshData GetMeshData(int lod) => _meshDataPerLOD[lod];
+		
+		/// Reconstruye la MeshData de todos los LODs usados
+		protected override void RebuildMeshData()
+		{
+			for (var i = 0; i < lodGroup.lodCount; i++)
+			{
+				int lodPow2 = i == 0 ? 0 : (int)Mathf.Pow(2, i - 1);
+				
+				IMeshData meshData = prebuildHeightMap && _localHeightMap != null
+					? MeshGenerator.BuildMeshData(_localHeightMap, lodPow2, MapManager.TerrainSettings.HeightScale, Gradient)
+					: MeshGenerator.BuildMeshData(NoiseParams, TerrainParams.HeightCurve, lodPow2, TerrainParams.HeightScale, Gradient);
+				
+				if (!_meshDataPerLOD.TryAdd(lodPow2, meshData))
+					_meshDataPerLOD[lodPow2] = meshData; 
+			}
+		}
+		
+		// Ignore MapManager MeshData
+		protected override void HandleMeshDataUpdated(int lod, IMeshData meshData) { }
+
+		#endregion
+
+
+		#region TEXTURE
+
+		private Texture2D _localTexture;
+		protected override Texture2D Texture => _localTexture ??= BuildLocalTexture();
+
+		protected override void HandleTextureUpdated(Texture2D texture) {}
+
+		protected override void RebuildTexture() => ApplyTexture(_localTexture = BuildLocalTexture());
+
+		/// Construye la textura del Chunk a partir de un Gradiente
+		private Texture2D BuildLocalTexture()
+		{
+			if (prebuildHeightMap && _localHeightMap != null)
+				return TextureGenerator.BuildTexture2D(_localHeightMap, Gradient);
+			
+			// Sample exact Noise Values for each pixel 
+			return TextureGenerator.BuildTexture2D(NoiseParams, Gradient, new Vector2Int(NoiseParams.Size, NoiseParams.Size));
+		}
+
+		#endregion
 	}
 }

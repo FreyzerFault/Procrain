@@ -1,12 +1,11 @@
 ﻿using System;
-using JetBrains.Annotations;
+using System.Linq;
 using Procrain.Utils;
 using UnityEngine;
-using VE = Procrain.Utils.VectorExtensions;
 
 namespace Procrain.Geometry
 {
-    public class Triangle
+    public struct Triangle: IEquatable<Triangle>
 	{
 		public enum PointTriPosition
 		{
@@ -15,85 +14,67 @@ namespace Procrain.Geometry
 			COLINEAR,
 			VERTEX
 		}
+		
+		public readonly int index;
+		
+		public readonly Edge e1;
+		public readonly Edge e2;
+		public readonly Edge e3;
+		
+		public Tuple<Edge, Edge, Edge> EdgesTuple => new (e1, e2, e3);
+		public Edge[] EdgeArray => new Edge[] { e1, e2, e3 };
 
-		public Edge[] edges;
+		public readonly Vertex v1;
+		public readonly Vertex v2;
+		public readonly Vertex v3;
+		
+		public Tuple<Vertex, Vertex, Vertex> VertexTuple => new (v1, v2, v3);
+		public Vertex[] VertexArray => new Vertex[] { v1, v2, v3 };
 
-		public Edge E1 => edges[0];
-		public Edge E2 => edges[1];
-		public Edge E3 => edges[2];
+		public Vector3 V1 => v1.xyz;
+		public Vector3 V2 => v2.xyz;
+		public Vector3 V3 => v3.xyz;
 
-		public Vector3 v1;
-		public Vector3 v2;
-		public Vector3 v3;
+		public Vector2 V1_XZ => v1.xz;
+		public Vector2 V2_XZ => v2.xz;
+		public Vector2 V3_XZ => v3.xz;
 
-		public Vector2 V1XZ => v1.ToV2XZ();
-		public Vector2 V2XZ => v2.ToV2XZ();
-		public Vector2 V3XZ => v3.ToV2XZ();
+		public Vector3[] Vertices => new[] { V1, V2, V3 };
+		public Vector2[] Vertices_XZ => new[] { V1_XZ, V2_XZ, V3_XZ };
 
-		public Vector3[] Vertices => new[] { v1, v2, v3 };
-		public Vector2[] Vertices2D => new[] { V1XZ, V2XZ, V3XZ };
+		public static Triangle InvalidTri => new Triangle(Vertex.InvalidVertex, Vertex.InvalidVertex, Vertex.InvalidVertex); 
+		public bool IsInvalid => v1.IsInvalid || v2.IsInvalid || v3.IsInvalid;
 
-		public int index;
-
-		public Triangle(Edge[] edges, int index = -1)
+		public Triangle(Tuple<Edge, Edge, Edge> edges, int index = -1) : this(edges.Item1, edges.Item2, edges.Item3, index) {}
+		
+		public Triangle(Edge e1, Edge e2, Edge e3, int index = -1)
 		{
 			this.index = index;
 
-			this.edges = edges;
+			this.e1 = e1;
+			this.e2 = e2;
+			this.e3 = e3;
 
 			// Los vertices los extraemos de las aristas
-			v1 = E1.begin;
+			v1 = e1.begin;
 
 			// No tienen por que ser todos el begin de las aristas
 			// Si el begin de la 2 coincide con el v1, se elige el end
-			v2 = E2.begin;
-			if (v2 == v1) v2 = E2.end;
+			v2 = e2.begin.Equals(v1) ? e2.end : e2.begin;
+			v3 = e3.begin.Equals(v1) || e3.begin.Equals(v2) ? e3.end : e3.begin;
+			
+			if (v1.Equals(v2) || v2.Equals(v3) || v3.Equals(v1))
+				throw new Exception($"Alguno de los vertices de el Triangulo esta mal: {{{V1}, {V2}, {V3}}}");
 
-			// Lo mismo para v3, si se repite, elegir el otro vertice
-			v3 = E3.begin;
-			if (v3 == v2 || v3 == v1) v3 = E3.end;
-
-			if (v1 == v2 || v2 == v3 || v3 == v1)
-				throw new Exception($"Alguno de los vertices de el Triangulo esta mal: {{{v1}, {v2}, {v3}}}");
-
-			EnsureCounterClockwise();
-		}
-
-		public Triangle(Edge e1, Edge e2, Edge e3, int index = -1) : this(new[] { e1, e2, e3 }, index)
-		{
-		}
-
-		public Triangle(Vector3 v1, Vector3 v2, Vector3 v3, Edge e1, Edge e2, Edge e3, int index = -1)
-		{
-			this.index = index;
-
-			edges = new[] { e1, e2, e3 };
-
-			this.v1 = v1;
-			this.v2 = v2;
-			this.v3 = v3;
-
-			EnsureCounterClockwise();
-		}
-
-		public Triangle(Vector3 v1, Vector3 v2, Vector3 v3, int index = -1)
-		{
-			this.index = index;
-
-			this.v1 = v1;
-			this.v2 = v2;
-			this.v3 = v3;
-			edges = new[] { new Edge(v1, v2, this), new Edge(v2, v3, this), new Edge(v3, v1, this) };
-
-			EnsureCounterClockwise();
-		}
-
-		private void EnsureCounterClockwise()
-		{
 			// Hay que ordenarlos en orden ANTIHORARIO
 			// (si alguno esta a la Derecha de la arista opuesta se hace un Swap de la opuesta):
-			if (v3.IsRight(v1, v2)) (v3, v2) = (v2, v3); // SWAP v2 <-> v3
+			if (V3.IsRight(V1, V2)) 
+				(v3, v2) = (v2, v3); // SWAP v2 <-> v3
 		}
+		
+		public Triangle(Vertex v1, Vertex v2, Vertex v3, int index = -1)
+		: this(new Edge(v1, v2), new Edge(v2, v3), new Edge(v3, v1), index) { }
+
 
 		/// <summary>
 		///     Busca el Eje que concuerda con los Vertices pasados como argumentos.
@@ -102,16 +83,12 @@ namespace Procrain.Geometry
 		/// <param name="begin"></param>
 		/// <param name="end"></param>
 		/// <returns></returns>
-		public Edge GetEdge(Vector3 begin, Vector3 end)
+		public Edge GetEdge(Vertex begin, Vertex end)
 		{
-			Edge[] edges = { E1, E2, E3 };
-
-			foreach (Edge edge in edges)
-				if ((edge.begin == begin || edge.begin == end) &&
-				    (edge.end == begin || edge.end == end))
-					return edge;
-
-			return null;
+			return EdgeArray.FirstOrDefault(e => 
+				(e.begin.Equals(begin) && e.end.Equals(end))
+				|| (e.begin.Equals(end) && e.end.Equals(begin))
+				);
 		}
 
 		/// <summary>
@@ -119,14 +96,8 @@ namespace Procrain.Geometry
 		/// </summary>
 		/// <param name="vertex">Vertice Opuesto</param>
 		/// <returns></returns>
-		public Edge GetOppositeEdge(Vector3 vertex)
-		{
-			if (vertex == v1) return GetEdge(v2, v3);
-			if (vertex == v2) return GetEdge(v3, v1);
-			if (vertex == v3) return GetEdge(v1, v2);
-
-			return null;
-		}
+		public Edge GetOppositeEdge(Vertex vertex) => 
+			EdgeArray.FirstOrDefault(e => !e.begin.Equals(vertex) && !e.end.Equals(vertex));
 
 		/// <summary>
 		///     Busca el Vertice que no pertenece a la arista que se pasa
@@ -135,14 +106,14 @@ namespace Procrain.Geometry
 		/// <param name="edge">Arista opuesta</param>
 		/// <returns>False si no lo encuentra o no tiene (es un borde)</returns>
 		/// <exception cref="Exception">No encuentra el opuesto</exception>
-		public bool GetOppositeVertex(out Vector3 opposite, Edge edge)
+		public bool GetOppositeVertex(out Vertex opposite, Edge edge)
 		{
-			opposite = Vector3.zero;
+			opposite = Vertex.InvalidVertex;
 
 			// Buscamos el vertice que no pertenece a la arista (no es ni Begin ni End)
-			foreach (Vector3 vertex in Vertices)
+			foreach (Vertex vertex in VertexArray)
 			{
-				if (vertex == edge.begin || vertex == edge.end) continue;
+				if (vertex.Equals(edge.begin) || vertex.Equals(edge.end)) continue;
 				opposite = vertex;
 				return true;
 			}
@@ -152,11 +123,11 @@ namespace Procrain.Geometry
 
 		public Triangle GetOppositeTriangle(Edge edge)
 		{
-			if (edge == E1) return E1.OppositeTri(this);
-			if (edge == E2) return E2.OppositeTri(this);
-			if (edge == E3) return E3.OppositeTri(this);
+			if (edge.Equals(e1)) return e1.OppositeTri(this);
+			if (edge.Equals(e2)) return e2.OppositeTri(this);
+			if (edge.Equals(e3)) return e3.OppositeTri(this);
 
-			return null;
+			return InvalidTri;
 		}
 
 
@@ -170,14 +141,14 @@ namespace Procrain.Geometry
 		/// <returns>OUT / IN / COLINEAR / VERTEX</returns>
 		public PointTriPosition PointInTriangle(Vector2 p, out Edge colinearEdge)
 		{
-			colinearEdge = null;
+			colinearEdge = Edge.InvalidEdge;
 
 			PointTriPosition pos = PointInTriangle(p);
 			if (pos == PointTriPosition.COLINEAR)
 			{
 				// Comprobamos en que eje esta de los 3
-				bool colinear1 = Edge.GetPointEdgePosition(p, V1XZ, V2XZ) == Edge.PointEdgePosition.COLINEAR;
-				bool colinear2 = Edge.GetPointEdgePosition(p, V2XZ, V3XZ) == Edge.PointEdgePosition.COLINEAR;
+				bool colinear1 = Edge.GetPointEdgePosition(p, V1_XZ, V2_XZ) == Edge.PointEdgePosition.Colinear;
+				bool colinear2 = Edge.GetPointEdgePosition(p, V2_XZ, V3_XZ) == Edge.PointEdgePosition.Colinear;
 
 				// Buscamos la Arista que concuerda con los vertices del Eje en el que esta
 				colinearEdge = colinear1 ? GetEdge(v1, v2) : colinear2 ? GetEdge(v2, v3) : GetEdge(v3, v1);
@@ -198,25 +169,25 @@ namespace Procrain.Geometry
 		public PointTriPosition PointInTriangle(Vector2 p)
 		{
 			// Posicion Relativa del Punto a cada Arista (alineada en orden Antihorario)
-			Edge.PointEdgePosition pos1 = Edge.GetPointEdgePosition(p, V1XZ, V2XZ);
-			Edge.PointEdgePosition pos2 = Edge.GetPointEdgePosition(p, V2XZ, V3XZ);
-			Edge.PointEdgePosition pos3 = Edge.GetPointEdgePosition(p, V3XZ, V1XZ);
+			Edge.PointEdgePosition pos1 = Edge.GetPointEdgePosition(p, V1_XZ, V2_XZ);
+			Edge.PointEdgePosition pos2 = Edge.GetPointEdgePosition(p, V2_XZ, V3_XZ);
+			Edge.PointEdgePosition pos3 = Edge.GetPointEdgePosition(p, V3_XZ, V1_XZ);
 
 			// En cuanto este a la derecha de cualquiera de las Aristas, esta FUERA
-			if (pos1 == Edge.PointEdgePosition.RIGHT ||
-			    pos2 == Edge.PointEdgePosition.RIGHT ||
-			    pos3 == Edge.PointEdgePosition.RIGHT)
+			if (pos1 == Edge.PointEdgePosition.Right ||
+			    pos2 == Edge.PointEdgePosition.Right ||
+			    pos3 == Edge.PointEdgePosition.Right)
 				return PointTriPosition.OUT;
 
 			// Si esta a la IZQUIERDA de TODOS => esta DENTRO
-			if (pos1 == Edge.PointEdgePosition.LEFT &&
-			    pos2 == Edge.PointEdgePosition.LEFT &&
-			    pos3 == Edge.PointEdgePosition.LEFT)
+			if (pos1 == Edge.PointEdgePosition.Left &&
+			    pos2 == Edge.PointEdgePosition.Left &&
+			    pos3 == Edge.PointEdgePosition.Left)
 				return PointTriPosition.IN;
 
 			// Si no, puede ser colinear con un eje, o estar en el vertice
 			// Por si acaso comprobamos primero que no sea un vertice
-			if (VE.Equals(p, V1XZ) || VE.Equals(p, V2XZ) || VE.Equals(p, V3XZ))
+			if (MathVectorExtensions.Equals(p, V1_XZ) || MathVectorExtensions.Equals(p, V2_XZ) || MathVectorExtensions.Equals(p, V3_XZ))
 				return PointTriPosition.VERTEX;
 
 			return PointTriPosition.COLINEAR;
@@ -236,9 +207,9 @@ namespace Procrain.Geometry
 		/// <returns></returns>
 		public PointTriPosition PointInTriangleBarycentricTechnique(Vector2 p, out Edge colinearEdge)
 		{
-			colinearEdge = null;
+			colinearEdge = Edge.InvalidEdge;
 
-			Vector2 a = V1XZ, b = V2XZ, c = V3XZ;
+			Vector2 a = V1_XZ, b = V2_XZ, c = V3_XZ;
 
 			float denom1 = (b.y - a.y) * (c.x - a.x) - (b.x - a.x) * (c.y - a.y);
 			float denom2 = c.y - a.y;
@@ -253,28 +224,28 @@ namespace Procrain.Geometry
 			//Debug.Log("W1: " + w1 + " W2: " + w2 + " Suma: " + suma);
 
 			Vector2 expectedPoint = a + w1 * (b - a) + w2 * (c - a);
-			if (!VE.Equals(expectedPoint, p))
+			if (!MathVectorExtensions.Equals(expectedPoint, p))
 				throw new Exception("La ecuacion Baricentrica esta mal: " + expectedPoint + " != " + p);
 
 			// w1 y w2 POSITIVOS y suma MENOR a 1 => DENTRO
-			if (w1 > VE.Epsilon && w2 > VE.Epsilon && suma < 1 - VE.Epsilon)
+			if (w1 > MathVectorExtensions.Epsilon && w2 > MathVectorExtensions.Epsilon && suma < 1 - MathVectorExtensions.Epsilon)
 				//Debug.Log("POINT IN!!! W1 = " + w1 + " > 0; y W2 = " + w2 + " > 0;" + " y w1 + w2 = " + suma + " < 1");
 				return PointTriPosition.IN;
 
 			// w1 o w2 NEGATIVO o suma MAYOR a 1 => FUERA
-			if (w1 < -VE.Epsilon || w2 < -VE.Epsilon || suma > 1 + VE.Epsilon)
+			if (w1 < -MathVectorExtensions.Epsilon || w2 < -MathVectorExtensions.Epsilon || suma > 1 + MathVectorExtensions.Epsilon)
 				return PointTriPosition.OUT;
 
 			// w2 == 0
-			if (w2 < VE.Epsilon)
+			if (w2 < MathVectorExtensions.Epsilon)
 				// w1 == 1
-				if (VE.Equals(w1, 1))
+				if (MathVectorExtensions.Equals(w1, 1))
 					// VERTEX B
 				{
 					return PointTriPosition.VERTEX;
 				}
 				// w1 == 0
-				else if (w1 < VE.Epsilon)
+				else if (w1 < MathVectorExtensions.Epsilon)
 					// VERTEX A
 				{
 					return PointTriPosition.VERTEX;
@@ -287,9 +258,9 @@ namespace Procrain.Geometry
 				}
 
 			// w1 == 0
-			if (w1 < VE.Epsilon)
+			if (w1 < MathVectorExtensions.Epsilon)
 				// w2 == 1
-				if (VE.Equals(w2, 1))
+				if (MathVectorExtensions.Equals(w2, 1))
 					// VERTEX C
 				{
 					return PointTriPosition.VERTEX;
@@ -302,7 +273,7 @@ namespace Procrain.Geometry
 				}
 
 			// SUMA == 1 => COLINEAR B->C
-			if (VE.Equals(suma, 1))
+			if (MathVectorExtensions.Equals(suma, 1))
 			{
 				colinearEdge = GetEdge(v2, v3);
 				return PointTriPosition.COLINEAR;
@@ -341,29 +312,29 @@ namespace Procrain.Geometry
 		)
 		{
 			intersectionPoint = null;
-			nextTriangle = null;
+			nextTriangle = InvalidTri;
 
 			if (!Intersect(a, b)) return false;
 
 			// Primer Eje:
-			if (E1.GetIntersectionPoint(a, b, out intersectionPoint))
+			if (e1.GetIntersectionPoint(a, b, out intersectionPoint))
 			{
 				// El siguiente Triangulo es el distinto a este
-				nextTriangle = E1.OppositeTri(this);
+				nextTriangle = e1.OppositeTri(this);
 				return true;
 			}
 
 			// Segundo Eje:
-			if (E2.GetIntersectionPoint(a, b, out intersectionPoint))
+			if (e2.GetIntersectionPoint(a, b, out intersectionPoint))
 			{
-				nextTriangle = E2.OppositeTri(this);
+				nextTriangle = e2.OppositeTri(this);
 				return true;
 			}
 
 			// Tercer Eje:
-			if (E3.GetIntersectionPoint(a, b, out intersectionPoint))
+			if (e3.GetIntersectionPoint(a, b, out intersectionPoint))
 			{
-				nextTriangle = E3.OppositeTri(this);
+				nextTriangle = e3.OppositeTri(this);
 				return true;
 			}
 
@@ -391,47 +362,46 @@ namespace Procrain.Geometry
 		public bool GetIntersectionPoint(
 			Vector2 a, Vector2 b, out Vector2? intersectionPoint1,
 			out Vector2? intersectionPoint2, out Edge edgeIntersected1, out Edge edgeIntersected2,
-			[CanBeNull] out Triangle nextTriangle, out Vector2? nextPoint
+			out Triangle nextTriangle, out Vector2? nextPoint
 		)
 		{
 			intersectionPoint1 = intersectionPoint2 = null;
-			edgeIntersected1 = edgeIntersected2 = null;
-			nextTriangle = null;
+			edgeIntersected1 = edgeIntersected2 = Edge.InvalidEdge;
+			nextTriangle = InvalidTri;
 			nextPoint = null;
 
 			if (Intersect(a, b))
 			{
-				Vector2? intersection = null;
-				Edge farEdge = null;
+				Edge farEdge = Edge.InvalidEdge;
 
 				// Primer Eje:
-				if (E1.GetIntersectionPoint(a, b, out intersection))
+				if (e1.GetIntersectionPoint(a, b, out Vector2? intersection))
 				{
-					farEdge = E1;
-					edgeIntersected1 = E1;
+					farEdge = e1;
+					edgeIntersected1 = e1;
 					intersectionPoint1 = intersection;
 					nextPoint = intersection;
 				}
 
 				// Segundo Eje:
-				if (E2.GetIntersectionPoint(a, b, out intersection))
+				if (e2.GetIntersectionPoint(a, b, out intersection))
 					// Si hubo una Interseccion con el Primero => lo asignamos como Segunda Interseccion
 					if (intersectionPoint1 == null)
 					{
 						intersectionPoint1 = intersection;
-						edgeIntersected1 = E2;
+						edgeIntersected1 = e2;
 						nextPoint = intersection;
 					}
 					else
 					{
 						intersectionPoint2 = intersection;
-						edgeIntersected2 = E2;
+						edgeIntersected2 = e2;
 
 						// Si hay 2 Intersecciones => Comprobamos cual esta mas lejos de A
 						if (intersectionPoint2 != null &&
 						    (a - (Vector2)intersectionPoint2).magnitude > (a - (Vector2)intersectionPoint1).magnitude)
 						{
-							farEdge = E2;
+							farEdge = e2;
 							nextPoint = intersectionPoint2;
 						}
 						else
@@ -442,25 +412,25 @@ namespace Procrain.Geometry
 
 				// Si aun no hay una Segunda Interseccion, comprobamos la Tercera Arista
 				if (intersectionPoint2 == null)
-					if (E3.GetIntersectionPoint(a, b, out intersection))
+					if (e3.GetIntersectionPoint(a, b, out intersection))
 						// Lo mismo, Si hubo una Interseccion con el Primero => lo asignamos como Segunda Interseccion
 						if (intersectionPoint1 == null)
 						{
 							intersectionPoint1 = intersection;
-							edgeIntersected1 = E3;
+							edgeIntersected1 = e3;
 							nextPoint = intersection;
 						}
 						else
 						{
 							intersectionPoint2 = intersection;
-							edgeIntersected2 = E3;
+							edgeIntersected2 = e3;
 
 							// Si hay 2 Intersecciones => Comprobamos cual esta mas lejos de A
 							if (intersectionPoint2 != null &&
 							    (a - (Vector2)intersectionPoint2).magnitude >
 							    (a - (Vector2)intersectionPoint1).magnitude)
 							{
-								farEdge = E2;
+								farEdge = e2;
 								nextPoint = intersectionPoint2;
 							}
 							else
@@ -473,7 +443,7 @@ namespace Procrain.Geometry
 				if (intersectionPoint1 == null) return false;
 
 				// Comprobamos cual es el Eje mas lejano, el cual tendra de vecino el SIGUIENTE TRIANGULO
-				if (farEdge != null) nextTriangle = farEdge.OppositeTri(this);
+				if (farEdge.IsInvalid) nextTriangle = farEdge.OppositeTri(this);
 
 				return true;
 			}
@@ -485,9 +455,9 @@ namespace Procrain.Geometry
 
 		private Vector3? GetVertex(Vector2 v)
 		{
-			if (v == V1XZ) return v1;
-			if (v == V2XZ) return v2;
-			if (v == V3XZ) return v3;
+			if (v == V1_XZ) return V1;
+			if (v == V2_XZ) return V2;
+			if (v == V3_XZ) return V3;
 			return null;
 		}
 
@@ -500,9 +470,9 @@ namespace Procrain.Geometry
 		/// <returns>Altura del punto en el triangulo</returns>
 		public float GetHeightInterpolation(Vector2 p)
 		{
-			Vector2 a = V1XZ;
-			Vector2 b = V2XZ;
-			Vector2 c = V3XZ;
+			Vector2 a = V1_XZ;
+			Vector2 b = V2_XZ;
+			Vector2 c = V3_XZ;
 
 			// Usamos las coordenadas baricentricas como pesos:
 			float denom = (b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y);
@@ -510,12 +480,16 @@ namespace Procrain.Geometry
 			float w2 = ((c.y - a.y) * (p.x - c.x) + (a.x - c.x) * (p.y - c.y)) / denom;
 			float w3 = 1 - w1 - w2;
 
-			return (v1.y * w1 + v2.y * w2 + v3.y * w3) / (w1 + w2 + w3);
+			return (V1.y * w1 + V2.y * w2 + V3.y * w3) / (w1 + w2 + w3);
 		}
 
 		public override string ToString() =>
-			"t" + index + " {" + v1 + " -> " + v2 + " -> " + v3 + "} (" + E1 + ", " + E2 + ", " + E3 + ")";
+			"t" + index + " {" + V1 + " -> " + V2 + " -> " + V3 + "} (" + e1 + ", " + e2 + ", " + e3 + ")";
 
-		public override int GetHashCode() => v1.GetHashCode() + v2.GetHashCode() + v3.GetHashCode();
+		public bool Equals(Triangle other) => 
+			v1.Equals(other.v1) && v2.Equals(other.v2) && v3.Equals(other.v3);
+
+		public override int GetHashCode() =>
+			v1.GetHashCode() + v2.GetHashCode() + v3.GetHashCode();
 	}
 }

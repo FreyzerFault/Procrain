@@ -1,5 +1,5 @@
 using Procrain.Editor.Utils;
-using Procrain.Noise;
+using Procrain.MapParameters;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,8 +12,8 @@ namespace Procrain.Editor.MapGeneration
 		{
 			base.OnInspectorGUI();
 
-			var noiseParams = target as PerlinNoiseParams;
-			if (noiseParams == null)
+			PerlinNoiseParams noiseParams = target as PerlinNoiseParams;
+			if (!noiseParams)
 				return;
 
 			if (GUILayout.Button("Reset Seed"))

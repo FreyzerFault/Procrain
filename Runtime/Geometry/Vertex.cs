@@ -1,20 +1,24 @@
 ﻿using System;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace Procrain.Geometry
 {
 	[Serializable]
-	public class Vertex
+	public struct Vertex: IEquatable<Vertex>
 	{
-		public int index;
+		public readonly int index;
 
-		public float x;
-		public float y;
-		public float z;
-		public readonly Vector2 v2D; // 2.5D (x,z)
+		public readonly float x;
+		public readonly float y;
+		public readonly float z;
 
-		public readonly Vector3 v3D;
+		// public readonly float2 xy; // 2D (x,y)
+		public readonly float2 xz; // 2.5D (x,z)
+		public readonly float3 xyz;
 
+		public static Vertex InvalidVertex => new Vertex(0,0,0);
+		public bool IsInvalid => index == -1;
+		
 		public Vertex(float x, float y, float z, int index = -1)
 		{
 			this.index = index;
@@ -23,21 +27,23 @@ namespace Procrain.Geometry
 			this.y = y;
 			this.z = z;
 
-			v3D = new Vector3(x, y, z);
-			v2D = new Vector2(x, z);
+			xyz = new float3(x, y, z);
+			xz = new float2(x, z);
+			// xy = new float2(x, y);
 		}
 
-		public Vertex(Vector3 v, int index = -1) : this(v.x, v.y, v.z, index)
-		{
-		}
+		public Vertex(float3 v, int index = -1) : this(v.x, v.y, v.z, index)
+		{ }
 
-		public override string ToString() => "v" + index;
-
+		public override string ToString() => $"{nameof(index)}: {index}, {nameof(xyz)}: {xyz}";
+		
 		public string ToString(bool withCoords) =>
 			ToString() + (withCoords ? "v" + "(" + x + ", " + z + ") H = " + y : "");
 
+		public bool Equals(Vertex other) => xyz.Equals(other.xyz);
+
 		/// Se identifica por su coordenada 2D en el plano X,Z.
 		/// No puede haber mas de 1 punto con distinta altura
-		public override int GetHashCode() => v2D.GetHashCode();
+		public override int GetHashCode() => xyz.GetHashCode();
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Procrain.MapDisplay.TIN;
 using Procrain.MapGeneration.TIN;
 using UnityEditor;
 using UnityEngine;
@@ -65,7 +66,7 @@ namespace Procrain.Editor.MapGeneration
 
             foreach (var tri in tin.triangles)
             {
-                var triCenter = (tri.v1 + tri.v2 + tri.v3) / 3;
+                var triCenter = (tri.V1 + tri.V2 + tri.V3) / 3;
 
                 Handles.Label(triCenter, tri.ToString(), cyanStyle);
             }

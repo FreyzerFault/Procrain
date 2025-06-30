@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcfeeaff4ed61944f9e0f24417334a96, type: 3}
   m_Name: Mesh Sample TSettings
   m_EditorClassIdentifier: 
-  dirty: 1
+  dirty: 0
   heightCurve:
     serializedVersion: 2
     m_Curve:
@@ -26,53 +26,52 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.10840002
-      value: 0.06205079
-      inSlope: 0.6354714
-      outSlope: 0.6354714
+      time: 0.13460317
+      value: 0.05500123
+      inSlope: 0.5775671
+      outSlope: 0.5775671
       tangentMode: 136
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.22579828
-      value: 0.14885838
-      inSlope: 0.72894853
-      outSlope: 0.72894853
+      time: 0.24845758
+      value: 0.14901097
+      inSlope: 1.0387486
+      outSlope: 1.0387486
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.7927402
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.33838493
+      value: 0.2349751
+      inSlope: 0.53917944
+      outSlope: 0.53917944
       tangentMode: 136
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.36178428
-      value: 0.24675487
-      inSlope: 0.47548166
-      outSlope: 0.47548166
-      tangentMode: 136
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.60698366
-      value: 0.33010504
-      inSlope: 1.0015031
-      outSlope: 1.0015031
+      time: 0.5712786
+      value: 0.32306942
+      inSlope: 0.2647552
+      outSlope: 0.2647552
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.27863345
+      outWeight: 0.43467644
     - serializedVersion: 3
-      time: 1.1138
-      value: 1.0704346
-      inSlope: 0
-      outSlope: 0
+      time: 1.007279
+      value: 1.0052164
+      inSlope: 0.12624118
+      outSlope: 0.12624118
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.4616809
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   heightScale: 100
   lod: 4
-  noiseParams: {fileID: 11400000, guid: b724943d15b9b9e4fbd6ec9ada5b86f9, type: 2}

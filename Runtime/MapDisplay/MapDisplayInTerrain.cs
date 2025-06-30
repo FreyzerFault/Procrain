@@ -1,4 +1,5 @@
 using Procrain.Core;
+using Procrain.Geometry;
 using Procrain.MapGeneration;
 using Procrain.MapGeneration.Terrain;
 using Unity.Mathematics;
@@ -29,15 +30,17 @@ namespace Procrain.MapDisplay
 			_terrainCollider = GetComponent<TerrainCollider>();
 		}
 
-		protected override void OnHeightMapUpdated(IHeightMap heightMap)
+		protected override void HandleHeightMapUpdated(IHeightMap heightMap)
 		{
 			UpdateTerrainData(heightMap);
 			UpdateMaterial();
 		}
 
+		[ContextMenu("Update Rendered Terrain")]
 		public override void DisplayMap()
 		{
 			if (HeightMap == null) return;
+			
 			UpdateTerrainData(HeightMap);
 			UpdateMaterial();
 		}
@@ -49,8 +52,8 @@ namespace Procrain.MapDisplay
 				terrainData = new TerrainData();
 
 			terrainData.ApplyToHeightMap(
-				HeightMap,
-				MapManager.Instance.TerrainSettings.HeightScale,
+				heightMap,
+				MapManager.TerrainSettings.HeightScale,
 				resolutionAmplifier
 			);
 			TerrainCollider.terrainData = terrainData;
@@ -70,7 +73,7 @@ namespace Procrain.MapDisplay
 		{
 			if (!movement)
 				return;
-			MapManager.Instance.NoiseParams.Offset += new float2(1, 0);
+			MapManager.NoiseParams.Offset += new float2(1, 0);
 		}
 
 		#endregion

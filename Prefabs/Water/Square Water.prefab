@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 53.883175, y: 53.882893, z: 53.882893}
+  m_LocalScale: {x: 989.24115, y: 989.23596, z: 989.23596}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -59,6 +59,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -141,12 +144,12 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   colorGradientTexture: {fileID: 0}
   shallowColor: {r: 0, g: 0.6313726, b: 1, a: 1}
-  deepColor: {r: 0, g: 0.42745084, b: 0.6784314, a: 1}
+  deepColor: {r: 0, g: 0.42744273, b: 0.6784314, a: 1}
   colorDepth: 2.59
-  horizonColor: {r: 0, g: 0.22745085, b: 0.8, a: 1}
+  horizonColor: {r: 0, g: 0.22744274, b: 0.8, a: 1}
   horizonDistance: 20
   shoreFade: 0
-  shoreColor: {r: 0, g: 0.98039216, b: 0.30196065, a: 0}
+  shoreColor: {r: 0, g: 0.98039216, b: 0.3019525, a: 0}
   shoreStrength: 0
   shoreBlend: 0
   shoreDepth: 0
@@ -167,8 +170,8 @@ MonoBehaviour:
   surfaceFoamSpeed1: 0.09
   surfaceFoamSpeed2: 0.11
   surfaceFoamTilingAndOffset: {x: -1, y: -1, z: 0.18, w: 0.15}
-  surfaceFoamOffsetX: -1
-  surfaceFoamOffsetY: -1
+  surfaceFoamOffsetX: 0
+  surfaceFoamOffsetY: 0
   surfaceFoamScale1: 0.18
   surfaceFoamScale2: 0.15
   enableSurfaceFoam: 1

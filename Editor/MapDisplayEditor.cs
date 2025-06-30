@@ -14,19 +14,16 @@ namespace Procrain.Editor
 			if (mapDisplay == null)
 				return;
 
-			if (DrawDefaultInspector()) mapDisplay.DisplayMap();
+			if (DrawDefaultInspector()) mapDisplay.RebuildMapData();
 
 			// Boton para generar el mapa
-			if (GUILayout.Button("Regenerate Map"))
-			{
-				MapManager.Instance.BuildMap();
-				mapDisplay.DisplayMap();
-			}
+			if (GUILayout.Button("Regenerate Map")) 
+				mapDisplay.RebuildMapData();
 
 			if (GUILayout.Button("Reset Seed"))
 			{
-				MapManager.Instance.ResetSeed();
-				mapDisplay.DisplayMap();
+				MapManager.NoiseParams.ResetSeed();
+				mapDisplay.RebuildMapData();
 			}
 		}
 	}

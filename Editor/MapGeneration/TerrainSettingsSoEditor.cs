@@ -1,18 +1,18 @@
 using Procrain.Editor.Utils;
-using Procrain.MapGeneration;
+using Procrain.MapParameters;
 using UnityEditor;
 using UnityEngine;
 
 namespace Procrain.Editor.MapGeneration
 {
-	[CustomEditor(typeof(TerrainSettingsSo), true)]
+	[CustomEditor(typeof(TerrainParams), true)]
 	public class TerrainSettingsSoEditor : AutoUpdatableSoEditor
 	{
 		public override void OnInspectorGUI()
 		{
 			base.OnInspectorGUI();
 
-			var terrainParamsSo = target as TerrainSettingsSo;
+			var terrainParamsSo = target as TerrainParams;
 			if (terrainParamsSo == null)
 				return;
 

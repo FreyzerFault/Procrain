@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using Procrain.Geometry;
-using Procrain.MapGeneration.Mesh;
+using Procrain.Geometry.Mesh;
 
 namespace Procrain.MapGeneration.TIN
 {
@@ -22,8 +22,8 @@ namespace Procrain.MapGeneration.TIN
 		)
 		{
 			// Creacion del Tin (Estructura topologica interna)
-			var tin = new Tin(heightMap.map, heightMap.Size, errorTolerance, heigthScale, maxIterations, bounds);
-			tin.InitGeometry(heightMap.map, heightMap.Size);
+			Tin tin = new(heightMap.map, heightMap.size, bounds, errorTolerance, heigthScale, maxIterations);
+			tin.InitGeometry();
 			tin.AddPointLoop();
 
 			// Creacion de la Malla
@@ -61,14 +61,14 @@ namespace Procrain.MapGeneration.TIN
 		public static MeshDataDynamic TinToMesh(Tin tin)
 		{
 			// Creacion de la malla (Datos basicos que necesita Unity)
-			var data = new MeshDataDynamic();
+			MeshDataDynamic data = new(tin.vertices.Count, tin.triangles.Count);
 
 			for (var i = 0; i < tin.triangles.Count; i++)
 			for (var v = 0; v < 3; v++)
 			{
 				Vector3 vertex = tin.triangles[i].Vertices[v];
 				data.AddVertex(vertex);
-				data.AddUV(vertex.x / tin.size, vertex.z / tin.size);
+				data.AddUV(vertex.x / tin.mapSize, vertex.z / tin.mapSize);
 				data.AddTriIndex(i * 3 + v);
 			}
 

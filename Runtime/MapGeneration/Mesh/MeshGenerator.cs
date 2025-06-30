@@ -1,20 +1,27 @@
-using System;
+using Procrain.MapGeneration;
+using Procrain.MapParameters;
+using Procrain.Noise;
+using Procrain.Utils;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
-using Procrain.Noise;
+using Octaves = Procrain.Noise.PerlinNoise.PerlinOctaves;
 
-namespace Procrain.MapGeneration.Mesh
+namespace Procrain.Geometry.Mesh
 {
 	public static class MeshGenerator
 	{
 		public static IMeshData BuildMeshData(
 			IHeightMap map,
-			int lod = 0,
-			float heightScale = 100
+			ITerrainParams terrainParams,
+			Gradient gradient = null
 		)
 		{
+			int lod = terrainParams.LOD;
+			float heightScale = terrainParams.HeightScale;
+			
 			// La malla la creamos centrada en 0:
 			float initCoord = (map.Size - 1) / -2f;
 
@@ -26,34 +33,30 @@ namespace Procrain.MapGeneration.Mesh
 			int simplificationIncrement = lod == 0 ? 1 : lod * 2;
 			int verticesPerLine = (map.Size - 1) / simplificationIncrement + 1;
 
-			var data = new MeshDataStatic(verticesPerLine, verticesPerLine, lod);
+			MeshDataStatic data = new(verticesPerLine, verticesPerLine, lod);
 
 			var vertIndex = 0;
 			for (var y = 0; y < map.Size; y += simplificationIncrement)
 			for (var x = 0; x < map.Size; x += simplificationIncrement)
 			{
-				data.AddVertex(
-					new Vector3(
-						initCoord + x,
-						map.GetHeight(x, y) * heightScale,
-						initCoord + y
-					)
-				);
-				data.AddUV(new Vector2((float)x / map.Size, (float)y / map.Size));
-
-				// TODO : Añadir color???
-				// if (gradCopy != null)
-				//     data.AddColor(gradCopy.Evaluate(heightMap.GetHeight(x, y)));
-
+				float heightValue = map.GetHeight(x, y);
+				
+				float3 pos = new(initCoord + x, heightValue * heightScale, initCoord + y);
+				float2 uv = new((float)x / map.Size, (float)y / map.Size);
+				Color color = gradient?.Evaluate(heightValue) ?? Color.white;
+				
+				data.AddVertex(pos, uv, color);
+				
 				// Ignorando la ultima fila y columna de vertices, añadimos los triangulos
 				if (x < map.Size - 1 && y < map.Size - 1)
 				{
-					data.AddTriangle(
-						vertIndex,
-						vertIndex + verticesPerLine,
-						vertIndex + verticesPerLine + 1
-					);
-					data.AddTriangle(vertIndex + verticesPerLine + 1, vertIndex + 1, vertIndex);
+					int indexBL = vertIndex;
+					int indexTL = vertIndex + verticesPerLine;
+					int indexTR = vertIndex + verticesPerLine + 1;
+					int indexBR = vertIndex + 1;
+					
+					data.AddTriangle(indexBL, indexTL, indexTR);
+					data.AddTriangle(indexBL, indexTR, indexBR);
 				}
 
 				vertIndex++;
@@ -62,77 +65,196 @@ namespace Procrain.MapGeneration.Mesh
 			return data;
 		}
 
-		// TODO: Generar la Mesh de cero, sin tener de iterar por un mapa de alturas
-		// TODO: Distinto lod segun los parametros de input
-		public static IMeshData BuildMesh(
-			PerlinNoiseParams noiseParams,
-			AnimationCurve heightCurve = null,
-			int lod = 0
-		) => throw new NotImplementedException();
-	}
-
-	public static class MeshGeneratorThreadSafe
-	{
-		public static void BuildMeshData(
-			MeshData_ThreadSafe meshData,
-			HeightMap_ThreadSafe map,
-			int lod = 0,
-			float heightScale = 100
+		/// <summary>
+		/// Genera la Mesh Data de cero.
+		/// Optimiza el proceso general, calculando la altura solo en los vertices,
+		/// quitando la necesidad de pregenerar el Mapa de Alturas
+		/// </summary>
+		public static IMeshData BuildMeshData(
+			IHeightMapParams noiseParams,
+			ITerrainParams terrainParams,
+			Gradient gradient = null
 		)
 		{
+			if (noiseParams is not PerlinNoiseParams_ThreadSafe np_ts)
+				np_ts = ((PerlinNoiseParams)noiseParams).ToThreadSafe();
+			
+			#region PERLIN NOISE BASIC PARAMS
+
+			PerlinNoise_ThreadSafe.PerlinOctaves_ThreadSafe octaves = new(np_ts);
+			
+			// Scale no puede ser negativa
+			float scale = np_ts.scale > 0 ? np_ts.scale : 0.0001f;
+
+			int size = np_ts.SampleSize;
+			float heightScale = terrainParams.HeightScale;
+
+			float halfSize = size / 2f;
+			float2 center = new float2(halfSize, halfSize) + np_ts.Offset;
+
+			#endregion
+
+			#region MESH INITIALIZATION
+
+			int lod = terrainParams.LOD;
+				
 			// La malla la creamos centrada en 0:
-			float initCoord = (map.Size - 1) / -2f;
+			float initCoord = (size - 1) / -2f;
 
 			// El LOD NECESITA ser múltiplo de la anchura para que sea simétrico
-			while (lod != 0 && (map.Size - 1) % lod != 0)
+			while (lod != 0 && (size - 1) % lod != 0)
 				lod += 1;
 
 			// Incremento entre vertices para asegurar el LOD
 			int simplificationIncrement = lod == 0 ? 1 : lod * 2;
-			int verticesPerLine = (map.Size - 1) / simplificationIncrement + 1;
+			int verticesPerLine = (size - 1) / simplificationIncrement + 1;
 
-			if (meshData.IsEmpty)
-				meshData = new MeshData_ThreadSafe(verticesPerLine, verticesPerLine, lod);
+			MeshDataStatic data = new(verticesPerLine, verticesPerLine, lod);
 
+			#endregion
+			
 			var vertIndex = 0;
-			for (var y = 0; y < map.Size; y += simplificationIncrement)
-			for (var x = 0; x < map.Size; x += simplificationIncrement)
+			for (var y = 0; y < size; y += simplificationIncrement)
+			for (var x = 0; x < size; x += simplificationIncrement)
 			{
-				meshData.AddVertex(
-					new float3(initCoord + x, map.GetHeight(x, y) * heightScale, initCoord + y)
-				);
-				meshData.AddUV(new float2(x, y) / map.Size);
+				#region NOISE VALUE
 
-				// TODO : Añadir color???
-				// if (gradCopy != null)
-				//     data.AddColor(gradCopy.Evaluate(heightMap.GetHeight(x, y)));
+				float2 coords = new float2(x, y) - center;
+				
+				float heightValue = PerlinNoise_ThreadSafe.GetNoiseHeight(coords, scale, octaves);
+				
+				if (!np_ts.heightCurve.IsEmpty) 
+					heightValue = np_ts.heightCurve.Evaluate(heightValue);
 
+				#endregion
+
+
+				#region MESH DATA
+
+				float3 pos = new(initCoord + x, heightValue * heightScale, initCoord + y);
+				float2 uv = new((float)x / size, (float)y / size);
+				Color color = gradient?.Evaluate(heightValue) ?? Color.white;
+
+				data.AddVertex(pos, uv, color);
+				
 				// Ignorando la ultima fila y columna de vertices, añadimos los triangulos
-				if (x < map.Size - 1 && y < map.Size - 1)
+				if (x < size - 1 && y < size - 1)
 				{
-					var tri1 = new int3(
-						vertIndex,
-						vertIndex + verticesPerLine,
-						vertIndex + verticesPerLine + 1
-					);
-					var tri2 = new int3(vertIndex + verticesPerLine + 1, vertIndex + 1, vertIndex);
-					meshData.AddTriangle(tri1);
-					meshData.AddTriangle(tri2);
+					int indexBL = vertIndex;
+					int indexTL = vertIndex + verticesPerLine;
+					int indexTR = vertIndex + verticesPerLine + 1;
+					int indexBR = vertIndex + 1;
+					
+					data.AddTriangle(indexBL, indexTL, indexTR);
+					data.AddTriangle(indexBL, indexTR, indexBR);
 				}
-
+				
 				vertIndex++;
+
+				#endregion
 			}
+
+			return data;
+		}
+	}
+
+	public static class MeshGeneratorThreadSafe
+	{
+		[BurstCompile]
+		public struct GenerateMeshDataJob : IJob
+		{
+			// Puede generarse calculando el ruido SOLO en los puntos apropiados
+			// o consultando valores de altura de un HeightMap pregenerado para optimizarlo
+			// 
+			[ReadOnly] public PerlinNoiseParams_ThreadSafe noiseParams;
+			[ReadOnly] public HeightMap_ThreadSafe prebuiltHeightMap;
+			
+			[ReadOnly] public TerrainParams_ThreadSafe terrainParams;
+			[ReadOnly] public Gradient_ThreadSafe gradient;
+			
+			[WriteOnly] public MeshData_ThreadSafe meshData;
+
+			public void Execute()
+			{
+				PerlinNoise_ThreadSafe.PerlinOctaves_ThreadSafe octaves = new(noiseParams);
+				
+				int size = prebuiltHeightMap.IsEmpty ? noiseParams.size : prebuiltHeightMap.size;
+				float heightScale = terrainParams.heightScale;
+				int lod = terrainParams.lod;
+			
+				// La malla la creamos centrada en 0:
+				var initCoord = (int)math.floor((size - 1) / -2f);
+
+				// Incremento entre vertices para asegurar el LOD
+				int simplificationIncrement = GetVertexSpace(size, lod);
+				int verticesPerLine = (size - 1) / simplificationIncrement + 1;
+
+				meshData = new MeshData_ThreadSafe(
+					verticesPerLine * verticesPerLine,
+					(verticesPerLine - 1) * 2,
+					lod
+				);
+				
+				// VERTICES
+				for (var y = 0; y < size; y += simplificationIncrement)
+				for (var x = 0; x < size; x += simplificationIncrement)
+				{
+					int2 coord = new(initCoord + x, initCoord + y);
+					
+					// Se samplea calculando con Perlin Noise o consultando el mapa pregenerado 
+					float heightValue = prebuiltHeightMap.IsEmpty 
+						? PerlinNoise_ThreadSafe.GetNoiseHeight(coord, noiseParams.scale, octaves)
+						:prebuiltHeightMap.GetHeight(coord);
+					
+					// Se aplica la curva de altura y se upscalea con la HeightScale
+					heightValue = noiseParams.heightCurve.Evaluate(heightValue) * heightScale;
+
+					float3 vertexPos = new(coord.x, heightValue, coord.y);
+					float2 uv = new((float)coord.x / size, (float)coord.y / size);
+					
+					meshData.AddVertex(vertexPos, uv, GetColor(heightValue));
+				}
+				
+				AddTrianglesAsRectGrid(meshData, new int2(verticesPerLine, verticesPerLine));
+			}
+
+			private static readonly Color32 Black = new(0, 0, 0, 1);
+			private static readonly Color32 White = new(1, 1, 1, 1);
+			
+			[BurstCompile]
+			private Color32 GetColor(float value) =>
+				gradient.IsEmpty ? Color32.Lerp(Black, White, value) : gradient.Evaluate(value);
 		}
 
+		/// Incremento entre vertices para asegurar el LOD (LOD 0, 1, 2, 3,...)
 		[BurstCompile]
-		public struct BuildMeshDataJob : IJob
+		private static int GetVertexSpace(int size, int lod)
 		{
-			public HeightMap_ThreadSafe heightMap;
-			public MeshData_ThreadSafe meshData;
-			public int lod;
-			public float heightScale;
+			// El LOD NECESITA ser múltiplo de la anchura para que sea simétrico
+			while (lod != 0 && (size - 1) % lod != 0)
+				lod += 1;
 
-			public void Execute() => BuildMeshData(meshData, heightMap, lod, heightScale);
+			return lod == 0 ? 1 : lod * 2;
+		}
+		
+		[BurstCompile]
+		public static void AddTrianglesAsRectGrid(MeshData_ThreadSafe meshData, int2 size)
+		{
+			for (var y = 0; y < size.y; y++)
+			for (var x = 0; x < size.x; x++)
+			{
+				// Ignore right and top border
+				if (x != size.x - 1 || y != size.y - 1) continue;
+					
+				// Bot-Left, Bot-Right, Top-Left, Top-Right
+				int indexBL = x + y * size.x;
+				int indexTL = indexBL + size.x;
+				int indexTR = indexBL + size.x + 1;
+				int indexBR = indexBL + 1;
+					
+				meshData.AddTriangle(indexBL, indexTL, indexTR);
+				meshData.AddTriangle(indexBL, indexTR, indexBR);
+			}
 		}
 	}
 }

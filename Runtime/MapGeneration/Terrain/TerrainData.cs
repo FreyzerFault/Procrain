@@ -1,5 +1,6 @@
+using Procrain.Geometry;
+using Procrain.Geometry.Mesh;
 using UnityEngine;
-using Procrain.MapGeneration.Mesh;
 using Procrain.MapGeneration.Texture;
 
 namespace Procrain.MapGeneration.Terrain
@@ -11,7 +12,7 @@ namespace Procrain.MapGeneration.Terrain
         public IMeshData meshData;
 
         public Texture2D BuildTexture() =>
-            TextureGenerator.BuildTexture2D(textureData, heightMap.Size, heightMap.Size);
+            TextureGenerator.BuildTexture2D(textureData, heightMap.size, heightMap.size);
 
         public UnityEngine.Mesh BuildMesh() =>
             meshData.CreateMesh();

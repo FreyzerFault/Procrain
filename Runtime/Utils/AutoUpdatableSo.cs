@@ -6,8 +6,8 @@ namespace Procrain.Utils
     [ExecuteAlways]
     public abstract class AutoUpdatableSo : ScriptableObject
     {
-        public Action valuesUpdated;
+        public event Action OnValuesUpdated;
 
-        public virtual void NotifyUpdate() => valuesUpdated?.Invoke();
+        public virtual void NotifyUpdate() => OnValuesUpdated?.Invoke();
     }
 }

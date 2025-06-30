@@ -143,19 +143,19 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_1_Albedo:
-        m_Texture: {fileID: 2800000, guid: 65c50b065f264b042a12153fb6454aa5, type: 3}
+        m_Texture: {fileID: 2800000, guid: fd43f7986b23ff347bbb6fe37978691d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_1_Mask:
-        m_Texture: {fileID: 2800000, guid: e39c4b98a4756b043a23fb5b81e7b25a, type: 3}
+        m_Texture: {fileID: 2800000, guid: 569de6b83ff804a429fb5a21ce12e2b0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_1_Normal_Map:
-        m_Texture: {fileID: 2800000, guid: 28b218fb0e12c994d8f0b586f65545f2, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9fc215717b71ea4468909885a8735ccc, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_2_Albedo:
-        m_Texture: {fileID: 2800000, guid: 311fa94216ea77342a20e99b01ed6e69, type: 3}
+        m_Texture: {fileID: 2800000, guid: 212ec4578f7e6f7458bf290f06f75eef, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_2_Displacement:
@@ -163,11 +163,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_2_Mask:
-        m_Texture: {fileID: 2800000, guid: 69ac4ffc59a4b194c9f03bec38be51ae, type: 3}
+        m_Texture: {fileID: 2800000, guid: b31bc69500b7a304ab63d04538139769, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_2_Normal_Map:
-        m_Texture: {fileID: 2800000, guid: 86f7d07dde38b154188fd60359df541e, type: 3}
+        m_Texture: {fileID: 2800000, guid: e0c16c3a77df86442ac0cdc2bc2fdc35, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_2_Occlusion:
@@ -179,15 +179,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_3_Albedo:
-        m_Texture: {fileID: 2800000, guid: 27ee302b48e908446ab6ceca6f3597c1, type: 3}
+        m_Texture: {fileID: 2800000, guid: f1c50490230f19643a402aaf5bba0950, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_3_Mask:
-        m_Texture: {fileID: 2800000, guid: 30ff9267bfc89694d87bc233105b263c, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0cdac447ce9d7fe4699765fbd4a6e064, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_3_Normal_Map:
-        m_Texture: {fileID: 2800000, guid: 842f9ccb760350b43b60a53a3677f16e, type: 3}
+        m_Texture: {fileID: 2800000, guid: 48f1c90123f27e3469d1cfec5be28ac5, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_3_Occlusion:
@@ -199,7 +199,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_4_Albedo:
-        m_Texture: {fileID: 2800000, guid: 7e35234e281d141418972228ee38415e, type: 3}
+        m_Texture: {fileID: 2800000, guid: 40ccacd7ad9bc5544b4f1bd5dc9109df, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_4_Displacement:
@@ -207,11 +207,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_4_Mask:
-        m_Texture: {fileID: 2800000, guid: 30b51375156b10e4780537d5793a26c9, type: 3}
+        m_Texture: {fileID: 2800000, guid: 563c09b8c254c494093a88b244153944, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_4_Normal_Map:
-        m_Texture: {fileID: 2800000, guid: d39a1b9e5d5c7b9499f579fa5c70a2a3, type: 3}
+        m_Texture: {fileID: 2800000, guid: 7bfba9b7914449549b5f080a546d7d8f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Layer_4_Occlusion:
@@ -303,15 +303,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Snow_Albedo:
-        m_Texture: {fileID: 2800000, guid: ffa01093856b873448237de84289ee85, type: 3}
+        m_Texture: {fileID: 2800000, guid: c10eb67dbbc876545b4e556c23983871, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Snow_Mask:
-        m_Texture: {fileID: 2800000, guid: 5d46f74cdeedd7941ba8cd7cb7ebb40c, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9adbd49442ff09545a85bd283eb533b9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Snow_Normal_Map:
-        m_Texture: {fileID: 2800000, guid: baca4d94b1d1d8046ab52ce1570a24c7, type: 3}
+        m_Texture: {fileID: 2800000, guid: e188684ba8a62fd41a47a4362a245db3, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Snow_Texture:
@@ -347,7 +347,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_2_Albedo:
-        m_Texture: {fileID: 2800000, guid: e257fa53a087b404d8579225e1c7cddb, type: 3}
+        m_Texture: {fileID: 2800000, guid: 8eca30fa1cc45ba4c8bf87bd6da1b25e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_2_Displacement:
@@ -355,11 +355,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_2_Mask:
-        m_Texture: {fileID: 2800000, guid: b1c590e575d73224eb6773fd8c1cbb64, type: 3}
+        m_Texture: {fileID: 2800000, guid: dbe04d30647454442b98d4c39698be92, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_2_Normal_Map:
-        m_Texture: {fileID: 2800000, guid: 773f0cf0efc85a14a9f70e559642746f, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9f8a1547570bb7e45973c10c639d05ac, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_2_Occlusion:
@@ -371,7 +371,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_3_Albedo:
-        m_Texture: {fileID: 2800000, guid: b39336e67b68db14aa4a8a7f883e5aff, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2ef36d6a6c1adb74cbabaed047cee58d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_3_Displacement:
@@ -379,11 +379,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_3_Mask:
-        m_Texture: {fileID: 2800000, guid: bd4c61d030690814097a2076498d1c75, type: 3}
+        m_Texture: {fileID: 2800000, guid: ce2253d04a5210c42b13218cc8ab4e5d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_3_Normal_Map:
-        m_Texture: {fileID: 2800000, guid: a8a2fc863627f464e838ba616a1d5789, type: 3}
+        m_Texture: {fileID: 2800000, guid: 6f5a13d4966d1984e925b9a61b37ebab, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_3_Occlusion:
@@ -395,7 +395,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_4_Albedo:
-        m_Texture: {fileID: 2800000, guid: e257fa53a087b404d8579225e1c7cddb, type: 3}
+        m_Texture: {fileID: 2800000, guid: 420eaac6ca3b2db4683240a912b094b5, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_4_Displacement:
@@ -403,11 +403,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_4_Mask:
-        m_Texture: {fileID: 2800000, guid: b1c590e575d73224eb6773fd8c1cbb64, type: 3}
+        m_Texture: {fileID: 2800000, guid: 40a2f583b7e14e449af3f019b46026ca, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_4_Normal_Map:
-        m_Texture: {fileID: 2800000, guid: 773f0cf0efc85a14a9f70e559642746f, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5baf3a9fc37ca854aa2edf01a2b70d1a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_4_Occlusion:
@@ -415,6 +415,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Sub_Layer_4_Roughness:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -464,6 +468,7 @@ Material:
     - _AlphaDstBlend: 0
     - _AlphaSrcBlend: 1
     - _AlphaToMask: 0
+    - _Ambient_Occ: 1
     - _Blend: 0
     - _BlendMode: 0
     - _BlendModePreserveSpecular: 1
@@ -518,6 +523,7 @@ Material:
     - _LowDetailDistance: 30.55
     - _Max_Height: 100
     - _Metallic: 0.171
+    - _Metallic_1: 0.214
     - _Metallic_Base: 0
     - _OcclusionStrength: 1
     - _OpaqueCullMode: 2
@@ -540,7 +546,7 @@ Material:
     - _Sand_Height: 0.247
     - _Sand_Tile: 0.047
     - _Show_Height_Lines: 0
-    - _Smoothness: 0.5
+    - _Smoothness: 0.068
     - _SmoothnessTextureChannel: 0
     - _Snow_Active: 1
     - _Snow_Blend: 3.24
@@ -591,6 +597,7 @@ Material:
     - _ZTestGBuffer: 4
     - _ZTestTransparent: 4
     - _ZWrite: 1
+    - _usePrebakedTexture: 0
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}

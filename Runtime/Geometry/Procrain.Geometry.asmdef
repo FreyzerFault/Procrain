@@ -2,7 +2,11 @@
     "name": "Procrain.Geometry",
     "rootNamespace": "Procrain",
     "references": [
-        "GUID:dcaa067449e2d6447937dca610032439"
+        "GUID:dcaa067449e2d6447937dca610032439",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:2665a8d13d1b3f18800f46e256720795",
+        "GUID:674e410f047ae0b41aae0934c6d5acfa",
+        "GUID:a6245a649dbd77945a7c456417a40bdb"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
