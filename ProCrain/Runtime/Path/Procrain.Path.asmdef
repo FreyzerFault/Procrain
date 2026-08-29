@@ -1,0 +1,17 @@
+{
+    "name": "Procrain.Path",
+    "rootNamespace": "Procrain",
+    "references": [
+        "GUID:8e56582fd59963847b3cb4d5600b8406",
+        "GUID:dcaa067449e2d6447937dca610032439"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

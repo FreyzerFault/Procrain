@@ -1,0 +1,16 @@
+{
+    "name": "Procrain.Core",
+    "rootNamespace": "Procrain",
+    "references": [
+        "GUID:dcaa067449e2d6447937dca610032439"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
